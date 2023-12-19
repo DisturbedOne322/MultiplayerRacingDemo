@@ -1,0 +1,141 @@
+.custom-label {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(68, 138, 255);
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.background {
+    flex-grow: 1;
+    align-items: flex-start;
+    background-color: rgb(50, 55, 55);
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.WheelLeft {
+    flex-grow: 1;
+    align-items: auto;
+    justify-content: flex-start;
+    align-self: auto;
+    flex-direction: column;
+    width: 100px;
+    background-color: rgba(255, 255, 255, 0);
+    height: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+    font-size: 10px;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.Header {
+    -unity-background-scale-mode: stretch-to-fill;
+    align-self: flex-start;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    display: flex;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.Foldout {
+    font-size: 30px;
+    -unity-font-style: bold;
+    margin-bottom: 25px;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.inputField {
+    font-size: 14px;
+    width: 100%;
+    align-self: flex-start;
+    align-items: flex-start;
+    justify-content: flex-start;
+    -unity-font-style: normal;
+    -unity-text-align: upper-left;
+    white-space: nowrap;
+    transform-origin: center;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-text-outline-width: 0;
+    flex-direction: row;
+    overflow: hidden;
+    margin-top: 5px;
+    opacity: 1;
+    min-width: auto;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.sideImage {
+    flex-grow: 1;
+    background-image: url('project://database/Assets/CustomVehicleController/Editor/images/vehicleBody.png?fileID=2800000&guid=9c351fdc02a4b4d40ad0719c4f6ceef2&type=3#vehicleBody');
+    -unity-background-scale-mode: scale-to-fit;
+    width: 500px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.statsBlock {
+    flex-grow: initial;
+    width: 300px;
+    max-width: 300px;
+    min-width: auto;
+    flex-shrink: 0;
+    margin-left: 10px;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.saveButton {
+    width: 100%;
+    justify-content: flex-start;
+    align-items: auto;
+    align-self: flex-start;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    font-size: 14px;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.suspensionField {
+    font-size: 15px;
+    -unity-font-style: normal;
+    width: 154px;
+    flex-direction: column;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.objectField {
+    align-self: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+    min-width: 200px;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}
+
+.suspensionObjectField {
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    flex-shrink: 1;
+    -unity-text-align: upper-left;
+    text-overflow: ellipsis;
+    font-size: 15px;
+    height: 42px;
+    width: auto;
+    -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
+}

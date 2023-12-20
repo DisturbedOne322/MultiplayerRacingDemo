@@ -5,6 +5,12 @@
     -unity-font: url('project://database/Assets/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=22fcce9866b063e44a2326ac456b2fdd&type=3#NotInter-Regular');
 }
 
+:root {
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+}
+
 .background {
     flex-grow: 1;
     align-items: flex-start;

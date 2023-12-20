@@ -1,5 +1,6 @@
 using Assets.VehicleController;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -64,15 +65,21 @@ namespace Assets.VehicleControllerEditor
             scriptFolder = Path.GetFullPath(Path.Combine(scriptFolder, "..")) + VEHICLE_PARTS_FOLDER_PATH;
             return scriptFolder.Substring(scriptFolder.IndexOf("Assets"));
         }
-
-       
-
+     
         public void CreateGUI()
         {
+
             VisualElement root = rootVisualElement;
             VisualElement labelFromUXML = m_VisualTreeAsset.Instantiate();
             root.Add(labelFromUXML);
 
+            Initialize(root);
+
+            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+        }
+
+        private void Initialize(VisualElement root)
+        {
             _controllerSelectedLabel = root.Q<Label>(CONTROLLER_SELECTED_LABEL);
 
             _lockWindowToggle = root.Q<Toggle>(LOCK_WINDOW_TOGGLE);
@@ -109,12 +116,17 @@ namespace Assets.VehicleControllerEditor
 
             _extraVisualsSettingsEditor = ScriptableObject.CreateInstance<ExtraVisualsSettingsEditor>();
             _extraVisualsSettingsEditor.HandleExtraSettings(root, this);
-
-
-            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
         }
 
-        private void OnBecameVisible() => BindController(TryGetVehicleController());
+        private void OnBecameVisible()
+        {
+            if (Selection.objects.Length > 1)
+            {
+                Debug.Log("Multiobject editing isn't supported");
+                return;
+            }
+            BindController(TryGetVehicleController());
+        }
 
         private void OnDestroy()
         {
@@ -138,28 +150,21 @@ namespace Assets.VehicleControllerEditor
 
             if (newState == PlayModeStateChange.ExitingPlayMode)
             {
-                if (_saveChangedToggle.value)
-                {
-                    CopyStats();
-                    _saveChangedToggleValuePlayMode = _saveChangedToggle.value;
-                }
-                SaveController();
+                if (!_saveChangedToggle.value)
+                    return;
 
+                CopyStats();
             }
 
             if (newState == PlayModeStateChange.EnteredEditMode)
             {
                 if (_saveChangedToggle.value)
-                {
                     PasteStats();
-                    _saveChangedToggle.value = _saveChangedToggleValuePlayMode;
-                    SaveController();
-                }
-
-
-                BindController(TryGetVehicleController());
+                //_saveChangedToggle.value = _saveChangedToggleValuePlayMode;
+                SaveController();
+                //update field values in the editor after play mode. even though the vehicle stats object gets reset, the fields in editor don't
+                SetVehicleControllerToSettingEditors(_serializedController, _controller);
             }
-
         }
 
         private void CopyStats()

@@ -16,7 +16,7 @@ MonoBehaviour:
   ForwardDrag: 0.05
   MidAirDrag: 0
   Downforce: 100
-  CorneringResistanceStrength: 10
+  CorneringResistanceStrength: 15
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:

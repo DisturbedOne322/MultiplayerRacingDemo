@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using System;
+using System.Linq;
 
 namespace Assets.VehicleControllerEditor
 {
@@ -15,7 +17,7 @@ namespace Assets.VehicleControllerEditor
         #region Transmission
         private TransmissionSO _transmissionSO;
         private TextField _transmissionTextField;
-        private FloatField _transmissionFinalDriveField;
+        private Slider _transmissionFinalDriveField;
         private FloatField _transmissionShiftCDField;
 
         private Slider _upshiftSlider;
@@ -23,9 +25,9 @@ namespace Assets.VehicleControllerEditor
 
         private ObjectField _transmissionSOObjectField;
 
-        private ListView _gearRatiosListView;
+        private ListView _gearRatiosSlidersListView;
 
-        private const string TRANSMISSION_GEAR_RATIOS_LIST_NAME = "GearRatiosList";
+        private const string TRANSMISSION_GEAR_RATIOS_SLIDERS_LIST_NAME = "GearRatiosSlidersList";
         private const string TRANSMISSION_TEXT_FIELD_NAME = "TransmissionAssetName";
         private const string TRANSMISSION_FINAL_DRIVE_FIELD_NAME = "FinalDriveInput";
         private const string TRANSMISSION_SHIFT_CD_NAME = "ShiftCooldownInput";
@@ -61,14 +63,63 @@ namespace Assets.VehicleControllerEditor
             _mainEditor.OnWindowClosed -= _mainEditor_OnWindowClosed;
         }
 
+        private void MakeGearList()
+        {
+            // The ListView calls this to add visible items to the scroller.
+            Func<VisualElement> makeItem = () =>
+            {
+                var gearInfoVisualElement = new GearInfoVisualElement();
+                var slider = gearInfoVisualElement.Q<Slider>(name: "Ratio");
+
+                var name = gearInfoVisualElement.Q<Label>(name: "nameLabel");
+                slider.RegisterValueChangedCallback(evt =>
+                {
+                    var i = (int)slider.userData;
+                    slider.value = evt.newValue;
+                    _transmissionSO.GearRatiosList[i] = evt.newValue;
+                });
+                return gearInfoVisualElement;
+            };
+
+            // The ListView calls this if a new item becomes visible when the item first appears on the screen, 
+            // when a user scrolls, or when the dimensions of the scroller are changed.
+            Action<VisualElement, int> bindItem = (e, i) => BindItem(e as GearInfoVisualElement, i);
+
+            // Height used by the ListView to determine the total height of items in the list.
+            int itemHeight = 27;
+
+
+            _gearRatiosSlidersListView = root.Q<ListView>(TRANSMISSION_GEAR_RATIOS_SLIDERS_LIST_NAME);
+            _gearRatiosSlidersListView.fixedItemHeight = itemHeight;
+            _gearRatiosSlidersListView.makeItem = makeItem;
+            _gearRatiosSlidersListView.bindItem = bindItem;
+            _gearRatiosSlidersListView.reorderable = false;
+            _gearRatiosSlidersListView.style.flexGrow = 1f; // Fills the window, at least until the toggle below.
+            _gearRatiosSlidersListView.showBorder = true;
+            _gearRatiosSlidersListView.itemsAdded += _gearRatiosSlidersListView_itemsAdded;
+        }
+
+        private void _gearRatiosSlidersListView_itemsAdded(IEnumerable<int> obj)
+        {
+            int indexLast = obj.Last();
+            if (indexLast == 0)
+            {
+                _transmissionSO.GearRatiosList[indexLast] = 3.45f;
+                return;
+            }
+
+            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[indexLast - 1] * (0.65f + (indexLast - 1) / 20f);
+        }
+
         private void FindTransmissionFields()
         {
             _transmissionTextField = root.Q<TextField>(name: TRANSMISSION_TEXT_FIELD_NAME);
-            _transmissionFinalDriveField = root.Q<FloatField>(name: TRANSMISSION_FINAL_DRIVE_FIELD_NAME);
+            _transmissionFinalDriveField = root.Q<Slider>(name: TRANSMISSION_FINAL_DRIVE_FIELD_NAME);
             _transmissionFinalDriveField.RegisterValueChangedCallback(evt => { _transmissionFinalDriveField.value = Mathf.Max(0.1f, _transmissionFinalDriveField.value); });
             _transmissionShiftCDField = root.Q<FloatField>(name: TRANSMISSION_SHIFT_CD_NAME);
             _transmissionShiftCDField.RegisterValueChangedCallback(evt => { _transmissionShiftCDField.value = Mathf.Max(0f, _transmissionShiftCDField.value); });
-            _gearRatiosListView = root.Q<ListView>(TRANSMISSION_GEAR_RATIOS_LIST_NAME);
+
+            MakeGearList();
 
             _upshiftSlider = root.Q<Slider>(TRANSMISSION_UPSHIFT_SLIDER_NAME);
             _upshiftSlider.RegisterValueChangedCallback(evt =>
@@ -81,7 +132,6 @@ namespace Assets.VehicleControllerEditor
             _downshiftSlider = root.Q<Slider>(TRANSMISSION_DONWSHIFT_SLIDER_NAME);
             _downshiftSlider.RegisterValueChangedCallback(evt => { _downshiftSlider.value = Mathf.Clamp(_downshiftSlider.value, 0, _upshiftSlider.value - MIN_RPM_DIFFERENCE); });
         }
-
 
         private void BindTransmissionSOField()
         {
@@ -111,7 +161,7 @@ namespace Assets.VehicleControllerEditor
                 0.91f
             };
             defaultTransmissionSO.GearRatiosList = gearList;
-            defaultTransmissionSO.FinalDriveRatio = 1;
+            defaultTransmissionSO.FinalDriveRatio = 3;
             defaultTransmissionSO.ShiftCooldown = 0.2f;
             return defaultTransmissionSO;
         }
@@ -130,18 +180,13 @@ namespace Assets.VehicleControllerEditor
             }
 
             SerializedObject so = new (_transmissionSO);
-            BindGearList(so);
             BindFinalDrive(so);
             BindShiftCD(so);
             BindUpshiftSlider(so);
             BindDownshiftSlider(so);
+            BindGearList(so);
         }
 
-        private void BindGearList(SerializedObject so)
-        {
-            _gearRatiosListView.bindingPath = nameof(_transmissionSO.GearRatiosList);
-            _gearRatiosListView.Bind(so);
-        }
         private void BindFinalDrive(SerializedObject so)
         {
             _transmissionFinalDriveField.bindingPath = nameof(_transmissionSO.FinalDriveRatio);
@@ -152,7 +197,6 @@ namespace Assets.VehicleControllerEditor
             _transmissionShiftCDField.bindingPath = nameof(_transmissionSO.ShiftCooldown);
             _transmissionShiftCDField.Bind(so);
         }
-
         private void BindUpshiftSlider(SerializedObject so)
         {
             _upshiftSlider.bindingPath = nameof(_transmissionSO.UpShiftRPMPercent);
@@ -163,7 +207,11 @@ namespace Assets.VehicleControllerEditor
             _downshiftSlider.bindingPath = nameof(_transmissionSO.DownShiftRPMPercent);
             _downshiftSlider.Bind(so);
         }
-
+        private void BindGearList(SerializedObject so)
+        {
+            _gearRatiosSlidersListView.bindingPath = nameof(_transmissionSO.GearRatiosList);
+            _gearRatiosSlidersListView.Bind(so);
+        }
 
         private void SubscribeToTransmissionSaveButtonClick()
         {
@@ -201,6 +249,73 @@ namespace Assets.VehicleControllerEditor
             _transmissionSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue;
             //_transmissionSOObjectField.value = controller == null ? null : controller.VehicleStats.TransmissionSO;
+        }
+
+        public class GearRatioVisualElement : VisualElement
+        {
+            public GearRatioVisualElement()
+            {
+                var root = new VisualElement();
+
+                var gearSlider = new Slider { name = "Ratio", lowValue = 0.1f, highValue = 10f };
+                gearSlider.style.flexGrow = 1f;
+                Add(root);
+            }
+        }
+
+        public class GearInfoVisualElement : VisualElement
+        {
+            // Use Constructor when the ListView uses makeItem and returns a VisualElement to be 
+            // bound to a CharacterInfo data class.
+            public GearInfoVisualElement()
+            {
+                var root = new VisualElement();
+                root.style.flexDirection = FlexDirection.Row;
+
+                // The code below to style the ListView is for demo purpose. It's better to use a USS file
+                // to style a visual element. 
+                root.style.marginBottom = 3f;
+                root.style.paddingBottom = 3f;
+                root.style.paddingLeft = 3f;
+
+                root.style.borderBottomColor = Color.gray;
+                root.style.borderBottomWidth = 2f;
+                var nameLabel = new Label() { name = "nameLabel" };
+                nameLabel.style.fontSize = 14f;
+                nameLabel.style.width = 75f;
+                var gearContainer = new VisualElement();
+                gearContainer.style.flexDirection = FlexDirection.Row;
+                gearContainer.style.flexGrow = 1;
+                gearContainer.style.paddingLeft = 15f;
+                gearContainer.style.paddingRight = 15f;
+
+                var gearRatioSlider = new Slider { name = "Ratio", lowValue = 0.1f, highValue = 10 };
+                gearRatioSlider.showInputField = true;
+                gearRatioSlider.style.fontSize = 14;
+                gearRatioSlider.style.flexGrow = 1f;
+                gearContainer.Add(gearRatioSlider);
+
+                root.Add(nameLabel);
+                root.Add(gearContainer);
+                Add(root);
+            }
+        }
+
+        private void BindItem(GearInfoVisualElement elem, int i)
+        {
+            var label = elem.Q<Label>(name: "nameLabel");
+            var slider = elem.Q<Slider>(name: "Ratio");
+            slider.userData = i;
+            label.text = GetGearName(i);
+            slider.value = _transmissionSO.GearRatiosList[i];
+        }
+
+        private string GetGearName(int i)
+        {
+            if (i == 0)
+                return "Gear 1 / R";
+
+            return $"Gear {i + 1}";
         }
     }
 

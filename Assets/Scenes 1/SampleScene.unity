@@ -214,133 +214,6 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
---- !u!114 &33501670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df78e93dab8aa0d4889b0ff2a71015a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BrakesStrength: 30
-  HandbrakeForce: 20000
-  HandbrakeTractionPercent: 0.33
---- !u!114 &52035838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dc67437ccb139e4389c97c1d1f48a18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CorneringStiffness: 15
-  SidewaysGripCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.25
-      inSlope: 0.75
-      outSlope: 0.75
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0.75
-      outSlope: 0.75
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  SidewaysSlipCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -0.5263158
-      outSlope: -0.5263158
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.95
-      value: 0.5
-      inSlope: 4.736841
-      outSlope: 4.736841
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 9.999998
-      outSlope: 9.999998
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  ForwardGrip: 1.5
---- !u!114 &80958792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82044c98410c19146b7592afd1d240e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Mass: 1500
-  ForwardDrag: 0.07
-  MidAirDrag: 0
-  Downforce: 5
-  CorneringResistanceStrength: 5
-  CorneringResistanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!1 &91049336
 GameObject:
   m_ObjectHideFlags: 0
@@ -1302,6 +1175,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 353037537}
   m_CullTransparentMesh: 1
+--- !u!114 &379032551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8a1f0792138ef3499d928787231913e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GearRatiosList:
+  - 3.45
+  - 2.12
+  - 1.44
+  - 1.13
+  - 0.91
+  FinalDriveRatio: 1
+  ShiftCooldown: 0.2
+  UpShiftRPMPercent: 0
+  DownShiftRPMPercent: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1525,21 +1420,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   b: 0
---- !u!114 &494763788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SpringRestDistance: 0.3
-  SpringStiffness: 60000
-  SpringDampingStiffness: 3500
 --- !u!1 &499697713
 GameObject:
   m_ObjectHideFlags: 0
@@ -2335,6 +2215,92 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &702589541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dc67437ccb139e4389c97c1d1f48a18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CorneringStiffness: 15
+  SidewaysGripCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.25
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  SidewaysSlipCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.5263158
+      outSlope: -0.5263158
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.95
+      value: 0.5
+      inSlope: 4.736841
+      outSlope: 4.736841
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 9.999998
+      outSlope: 9.999998
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ForwardGrip: 1.5
+--- !u!114 &727551660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpringRestDistance: 0.3
+  SpringStiffness: 60000
+  SpringDampingStiffness: 3500
 --- !u!1 &739013523
 GameObject:
   m_ObjectHideFlags: 0
@@ -3378,21 +3344,6 @@ MonoBehaviour:
   _wheelRadius: 0
   _wheelMeshTransform: {fileID: 4448173093552642}
   b: 0
---- !u!114 &1277954706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SpringRestDistance: 0.3
-  SpringStiffness: 60000
-  SpringDampingStiffness: 3500
 --- !u!1 &1304342821
 GameObject:
   m_ObjectHideFlags: 0
@@ -3537,6 +3488,77 @@ Transform:
   - {fileID: 327896591}
   m_Father: {fileID: 2088265744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1375227802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dc67437ccb139e4389c97c1d1f48a18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CorneringStiffness: 15
+  SidewaysGripCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.25
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.75
+      outSlope: 0.75
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  SidewaysSlipCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.5263158
+      outSlope: -0.5263158
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.95
+      value: 0.5
+      inSlope: 4.736841
+      outSlope: 4.736841
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 9.999998
+      outSlope: 9.999998
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ForwardGrip: 1.5
 --- !u!1 &1394896801
 GameObject:
   m_ObjectHideFlags: 0
@@ -3692,28 +3714,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1472629760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8a1f0792138ef3499d928787231913e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GearRatiosList:
-  - 3.45
-  - 2.12
-  - 1.44
-  - 1.13
-  - 0.91
-  FinalDriveRatio: 1
-  ShiftCooldown: 0.2
-  UpShiftRPMPercent: 0
-  DownShiftRPMPercent: 0
 --- !u!1 &1487613127
 GameObject:
   m_ObjectHideFlags: 0
@@ -3783,16 +3783,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VehicleStats:
-    EngineSO: {fileID: 11400000, guid: 0142f93af7bac1742aee6059eabddb66, type: 2}
-    TransmissionSO: {fileID: 11400000, guid: 45f50ce1b0d6d444daae567a746a5b44, type: 2}
-    FrontTiresSO: {fileID: 11400000, guid: 7b62f8d82321f3949a6af5737eb3f5ee, type: 2}
-    RearTiresSO: {fileID: 11400000, guid: 7b62f8d82321f3949a6af5737eb3f5ee, type: 2}
-    FrontSuspensionSO: {fileID: 11400000, guid: 3451df8b54df38e49b069aa6209889a7,
-      type: 2}
-    RearSuspensionSO: {fileID: 11400000, guid: 3451df8b54df38e49b069aa6209889a7, type: 2}
-    BrakesSO: {fileID: 11400000, guid: 64d9a289927543d40b3264a26bdfa404, type: 2}
-    BodySO: {fileID: 11400000, guid: 3db7fb85ec7a7c3458b60064742f08ea, type: 2}
-  DrivetrainType: 2
+    EngineSO: {fileID: 2067243003}
+    TransmissionSO: {fileID: 379032551}
+    FrontTiresSO: {fileID: 1375227802}
+    RearTiresSO: {fileID: 702589541}
+    FrontSuspensionSO: {fileID: 1620163485}
+    RearSuspensionSO: {fileID: 727551660}
+    BrakesSO: {fileID: 1747060819}
+    BodySO: {fileID: 1599266127}
+  DrivetrainType: 0
   TransmissionType: 0
   SteerAngle: 30
   SteerSpeed: 0.15
@@ -3975,6 +3974,47 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4019949821456274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1599266127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82044c98410c19146b7592afd1d240e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Mass: 1500
+  ForwardDrag: 0.07
+  MidAirDrag: 0
+  Downforce: 5
+  CorneringResistanceStrength: 5
+  CorneringResistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1618667948
 GameObject:
   m_ObjectHideFlags: 0
@@ -4006,6 +4046,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4019949821456274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1620163485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpringRestDistance: 0.3
+  SpringStiffness: 60000
+  SpringDampingStiffness: 3500
 --- !u!1 &1629393462
 GameObject:
   m_ObjectHideFlags: 0
@@ -4312,6 +4367,21 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!114 &1747060819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df78e93dab8aa0d4889b0ff2a71015a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BrakesStrength: 30
+  HandbrakeForce: 20000
+  HandbrakeTractionPercent: 0.33
 --- !u!1 &1774963771
 GameObject:
   m_ObjectHideFlags: 0
@@ -5375,7 +5445,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
   _boostNeedle: {fileID: 1774963771}
---- !u!114 &2073190778
+--- !u!114 &2067243003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5384,68 +5454,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dc67437ccb139e4389c97c1d1f48a18, type: 3}
+  m_Script: {fileID: 11500000, guid: db281c34c26671247bcffab06267e07e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CorneringStiffness: 15
-  SidewaysGripCurve:
+  TorqueCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.25
-      inSlope: 0.75
-      outSlope: 0.75
-      tangentMode: 0
+      time: 1000
+      value: 100
+      inSlope: 0.008571428
+      outSlope: 0.008571428
+      tangentMode: 35
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0.75
-      outSlope: 0.75
-      tangentMode: 0
+      time: 8000
+      value: 160
+      inSlope: -0.010714285
+      outSlope: -0.010714285
+      tangentMode: 35
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 9000
+      value: 130
+      inSlope: -0.03
+      outSlope: -0.03
+      tangentMode: 35
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  SidewaysSlipCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -0.5263158
-      outSlope: -0.5263158
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.95
-      value: 0.5
-      inSlope: 4.736841
-      outSlope: 4.736841
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 9.999998
-      outSlope: 9.999998
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  ForwardGrip: 1.5
+  ForcedInductionSO: {fileID: 0}
+  MaxSpeed: 300
 --- !u!1 &2088265743
 GameObject:
   m_ObjectHideFlags: 0
@@ -6668,7 +6714,6 @@ GameObject:
   - component: {fileID: 2562711910941428487}
   - component: {fileID: 2562711910941428491}
   - component: {fileID: 2562711910941428496}
-  - component: {fileID: 2562711910941428494}
   - component: {fileID: 2562711910941428497}
   m_Layer: 6
   m_Name: low poly car muscle car 2 (stanced) Variant
@@ -6959,14 +7004,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VehicleStats:
-    EngineSO: {fileID: 11400000, guid: 0142f93af7bac1742aee6059eabddb66, type: 2}
-    TransmissionSO: {fileID: 1472629760}
-    FrontTiresSO: {fileID: 2073190778}
-    RearTiresSO: {fileID: 52035838}
-    FrontSuspensionSO: {fileID: 494763788}
-    RearSuspensionSO: {fileID: 1277954706}
-    BrakesSO: {fileID: 33501670}
-    BodySO: {fileID: 80958792}
+    EngineSO: {fileID: 11400000, guid: 2b220c2568dcb9d49bc3cb179240ac4b, type: 2}
+    TransmissionSO: {fileID: 11400000, guid: a3ba8065a2284374a97ff33c3787ca3b, type: 2}
+    FrontTiresSO: {fileID: 11400000, guid: 74070100d2f461947bc8b7919f451bd3, type: 2}
+    RearTiresSO: {fileID: 11400000, guid: 74070100d2f461947bc8b7919f451bd3, type: 2}
+    FrontSuspensionSO: {fileID: 11400000, guid: 3451df8b54df38e49b069aa6209889a7,
+      type: 2}
+    RearSuspensionSO: {fileID: 11400000, guid: 3451df8b54df38e49b069aa6209889a7, type: 2}
+    BrakesSO: {fileID: 11400000, guid: 64d9a289927543d40b3264a26bdfa404, type: 2}
+    BodySO: {fileID: 11400000, guid: 3db7fb85ec7a7c3458b60064742f08ea, type: 2}
   DrivetrainType: 0
   TransmissionType: 0
   SteerAngle: 0
@@ -7122,23 +7168,7 @@ MonoBehaviour:
   _bodyWindEffect: {fileID: 2562711910941428496}
   _brakeLights: {fileID: 2562711910941428491}
   _skidMarks: {fileID: 0}
-  _tireSmoke: {fileID: 2562711910941428494}
---- !u!114 &2562711910941428494
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 311576484562101898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d82c6409e916f348b9ed3f72de14e2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tireSmokeVisualEffectType: 1
-  _tireSmokeVFX: {fileID: 8926484042661614526, guid: 9a5474766e769e540a51504975ca01aa,
-    type: 3}
-  _tireSmokeParticleSystem: {fileID: 0}
+  _tireSmoke: {fileID: 0}
 --- !u!114 &2562711910941428496
 MonoBehaviour:
   m_ObjectHideFlags: 0

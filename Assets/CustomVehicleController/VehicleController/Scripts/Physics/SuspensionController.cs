@@ -171,9 +171,6 @@ namespace Assets.VehicleController
         {
             float targetY = _wheelInitialPosition.y - (distance - _wheelRadius * 2);
 
-            if (targetY > _wheelInitialPosition.y)
-                targetY = _wheelInitialPosition.y;
-
             _wheelPosition = new(_wheelInitialPosition.x,
                                  targetY, 
                                  _wheelInitialPosition.z);

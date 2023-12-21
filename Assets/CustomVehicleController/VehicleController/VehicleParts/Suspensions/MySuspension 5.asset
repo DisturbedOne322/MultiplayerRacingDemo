@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a07113725e0bf9b40a510170f9f94e8e, type: 3}
-  m_Name: TurboPro
+  m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
+  m_Name: MySuspension 5
   m_EditorClassIdentifier: 
-  ForcedInductionType: 3
-  MaxTorqueBoostAmount: 600
-  TurboRPMPercentDelay: 0.2
-  TurboSpinTime: 1
+  SpringRestDistance: 0.23
+  SpringStiffness: 100000
+  SpringDampingStiffness: 1000

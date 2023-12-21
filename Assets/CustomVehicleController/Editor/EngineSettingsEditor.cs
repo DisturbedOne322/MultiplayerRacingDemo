@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -62,6 +63,29 @@ namespace Assets.VehicleControllerEditor
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
             EditorApplication.update += RecalculateHorsepowerRoutine;
+
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb1 = new StringBuilder();
+            sb1.AppendLine("Engine torque graph.");
+            sb1.AppendLine("");
+            sb1.AppendLine("X-axis - rpm. Y-axis - torque.");
+            sb1.AppendLine("");
+            sb1.AppendLine("The leftmost key is the idle rpm, and the rightmost - the max rpm.");
+            _engineTorqueCurveField.tooltip = sb1.ToString();
+
+            StringBuilder sb2 = new StringBuilder();
+
+            sb2.AppendLine("The maximum speed a vehicle can reach (in km/h).");
+            sb2.AppendLine();
+            sb2.AppendLine("In case the car is trying to accelerate beyond this value, the opposite force would be applied.");
+            sb2.AppendLine();
+            sb2.AppendLine("Keep the value at a reasonable amount because other components may depend on it for calculations.");
+
+            _engineMaxSpeedField.tooltip = sb2.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -130,7 +154,7 @@ namespace Assets.VehicleControllerEditor
         {
             _engineSO = loadedEngineSO;
 
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue = _engineSO;
                 _mainEditor.SaveController();
@@ -218,7 +242,6 @@ namespace Assets.VehicleControllerEditor
 
             _engineSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue;
-           //_engineSOObjectField.value = customVehicleController == null ? null : customVehicleController.VehicleStats.EngineSO;
         }
     }
 

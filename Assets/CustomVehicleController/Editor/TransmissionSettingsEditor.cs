@@ -6,6 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace Assets.VehicleControllerEditor
 {
@@ -54,6 +55,21 @@ namespace Assets.VehicleControllerEditor
             SubscribeToTransmissionSaveButtonClick();
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Gear ratios of the transmission. The reverse gear has the same ratio as the first gear.");
+            sb.AppendLine();
+            sb.AppendLine("The higher the ratio the more torque the gear produces, but the top speed gets lower.");
+            sb.AppendLine();
+            sb.AppendLine("Gear ratios must decrease as the gear number increases. When adding a new gear, its ratio will be approximated using the formula:");
+            sb.AppendLine();
+            sb.AppendLine("Gear N Ratio = Gear 0 Ratio * e^(-0.27f * N).");
+
+            _gearRatiosSlidersListView.tooltip = sb.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -107,8 +123,7 @@ namespace Assets.VehicleControllerEditor
                 _transmissionSO.GearRatiosList[indexLast] = 3.45f;
                 return;
             }
-
-            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[indexLast - 1] * (0.65f + (indexLast - 1) / 20f);
+            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(-0.27f * indexLast);           
         }
 
         private void FindTransmissionFields()
@@ -169,7 +184,7 @@ namespace Assets.VehicleControllerEditor
         private void RebindTransmissionSettings(TransmissionSO loadedTransmissionSO)
         {
             _transmissionSO = loadedTransmissionSO;
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue = _transmissionSO;
                 _mainEditor.SaveController();

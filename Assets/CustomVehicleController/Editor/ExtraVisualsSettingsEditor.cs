@@ -54,21 +54,7 @@ namespace Assets.VehicleControllerEditor
             FindFields();
         }
 
-        public void UpdateValueFields(PlayModeStateChange playModeState)
-        {
-            if (playModeState == PlayModeStateChange.EnteredEditMode)
-            {
-                UpdateEditModeValues(_editor.GetSerializedController());
-            }
-
-            if (playModeState == PlayModeStateChange.ExitingPlayMode)
-            {
-                CopyValuesFromPlayMode();
-            }
-        }
-
-
-        private void UpdateEditModeValues(SerializedObject controller)
+        public void PasteStats(SerializedObject controller)
         {
             controller.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue = _forwardSlipPlayMode;
             controller.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue = _sidewaysSlipPlayMode;
@@ -78,7 +64,7 @@ namespace Assets.VehicleControllerEditor
             controller.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue = _aerialSensitivityPlayMode;
         }
 
-        private void CopyValuesFromPlayMode()
+        public void CopyStats()
         {
             _forwardSlipPlayMode = _forwardSlipField.value;
             _sidewaysSlipPlayMode = _sidewaysSlipField.value;
@@ -164,16 +150,16 @@ namespace Assets.VehicleControllerEditor
             });
         }
 
-        public void SetVehicleController(CustomVehicleController vehicleController)
+        public void SetVehicleController(SerializedObject vehicleController)
         {
-            _autoFlipToggle.value = vehicleController == null ? true : vehicleController.AutomaticFlipOverRecoverEnabled;
-            _flipDelayField.value = vehicleController == null ? 2 : vehicleController.AutomaticFlipOverRecoverDelay;
+            _autoFlipToggle.value = vehicleController == null ? true : vehicleController.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverEnabled)).boolValue;
+            _flipDelayField.value = vehicleController == null ? 2 : vehicleController.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverDelay)).floatValue;
 
-            _aerialControlsToggle.value = vehicleController == null ? true : vehicleController.AerialControlsEnabled;
-            _aerialSensitivityField.value = vehicleController == null ? 7500 : vehicleController.AerialControlsSensitivity;
+            _aerialControlsToggle.value = vehicleController == null ? true : vehicleController.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)).boolValue;
+            _aerialSensitivityField.value = vehicleController == null ? 7500 : vehicleController.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue;
 
-            _forwardSlipField.value = vehicleController == null ? 0.1f : vehicleController.ForwardSlippingThreshold;
-            _sidewaysSlipField.value = vehicleController == null ? 0.3f : vehicleController.SidewaysSlippingThreshold;
+            _forwardSlipField.value = vehicleController == null ? 0.1f : vehicleController.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue;
+            _sidewaysSlipField.value = vehicleController == null ? 0.3f : vehicleController.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue;
         }
     }
 

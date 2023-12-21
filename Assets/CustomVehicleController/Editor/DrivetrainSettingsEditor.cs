@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using System.Text;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -60,6 +61,18 @@ namespace Assets.VehicleControllerEditor
             SubscribeToInitializeButtonClickEvent();
 
             _mainEditor.OnWindowClosed += _editor_OnWindowClosed;
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Drag and drop appropriate game objects which represent wheels into transform fields, ideally the ones with MeshRenderer components (this will allow automatic wheel radius and suspension position calculation).");
+            sb.AppendLine();
+            sb.AppendLine("This button will create a hierarchy of game objects, add needed scripts and populate scripts with appropriate references.");
+            sb.AppendLine("");
+            sb.AppendLine("Since hierarchy will be changed, the root game object can't be a prefab.");
+            root.Q<Button>(INIT_BUTTON_NAME).tooltip = sb.ToString();
         }
 
         private void _editor_OnWindowClosed()
@@ -70,25 +83,12 @@ namespace Assets.VehicleControllerEditor
             _mainEditor.OnWindowClosed -= _editor_OnWindowClosed;
         }
 
-        public void UpdateValueFields(PlayModeStateChange playModeState)
+        public void PasteStats(SerializedObject serializedObject)
         {
-            if (playModeState == PlayModeStateChange.EnteredEditMode)
-            {
-                UpdateEditModeValues();
-            }
-
-            if (playModeState == PlayModeStateChange.ExitingPlayMode)
-            {
-                CopyValuesFromPlayMode();
-            }
+            serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)_drivetrainTypePlayMode;
         }
 
-        private void UpdateEditModeValues()
-        {
-            _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)_drivetrainTypePlayMode;
-        }
-
-        private void CopyValuesFromPlayMode()
+        public void CopyStats()
         {
             _drivetrainTypePlayMode = (PartTypes.DrivetrainType)_drivetrainTypeEnum.value;
         }

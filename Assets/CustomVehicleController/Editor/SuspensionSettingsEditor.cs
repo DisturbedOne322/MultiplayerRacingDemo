@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using System.Text;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -63,6 +64,32 @@ namespace Assets.VehicleControllerEditor
             SubscribeToRearSuspensionSaveButtonClick();
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb1 = new StringBuilder();
+            sb1.AppendLine("Defines the amount of force that is applied to the suspension.");
+            sb1.AppendLine("");
+            sb1.AppendLine("If the value is too low, the suspension won't be able to keep the car at a desired height above the ground.");
+            sb1.AppendLine("");
+            sb1.AppendLine("Vehicle mass has an influence on the amount of force required.");
+            sb1.AppendLine("");
+            sb1.AppendLine("Recommended values: [50000: 200000].");
+
+            _forwardSuspensionStiffnessField.tooltip = sb1.ToString();
+            _rearSuspensionStiffnessField.tooltip = sb1.ToString();
+
+            StringBuilder sb2 = new StringBuilder();
+            sb2.AppendLine("Damper stiffness defines how much the suspension wants to travel.");
+            sb2.AppendLine("");
+            sb2.AppendLine("The lower the value, the less resistance the suspension has to movement.");
+            sb2.AppendLine("");
+            sb2.AppendLine("Recommended values: [500: 3000].");
+
+            _forwardSuspensionDamperField.tooltip = sb2.ToString();
+            _rearSuspensionDamperField.tooltip = sb2.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -132,7 +159,7 @@ namespace Assets.VehicleControllerEditor
         {
             _forwardSuspensionSO = loadedFrontSuspensionSO;
 
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontSuspensionSO)).objectReferenceValue = _forwardSuspensionSO;
@@ -186,7 +213,7 @@ namespace Assets.VehicleControllerEditor
         {
             _rearSuspensionSO = loadedForwardSuspensionSO;
 
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearSuspensionSO)).objectReferenceValue = _rearSuspensionSO;
@@ -292,9 +319,6 @@ namespace Assets.VehicleControllerEditor
 
             _rearSuspensionObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearSuspensionSO)).objectReferenceValue;
-
-            //_forwardSuspensionObjectField.value = controller == null ? null : controller.VehicleStats.FrontSuspensionSO;
-            //_rearSuspensionObjectField.value = controller == null ? null : controller.VehicleStats.RearSuspensionSO;
         }
     }
 

@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using System.Text;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -47,6 +48,28 @@ namespace Assets.VehicleControllerEditor
             SubscribeToBrakesSaveButtonClick();
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Defines the stopping ability of a car.");
+            sb.AppendLine("");
+            sb.AppendLine("The car is slowed down by increasing drag.");
+            sb.AppendLine("");
+            sb.AppendLine("Recommended values [15:30].");
+
+            _brakesForceField.tooltip = sb.ToString();
+
+            StringBuilder sb2 = new StringBuilder();
+            sb2.AppendLine("Defines the amount of force that will be applied to the rear wheels.");
+            sb2.AppendLine();
+            sb2.AppendLine("Unlike brakes, the car is slowed down by adding force in the opposite direction to movement.");
+            sb2.AppendLine();
+            sb2.AppendLine("Recommended values [5000:15000]");
+
+            _handbrakeForceField.tooltip = sb2.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -85,7 +108,7 @@ namespace Assets.VehicleControllerEditor
         private void RebindBrakesSettings(BrakesSO loadedBrakesSO)
         {
             _brakesSO = loadedBrakesSO;
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue = _brakesSO;

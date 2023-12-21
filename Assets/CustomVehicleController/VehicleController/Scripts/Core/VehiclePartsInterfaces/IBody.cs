@@ -9,6 +9,6 @@ namespace Assets.VehicleController
         public void AddCorneringForce();
         public void HandleAirDrag();
         public void AutomaticFlipOverRecover(float timer);
-        public void PerformAerialControls(float sensitivity, float xInput, float yInput);
+        public void PerformAerialControls(float sensitivity, float pitchInput, float yawInput, float rollInput);
     }
 }

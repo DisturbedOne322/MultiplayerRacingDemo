@@ -81,7 +81,7 @@ namespace Assets.VehicleController
             }
         }
 
-        public void PerformAerialControls(float sensitivity, float xInput, float yInput)
+        public void PerformAerialControls(float sensitivity, float pitchInput, float yawInput, float rollInput)
         {
             if (!_currentCarStats.InAir)
                 return;
@@ -90,9 +90,10 @@ namespace Assets.VehicleController
 
             float sensMultiplier = airTime / MAX_SENSITIVITY_AFTER_AERIAL_TIME;
 
-            Vector3 rotateRightForce = -xInput * sensMultiplier * sensitivity * _transform.forward;
-            Vector3 rotateForwardForce = yInput * sensMultiplier * sensitivity * _transform.right;
-            _rb.AddTorque(rotateForwardForce + rotateRightForce);            
+            Vector3 rotatePitchForce = pitchInput * sensMultiplier * sensitivity * _transform.right;
+            Vector3 rotateYawForce = yawInput * sensMultiplier * sensitivity * _transform.up;
+            Vector3 rotateRollForce = -rollInput * sensitivity * _transform.forward;
+            _rb.AddTorque(rotatePitchForce + rotateYawForce + rotateRollForce);            
         }
     }
 }

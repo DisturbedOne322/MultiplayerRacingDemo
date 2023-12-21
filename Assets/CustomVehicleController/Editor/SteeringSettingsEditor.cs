@@ -25,26 +25,13 @@ namespace Assets.VehicleControllerEditor
             FindSteeringFields();
         }
 
-        public void UpdateValueFields(PlayModeStateChange playModeState)
-        {
-            if (playModeState == PlayModeStateChange.EnteredEditMode)
-            {
-                UpdateEditModeValues(_editor.GetSerializedController());
-            }
-
-            if (playModeState == PlayModeStateChange.ExitingPlayMode)
-            {
-                CopyValuesFromPlayMode();
-            }
-        }
-
-        private void UpdateEditModeValues(SerializedObject controller)
+        public void PasteStats(SerializedObject controller)
         {
             controller.FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue = _steerAnglePlayMode;
             controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue = _steerSpeedPlayMode;
         }
 
-        private void CopyValuesFromPlayMode()
+        public void CopyStats()
         {
             _steerAnglePlayMode = _steerAngleField.value;
             _steerSpeedPlayMode = _steerSpeedField.value;
@@ -79,12 +66,12 @@ namespace Assets.VehicleControllerEditor
             }
         }
 
-        public void SetVehicleController(CustomVehicleController controller)
+        public void SetVehicleController(SerializedObject controller)
         {
             if (controller != null)
             {
-                _steerAngleField.value = controller.SteerAngle;
-                _steerSpeedField.value = controller.SteerSpeed;
+                _steerAngleField.value = controller.FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue;
+                _steerSpeedField.value = controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue;
             }
             else
             {

@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using System.Text;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -70,6 +71,67 @@ namespace Assets.VehicleControllerEditor
             SubscribeToRearTiresSaveButtonClick();
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            SetCorneringStiffnessTooltip();
+            SetSidewaysGripTooltip();
+            SetSidewaysSlipTooltip();
+            SetForwardGripTooltip();
+        }
+
+        private void SetCorneringStiffnessTooltip()
+        {
+            StringBuilder corneringStiffnessSB = new StringBuilder();
+            corneringStiffnessSB.AppendLine("Defines the cornering ability of a car.");
+            corneringStiffnessSB.AppendLine();
+            corneringStiffnessSB.AppendLine("The higher the value, the more the car wants to move in the direction it's facing.");
+            corneringStiffnessSB.AppendLine();
+            corneringStiffnessSB.AppendLine("Lower values [5:15] suitable for drift, and higher values for grip.");
+
+            _forwardTiresCorneringStiffnessField.tooltip = corneringStiffnessSB.ToString();
+            _rearTiresCorneringStiffnessField.tooltip = corneringStiffnessSB.ToString();
+        }
+
+        private void SetSidewaysGripTooltip()
+        {
+            StringBuilder sidewaysGripSB = new StringBuilder();
+            sidewaysGripSB.AppendLine("The sideways grip curve is a multiplier to the cornering stiffness according to the current car speed / max speed of the engine.");
+            sidewaysGripSB.AppendLine();
+            sidewaysGripSB.AppendLine("X-axis - speed percent, Y-axis - multiplier. ");
+            sidewaysGripSB.AppendLine();
+            sidewaysGripSB.AppendLine("If you want to keep the car at maximum grip all the time, set keys to [0:1], [1:1].");
+            sidewaysGripSB.AppendLine();
+            sidewaysGripSB.AppendLine("If you want the car to drift, but still handle well at high speeds, make the keys increase in value, for example [0:0.2f], [1,1] and adjust cornering stiffness value.");
+
+            _forwardTiresSideGripCurve.tooltip = sidewaysGripSB.ToString();
+            _rearTiresSideGripCurve.tooltip = sidewaysGripSB.ToString();
+        }
+
+        private void SetSidewaysSlipTooltip()
+        {
+            StringBuilder sidewaysSlipSB = new StringBuilder();
+            sidewaysSlipSB.AppendLine("The sideways slip curve defines how much grip the tires have depending on the dot product of vehicle movement and forward vector. It is a multiplier to the cornering stiffness.");
+            sidewaysSlipSB.AppendLine();
+            sidewaysSlipSB.AppendLine("X-axis - dot product (slipping). Y-axis - grip multiplier.");
+            sidewaysSlipSB.AppendLine();
+            sidewaysSlipSB.AppendLine("It is recommended to increase grip when the dot product is close to 1 because in this case car is moving perpendicular to its forward vector, so the wheels have to have very high resistance to movement.");
+
+            _forwardTiresSideSlipCurve.tooltip = sidewaysSlipSB.ToString();
+            _rearTiresSideSlipCurve.tooltip = sidewaysSlipSB.ToString();
+        }
+
+        private void SetForwardGripTooltip()
+        {
+            StringBuilder forwardGripSB = new StringBuilder();
+            forwardGripSB.AppendLine("Defines how much force a wheel can take before it starts slipping.");
+            forwardGripSB.AppendLine();
+            forwardGripSB.AppendLine("If acceleration force is higher than wheel load * forward grip, the wheel starts slipping.");
+
+            _forwardTiresForwardGripField.tooltip = forwardGripSB.ToString();
+            _rearTiresForwardGripField.tooltip = forwardGripSB.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -154,7 +216,7 @@ namespace Assets.VehicleControllerEditor
         private void RebindForwardTiresSettings(TiresSO loadedForwardTiresSO)
         {
             _forwardTiresSO = loadedForwardTiresSO;
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontTiresSO)).objectReferenceValue = _forwardTiresSO;
@@ -210,7 +272,7 @@ namespace Assets.VehicleControllerEditor
         private void RebindRearTiresSettings(TiresSO loadedForwardSuspensionSO)
         {
             _rearTiresSO = loadedForwardSuspensionSO;
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue = _rearTiresSO;

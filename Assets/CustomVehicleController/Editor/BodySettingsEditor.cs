@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using System.Text;
 using System.Threading;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -51,6 +52,43 @@ namespace Assets.VehicleControllerEditor
             RebindBodySettings(_bodySO);
             SubscribeToBodySaveButtonClick();
             _mainEditor.OnWindowClosed += Editor_OnWindowClosed;
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb1 = new StringBuilder();
+            sb1.AppendLine("Forward drag of a rigidbody. Works like air resistance that slows down the acceleration.");
+            sb1.AppendLine("");
+            sb1.AppendLine("Recommended values [0:0.2].");
+
+            _forwardDragField.tooltip = sb1.ToString();
+
+            StringBuilder sb2 = new StringBuilder();
+            sb2.AppendLine("Defines the amount of force applied to the vehicle in the downward direction.");
+            sb2.AppendLine("");
+            sb2.AppendLine("Helps stabilize the vehicle and prevents rolling over at turns.");
+            sb2.AppendLine("");
+            sb2.AppendLine("Recommended values[10:100].");
+
+            _downforceField.tooltip = sb2.ToString();
+
+            StringBuilder sb3 = new StringBuilder();
+            sb3.AppendLine("Cornering resistance simulates the vehicle control getting stiffer at high speeds.");
+            sb3.AppendLine("");
+            sb3.AppendLine("Also has the effect of wheels automatically recentering.");
+            sb3.AppendLine("");
+            sb3.AppendLine("Recommended values for drift [5:10].");
+            sb3.AppendLine("");
+            sb3.AppendLine("Recommended values for grip [10:30], but it highly depends on the cornering stiffness of the tires.");
+            _corneringResistanceField.tooltip = sb3.ToString();
+
+            StringBuilder sb4 = new StringBuilder();
+            sb4.AppendLine("A multiplier to the cornering resistance strength.");
+            sb4.AppendLine("");
+            sb4.AppendLine("The X-axis is the current vehicle speed divided by the maximum speed of the engine. Y-axis - effect multiplier.");
+
+            _corneringResistanceCurve.tooltip = sb4.ToString();
         }
 
         private void Editor_OnWindowClosed()
@@ -111,7 +149,7 @@ namespace Assets.VehicleControllerEditor
         private void RebindBodySettings(VehicleBodySO loadedBodySO)
         {
             _bodySO = loadedBodySO;
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue = _bodySO;
                 _mainEditor.SaveController();

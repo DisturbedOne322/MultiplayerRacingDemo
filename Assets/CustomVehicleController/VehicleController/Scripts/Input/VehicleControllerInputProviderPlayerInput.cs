@@ -11,6 +11,9 @@ namespace Assets.VehicleController
         private float _brakeInput;
         private bool _handbrakeInput;
         private float _horizontalInput;
+        private float _pitchInput;
+        private float _yawInput;
+        private float _rollInput;
         #endregion
         [SerializeField]
         private PlayerInput _playerInput;
@@ -36,6 +39,12 @@ namespace Assets.VehicleController
 
         public float OnHorizontalInput(InputValue value) => _horizontalInput = value.Get<float>();
 
+        public float OnPitchInput(InputValue value) => _pitchInput = value.Get<float>();
+
+        public float OnYawInput(InputValue value) => _yawInput = value.Get<float>();
+
+        public float OnRollInput(InputValue value) => _rollInput = value.Get<float>();
+
         public float GetGasInput() => _gasInput;
 
         public float GetBrakeInput() => _brakeInput;
@@ -47,5 +56,11 @@ namespace Assets.VehicleController
         public bool GetGearUpInput() => _gearUpAction.triggered;
 
         public bool GetGearDownInput() => _gearDownAction.triggered;
+
+        public float GetPitchInput() => _pitchInput;
+
+        public float GetYawInput() => _yawInput;
+
+        public float GetRollInput() => _rollInput;
     }
 }

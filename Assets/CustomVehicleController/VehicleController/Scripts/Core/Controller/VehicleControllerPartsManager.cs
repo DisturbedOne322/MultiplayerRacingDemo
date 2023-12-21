@@ -105,11 +105,11 @@ namespace Assets.VehicleController
         }
 
         public void PerformAirControls(bool enabled, float aerialControlsSensitivity,
-            float horizInput, float verticalInput)
+            float pitchInput, float yawInput, float rollInput)
         {
             if (enabled)
             {
-                _body.PerformAerialControls(aerialControlsSensitivity, horizInput, verticalInput);
+                _body.PerformAerialControls(aerialControlsSensitivity, pitchInput, yawInput, rollInput);
             }
         }
 

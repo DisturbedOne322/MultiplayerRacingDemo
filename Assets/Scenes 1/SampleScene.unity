@@ -238,8 +238,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91049336}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.06, z: -0.06}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -274,7 +274,7 @@ Transform:
   m_GameObject: {fileID: 178380080}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.314, y: 0.41, z: 1.5299988}
+  m_LocalPosition: {x: 0.314, y: 0.37, z: 1.5299988}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -314,11 +314,11 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 25
-  m_Range: 20
-  m_SpotAngle: 142.35559
-  m_InnerSpotAngle: 48.88708
+  m_Color: {r: 0, g: 0.9155383, b: 1, a: 1}
+  m_Intensity: 50
+  m_Range: 50
+  m_SpotAngle: 124.02601
+  m_InnerSpotAngle: 55.29001
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -938,9 +938,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.062543355, y: 0.000000017172695, z: -0.0000000010761447,
-    w: 0.9980423}
-  m_LocalPosition: {x: 18.24, y: 2.56, z: -248.09001}
+  m_LocalRotation: {x: 0, y: 0.99804235, z: -0.062542334, w: 0}
+  m_LocalPosition: {x: 18.24, y: 2.1599998, z: -2254.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1942,7 +1941,7 @@ Transform:
   m_GameObject: {fileID: 600175793}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.314, y: 0.41, z: 1.53}
+  m_LocalPosition: {x: -0.314, y: 0.37, z: 1.53}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1982,11 +1981,11 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 25
-  m_Range: 20
-  m_SpotAngle: 142.35559
-  m_InnerSpotAngle: 48.88708
+  m_Color: {r: 0, g: 0.9155383, b: 1, a: 1}
+  m_Intensity: 50
+  m_Range: 50
+  m_SpotAngle: 124.02601
+  m_InnerSpotAngle: 55.29001
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -2827,9 +2826,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081317591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.062543355, y: 0.000000017172695, z: -0.0000000010761447,
-    w: 0.9980423}
-  m_LocalPosition: {x: 18.24, y: 2.56, z: -248.09001}
+  m_LocalRotation: {x: 0, y: 0.99804235, z: -0.062542334, w: 0}
+  m_LocalPosition: {x: 18.24, y: 2.1599998, z: -2254.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3797,12 +3795,12 @@ MonoBehaviour:
   SteerSpeed: 0.15
   _centerOfMass: {fileID: 1496878131}
   _centerOfGeometry: {fileID: 1618667949}
+  ForwardSlippingThreshold: 0.1
+  SidewaysSlippingThreshold: 0.3
   AerialControlsEnabled: 1
   AerialControlsSensitivity: 7500
   AutomaticFlipOverRecoverEnabled: 1
   AutomaticFlipOverRecoverDelay: 2
-  ForwardSlippingThreshold: 0.1
-  SidewaysSlippingThreshold: 0.3
   _rigidbody: {fileID: 1492795092}
   _suspensionSimulationPrecision: 7
   CurrentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
@@ -6715,6 +6713,7 @@ GameObject:
   - component: {fileID: 2562711910941428491}
   - component: {fileID: 2562711910941428496}
   - component: {fileID: 2562711910941428497}
+  - component: {fileID: 2562711910941428498}
   m_Layer: 6
   m_Name: low poly car muscle car 2 (stanced) Variant
   m_TagString: Untagged
@@ -6818,8 +6817,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311576484562101898}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.24, y: 0.77, z: -243.27}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 18.24, y: 0.37, z: -2259}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6832,7 +6831,7 @@ Transform:
   - {fileID: 1912575162}
   - {fileID: 1304342822}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &1136208433993577649
 Transform:
   m_ObjectHideFlags: 0
@@ -7005,28 +7004,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VehicleStats:
     EngineSO: {fileID: 11400000, guid: 2b220c2568dcb9d49bc3cb179240ac4b, type: 2}
-    TransmissionSO: {fileID: 11400000, guid: a3ba8065a2284374a97ff33c3787ca3b, type: 2}
+    TransmissionSO: {fileID: 11400000, guid: c4957cdf8eb1ecf44becd3d37646e13b, type: 2}
     FrontTiresSO: {fileID: 11400000, guid: 74070100d2f461947bc8b7919f451bd3, type: 2}
     RearTiresSO: {fileID: 11400000, guid: 74070100d2f461947bc8b7919f451bd3, type: 2}
-    FrontSuspensionSO: {fileID: 11400000, guid: 3451df8b54df38e49b069aa6209889a7,
+    FrontSuspensionSO: {fileID: 11400000, guid: f67afd53cc4f01a45aa21a6f32119538,
       type: 2}
-    RearSuspensionSO: {fileID: 11400000, guid: 3451df8b54df38e49b069aa6209889a7, type: 2}
+    RearSuspensionSO: {fileID: 11400000, guid: f67afd53cc4f01a45aa21a6f32119538, type: 2}
     BrakesSO: {fileID: 11400000, guid: 64d9a289927543d40b3264a26bdfa404, type: 2}
     BodySO: {fileID: 11400000, guid: 3db7fb85ec7a7c3458b60064742f08ea, type: 2}
   DrivetrainType: 0
   TransmissionType: 0
-  SteerAngle: 0
-  SteerSpeed: 0
+  SteerAngle: 30
+  SteerSpeed: 0.2
   _centerOfMass: {fileID: 283326415}
   _centerOfGeometry: {fileID: 178501977}
+  ForwardSlippingThreshold: 0.1
+  SidewaysSlippingThreshold: 0.3
   AerialControlsEnabled: 1
   AerialControlsSensitivity: 7500
   AutomaticFlipOverRecoverEnabled: 1
   AutomaticFlipOverRecoverDelay: 2
-  ForwardSlippingThreshold: 0.1
-  SidewaysSlippingThreshold: 0.3
   _rigidbody: {fileID: 2562711910941428478}
-  _suspensionSimulationPrecision: 3
+  _suspensionSimulationPrecision: 5
   CurrentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
   _wheelControllersArray:
   - {fileID: 882263567}
@@ -7168,7 +7167,7 @@ MonoBehaviour:
   _bodyWindEffect: {fileID: 2562711910941428496}
   _brakeLights: {fileID: 2562711910941428491}
   _skidMarks: {fileID: 0}
-  _tireSmoke: {fileID: 0}
+  _tireSmoke: {fileID: 2562711910941428498}
 --- !u!114 &2562711910941428496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7197,6 +7196,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dddcae02cf8b20b4b8e03642d445d3e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2562711910941428498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311576484562101898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d82c6409e916f348b9ed3f72de14e2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tireSmokeVisualEffectType: 1
+  _tireSmokeVFX: {fileID: 8926484042661614526, guid: 9a5474766e769e540a51504975ca01aa,
+    type: 3}
+  _tireSmokeParticleSystem: {fileID: 6840747477825600795, guid: b192673840fbe23418c9e05da2648b6f,
+    type: 3}
 --- !u!1 &2661484018289512689
 GameObject:
   m_ObjectHideFlags: 0

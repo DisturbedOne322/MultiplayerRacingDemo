@@ -131,7 +131,7 @@ namespace Assets.VehicleController
         private Vector3 CalculateTiresSidewaysForce(float speed, float speedPercent, float steeringVel, Vector3 steeringDir, 
             float tireCorneringStiffness, AnimationCurve gripCurve, AnimationCurve slipCurve)
         {
-            if (speed < 1)
+            if (Mathf.Abs(speed) < 1)
                 _sidewaysSlip = 0;
             else
                 _sidewaysSlip = 1 - slipCurve.Evaluate(Mathf.Abs(_sidewaysDot));

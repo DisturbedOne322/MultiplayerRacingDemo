@@ -11,4 +11,10 @@ public interface IVehicleControllerInputProvider
     public bool GetGearUpInput();
 
     public bool GetGearDownInput();
+
+    public float GetPitchInput();
+
+    public float GetYawInput();
+
+    public float GetRollInput();
 }

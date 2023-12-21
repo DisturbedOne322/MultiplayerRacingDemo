@@ -80,6 +80,33 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PitchInput"",
+                    ""type"": ""Value"",
+                    ""id"": ""fabcfe13-f9ce-429d-aa6f-f9ec617c59f6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""YawInput"",
+                    ""type"": ""Value"",
+                    ""id"": ""e9676fbf-1234-493b-8419-3f52dbb31d5c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""RollInput"",
+                    ""type"": ""Value"",
+                    ""id"": ""f77ffe61-aafc-4c3a-a665-508e47777276"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -214,6 +241,105 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""HorizontalInput"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""1f8419b8-b600-4b36-af68-737d0468b779"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YawInput"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""5d40ed95-4679-4bd7-a4f1-47e827389607"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YawInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""d7186a49-5dde-4b3f-aa08-08d111561dc3"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YawInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""5a2e798d-2b7d-4fb5-8d04-c9c22f7cb254"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PitchInput"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""398f0f64-7aa9-4131-882b-d8022256d14a"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PitchInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b5f64dad-d075-4a67-be1a-4361bf51fcb1"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PitchInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""ab3160a5-c737-4d2d-a688-51a8cdd9970b"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RollInput"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""7025b310-3ef6-4362-aff0-89b5bffa2361"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RollInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""afd73e57-2fd1-43d9-9901-91d7db5abc31"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RollInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -228,6 +354,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_GasInput = m_Player.FindAction("GasInput", throwIfNotFound: true);
         m_Player_BrakeInput = m_Player.FindAction("BrakeInput", throwIfNotFound: true);
         m_Player_HorizontalInput = m_Player.FindAction("HorizontalInput", throwIfNotFound: true);
+        m_Player_PitchInput = m_Player.FindAction("PitchInput", throwIfNotFound: true);
+        m_Player_YawInput = m_Player.FindAction("YawInput", throwIfNotFound: true);
+        m_Player_RollInput = m_Player.FindAction("RollInput", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -295,6 +424,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_GasInput;
     private readonly InputAction m_Player_BrakeInput;
     private readonly InputAction m_Player_HorizontalInput;
+    private readonly InputAction m_Player_PitchInput;
+    private readonly InputAction m_Player_YawInput;
+    private readonly InputAction m_Player_RollInput;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -305,6 +437,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @GasInput => m_Wrapper.m_Player_GasInput;
         public InputAction @BrakeInput => m_Wrapper.m_Player_BrakeInput;
         public InputAction @HorizontalInput => m_Wrapper.m_Player_HorizontalInput;
+        public InputAction @PitchInput => m_Wrapper.m_Player_PitchInput;
+        public InputAction @YawInput => m_Wrapper.m_Player_YawInput;
+        public InputAction @RollInput => m_Wrapper.m_Player_RollInput;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -332,6 +467,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @HorizontalInput.started += instance.OnHorizontalInput;
             @HorizontalInput.performed += instance.OnHorizontalInput;
             @HorizontalInput.canceled += instance.OnHorizontalInput;
+            @PitchInput.started += instance.OnPitchInput;
+            @PitchInput.performed += instance.OnPitchInput;
+            @PitchInput.canceled += instance.OnPitchInput;
+            @YawInput.started += instance.OnYawInput;
+            @YawInput.performed += instance.OnYawInput;
+            @YawInput.canceled += instance.OnYawInput;
+            @RollInput.started += instance.OnRollInput;
+            @RollInput.performed += instance.OnRollInput;
+            @RollInput.canceled += instance.OnRollInput;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -354,6 +498,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @HorizontalInput.started -= instance.OnHorizontalInput;
             @HorizontalInput.performed -= instance.OnHorizontalInput;
             @HorizontalInput.canceled -= instance.OnHorizontalInput;
+            @PitchInput.started -= instance.OnPitchInput;
+            @PitchInput.performed -= instance.OnPitchInput;
+            @PitchInput.canceled -= instance.OnPitchInput;
+            @YawInput.started -= instance.OnYawInput;
+            @YawInput.performed -= instance.OnYawInput;
+            @YawInput.canceled -= instance.OnYawInput;
+            @RollInput.started -= instance.OnRollInput;
+            @RollInput.performed -= instance.OnRollInput;
+            @RollInput.canceled -= instance.OnRollInput;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -379,5 +532,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnGasInput(InputAction.CallbackContext context);
         void OnBrakeInput(InputAction.CallbackContext context);
         void OnHorizontalInput(InputAction.CallbackContext context);
+        void OnPitchInput(InputAction.CallbackContext context);
+        void OnYawInput(InputAction.CallbackContext context);
+        void OnRollInput(InputAction.CallbackContext context);
     }
 }

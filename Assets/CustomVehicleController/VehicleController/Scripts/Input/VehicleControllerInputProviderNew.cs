@@ -24,5 +24,11 @@ namespace Assets.VehicleController
         public bool GetHandbrakeInput() => _playerInput.Player.HandbrakeInput.IsPressed();
 
         public float GetHorizontalInput() => _playerInput.Player.HorizontalInput.ReadValue<float>();
+
+        public float GetPitchInput() => _playerInput.Player.PitchInput.ReadValue<float>();
+
+        public float GetYawInput() => _playerInput.Player.YawInput.ReadValue<float>();
+
+        public float GetRollInput() => _playerInput.Player.RollInput.ReadValue<float>();
     }
 }

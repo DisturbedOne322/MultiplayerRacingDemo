@@ -1,8 +1,10 @@
 using Assets.VehicleController;
+using System.Text;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+//
 
 namespace Assets.VehicleControllerEditor
 {
@@ -49,6 +51,22 @@ namespace Assets.VehicleControllerEditor
             RebindFISettings(_inductionSO);
             SubscribeToFISaveButtonClick();
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
+
+
+            SetTooltips();
+        }
+
+        private void SetTooltips()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Forced induction provides an additional boost. The way boost is provided depends on the forced induction type.");
+            sb.AppendLine("");
+            sb.AppendLine("Turbocharger: isn't working until certain engine rpm. Takes time to spin to full speed. Boost depends on gas input.");
+            sb.AppendLine("");
+            sb.AppendLine("Supercharger: constant boost.");
+            sb.AppendLine("");
+            sb.AppendLine("Centrifugal: boost is directly tied to engine rpm.");
+            _foTypeEnum.tooltip = sb.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -117,7 +135,7 @@ namespace Assets.VehicleControllerEditor
         private void RebindFISettings(ForcedInductionSO loadedFISO)
         {
             _inductionSO = loadedFISO;
-            if (_mainEditor.GetSerializedController() != null && _mainEditor.GetController() != null)
+            if (_mainEditor.GetSerializedController() != null)
             {
                 _mainEditor.SaveController();
             }

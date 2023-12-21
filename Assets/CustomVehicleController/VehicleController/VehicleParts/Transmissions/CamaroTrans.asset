@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: CamaroTrans
   m_EditorClassIdentifier: 
   GearRatiosList:
-  - 3.45
-  - 2.2425
-  - 1.56975
-  - 1.1773124
-  - 0.9418499
-  - 0.8005724
-  FinalDriveRatio: 0.61
-  ShiftCooldown: 0.2
+  - 5
+  - 3.8168976
+  - 2.913741
+  - 2.2242901
+  - 1.6979775
+  - 1.2962012
+  - 0.98949337
+  FinalDriveRatio: 2
+  ShiftCooldown: 0
   UpShiftRPMPercent: 0.99
-  DownShiftRPMPercent: 0.69
+  DownShiftRPMPercent: 0.84000003

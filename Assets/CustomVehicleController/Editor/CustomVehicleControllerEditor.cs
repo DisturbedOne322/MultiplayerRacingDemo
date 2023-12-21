@@ -144,10 +144,6 @@ namespace Assets.VehicleControllerEditor
 
         private void SaveVehicleStatsAfterPlayMode(PlayModeStateChange newState)
         {
-            _extraVisualsSettingsEditor.UpdateValueFields(newState);
-            _drivetrainSettingsEditor.UpdateValueFields(newState);
-            _steeringSettingsEditor.UpdateValueFields(newState);
-
             if (newState == PlayModeStateChange.ExitingPlayMode)
             {
                 if (!_saveChangedToggle.value)
@@ -169,6 +165,10 @@ namespace Assets.VehicleControllerEditor
 
         private void CopyStats()
         {
+            _extraVisualsSettingsEditor.CopyStats();
+            _drivetrainSettingsEditor.CopyStats();
+            _steeringSettingsEditor.CopyStats();
+
             _vehicleStatsPlayMode = new VehicleStats();
             SerializedProperty vehicleStats = _serializedController.FindProperty(nameof(CustomVehicleController.VehicleStats));
 
@@ -195,6 +195,10 @@ namespace Assets.VehicleControllerEditor
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue = _vehicleStatsPlayMode.RearTiresSO;
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue = _vehicleStatsPlayMode.BrakesSO;
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue = _vehicleStatsPlayMode.BodySO;
+
+            _extraVisualsSettingsEditor.PasteStats(_serializedController);
+            _drivetrainSettingsEditor.PasteStats(_serializedController);
+            _steeringSettingsEditor.PasteStats(_serializedController);
         }
 
         private void OnSelectionChange()
@@ -248,17 +252,17 @@ namespace Assets.VehicleControllerEditor
 
         private void BindController(CustomVehicleController controller)
         {
+            SetVehicleControllerToSettingEditors(_serializedController, controller);
+
             if (controller != null)
             {
                 _controllerSelectedLabel.text = "CURRENTLY SELECTED VEHICLE CONTROLLER: " + controller.name.ToUpper();
                 _controllerSelectedLabel.style.color = Color.green;
-                SetVehicleControllerToSettingEditors(_serializedController, controller);
                 return;
             }
 
             _controllerSelectedLabel.text = "CURRENTLY SELECTED VEHICLE CONTROLLER: NONE";
             _controllerSelectedLabel.style.color = Color.red;
-            SetVehicleControllerToSettingEditors(null, null);
         }
 
         private void SetVehicleControllerToSettingEditors(SerializedObject so, CustomVehicleController controller)
@@ -269,9 +273,9 @@ namespace Assets.VehicleControllerEditor
             _bodySettingsEditor.SetVehicleController(so);
             _tiresSettingsEditor.SetVehicleController(so);
             _brakesSettingsEditor.SetVehicleController(so);
-            _steeringSettingsEditor.SetVehicleController(controller);
+            _steeringSettingsEditor.SetVehicleController(so);
             _drivetrainSettingsEditor.SetVehicleController(controller);
-            _extraVisualsSettingsEditor.SetVehicleController(controller);
+            _extraVisualsSettingsEditor.SetVehicleController(so);
         }
 
         public string GetVehiclePartsFolderPath(string folderName)

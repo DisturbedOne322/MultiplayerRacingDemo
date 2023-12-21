@@ -34,20 +34,22 @@ namespace Assets.VehicleController
 
         #region Extra options
         [Header("   Extra options")]
+        [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be forward slipping. " +
+            "Forward slipping occurs when acceleration force is higher than the wheel load * tire grip")]
+        public float ForwardSlippingThreshold = 0.1f;
+        [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be sideways slipping. " +
+            "The slipping amount equals the dot product of the car forward vector and car velocity")]
+        public float SidewaysSlippingThreshold = 0.3f;
         //allows you to control the car in air. 
         public bool AerialControlsEnabled = false;
         public float AerialControlsSensitivity = 0;
 
         public bool AutomaticFlipOverRecoverEnabled = false;
+        [Min(0f)]
         public float AutomaticFlipOverRecoverDelay = 2;
         #endregion
 
-        [Tooltip("Defines how much slipping is allowed until the wheel is considered to be forward slipping. " +
-            "Forward slipping occurs when acceleration force is higher than the wheel load * tire grip")]
-        public float ForwardSlippingThreshold = 0.1f;
-        [Tooltip("Defines how much slipping is allowed until the wheel is considered to be sideways slipping. " +
-            "The slipping amount equals the dot product of the car forward vector and car velocity")]
-        public float SidewaysSlippingThreshold = 0.3f;
+
 
         [Header("   Physics"), SerializeField, Tooltip("Assign rigidbody component to avoid using the costly GetComponent operation")]
         private Rigidbody _rigidbody;
@@ -110,7 +112,7 @@ namespace Assets.VehicleController
                 SteerAngle, SteerSpeed, TransmissionType, DrivetrainType, _suspensionSimulationPrecision);
 
             _partsManager.PerformAirControls(AerialControlsEnabled, AerialControlsSensitivity,
-                _inputProvider.GetHorizontalInput(), _inputProvider.GetGasInput() - _inputProvider.GetBrakeInput());
+                _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());
         }
 
         public Transform GetCenterOfGeometry() => _centerOfGeometry;

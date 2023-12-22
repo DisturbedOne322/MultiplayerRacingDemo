@@ -28,13 +28,14 @@ namespace Assets.VehicleController
             if (_stats.EngineSO.ForcedInductionSO.ForcedInductionType != PartTypes.ForcedInductionType.Turbocharger)
                 return;
             
-            if (_boostPercent > 0.75f)
+            if (_boostPercent == 1)
                 _currentCarStats.ShiftedAntiLagHappened();
             
         }
 
         public float GetForcedInductionBoost(float gasInput, bool inCD)
         {
+            //
             if (_stats.EngineSO.ForcedInductionSO == null)
                 return 0;
 

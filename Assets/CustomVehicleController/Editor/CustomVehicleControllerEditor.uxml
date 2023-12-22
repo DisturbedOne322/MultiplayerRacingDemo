@@ -101,7 +101,7 @@
                     </ui:VisualElement>
                 </ui:Foldout>
             </ui:Foldout>
-            <ui:Foldout text="Handling Settings" name="HandlingFoldout" value="false" view-data-key="HandlingSettingsFoldout" class="Foldout">
+            <ui:Foldout text="Handling Settings" name="HandlingFoldout" value="true" view-data-key="HandlingSettingsFoldout" class="Foldout">
                 <ui:Foldout text="Tires Settings" name="Tires" value="false" focusable="false" view-data-key="TiresSettingsFoldout" class="Foldout" style="display: flex;">
                     <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
                         <ui:VisualElement name="Wheels" class="statsBlock" style="flex-grow: 1; flex-shrink: 0;">
@@ -166,12 +166,12 @@
                     </ui:VisualElement>
                 </ui:Foldout>
                 <ui:Foldout text="Steering Settings" name="Steering" value="true" view-data-key="SteeringSettingsFoldout" class="Foldout">
-                    <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                    <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: stretch;">
                         <ui:VisualElement class="statsBlock" style="flex-grow: 1;">
                             <ui:FloatField label="Max Steer Angle&#10;(deg)" value="42,2" name="SteerAngleInput" tooltip="Maximum steering angle in degrees" class="inputField" />
                             <ui:FloatField label="Steer Speed (s)" value="42,2" name="SteerSpeedInput" tooltip="Time in which wheels will reach maximum steering angle. Since steering uses a smooth damp function, this time is approximate." class="inputField" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="sideImage" style="flex-grow: 1; background-image: url(&apos;project://database/Assets/CustomVehicleController/Editor/images/steerWheel.png?fileID=2800000&amp;guid=21fa6148dc056704abb742b2bbcb138a&amp;type=3#steerWheel&apos;); height: 150px; width: 500px;" />
+                        <ui:VisualElement class="sideImage" style="flex-grow: 1; background-image: url(&apos;project://database/Assets/CustomVehicleController/Editor/images/steerWheel.png?fileID=2800000&amp;guid=21fa6148dc056704abb742b2bbcb138a&amp;type=3#steerWheel&apos;); height: 150px; width: 500px; margin-top: -15px;" />
                     </ui:VisualElement>
                 </ui:Foldout>
             </ui:Foldout>

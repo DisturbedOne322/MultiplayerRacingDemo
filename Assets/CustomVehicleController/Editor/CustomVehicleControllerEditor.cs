@@ -10,6 +10,8 @@ namespace Assets.VehicleControllerEditor
 {
     public class CustomVehicleControllerEditor : EditorWindow
     {
+        public static CustomVehicleControllerEditor Instance;
+
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
@@ -18,8 +20,6 @@ namespace Assets.VehicleControllerEditor
         private Label _controllerSelectedLabel;
         private Toggle _saveChangedToggle;
         private Toggle _lockWindowToggle;
-
-        private bool _saveChangedToggleValuePlayMode;
 
         private const string CONTROLLER_SELECTED_LABEL = "ControllerSelectionLabel";
         private const string SAVE_CHANGES_TOGGLE_NAME = "SaveChangesToggle";
@@ -54,32 +54,21 @@ namespace Assets.VehicleControllerEditor
             CustomVehicleControllerEditor wnd = GetWindow<CustomVehicleControllerEditor>();
             wnd.titleContent = new GUIContent("CustomVehicleControllerEditor");
         }
-
-        private string FindPath()
-        {
-            MonoScript ms = MonoScript.FromScriptableObject(this);
-            string scriptFilePath = AssetDatabase.GetAssetPath(ms);
-
-            FileInfo fi = new FileInfo(scriptFilePath);
-            string scriptFolder = fi.Directory.ToString();
-            scriptFolder = Path.GetFullPath(Path.Combine(scriptFolder, "..")) + VEHICLE_PARTS_FOLDER_PATH;
-            return scriptFolder.Substring(scriptFolder.IndexOf("Assets"));
-        }
      
         public void CreateGUI()
         {
+            if(Instance == null)
+                Initialize();
+        }
+
+        private void Initialize()
+        {
+            Instance = this;
 
             VisualElement root = rootVisualElement;
             VisualElement labelFromUXML = m_VisualTreeAsset.Instantiate();
             root.Add(labelFromUXML);
 
-            Initialize(root);
-
-            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
-        }
-
-        private void Initialize(VisualElement root)
-        {
             _controllerSelectedLabel = root.Q<Label>(CONTROLLER_SELECTED_LABEL);
 
             _lockWindowToggle = root.Q<Toggle>(LOCK_WINDOW_TOGGLE);
@@ -116,15 +105,9 @@ namespace Assets.VehicleControllerEditor
 
             _extraVisualsSettingsEditor = ScriptableObject.CreateInstance<ExtraVisualsSettingsEditor>();
             _extraVisualsSettingsEditor.HandleExtraSettings(root, this);
-        }
 
-        private void OnBecameVisible()
-        {
-            if (Selection.objects.Length > 1)
-            {
-                Debug.Log("Multiobject editing isn't supported");
-                return;
-            }
+            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+
             BindController(TryGetVehicleController());
         }
 
@@ -140,8 +123,6 @@ namespace Assets.VehicleControllerEditor
             SaveController();
         }
 
-
-
         private void SaveVehicleStatsAfterPlayMode(PlayModeStateChange newState)
         {
             if (newState == PlayModeStateChange.ExitingPlayMode)
@@ -156,7 +137,6 @@ namespace Assets.VehicleControllerEditor
             {
                 if (_saveChangedToggle.value)
                     PasteStats();
-                //_saveChangedToggle.value = _saveChangedToggleValuePlayMode;
                 SaveController();
                 //update field values in the editor after play mode. even though the vehicle stats object gets reset, the fields in editor don't
                 SetVehicleControllerToSettingEditors(_serializedController, _controller);
@@ -184,7 +164,6 @@ namespace Assets.VehicleControllerEditor
 
         private void PasteStats()
         {
-            //test
             _serializedController.Update();
             SerializedProperty vehicleStats = _serializedController.FindProperty(nameof(CustomVehicleController.VehicleStats));
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue = _vehicleStatsPlayMode.EngineSO;
@@ -215,20 +194,33 @@ namespace Assets.VehicleControllerEditor
             BindController(TryGetVehicleController());
         }
 
+        private void OnBecameVisible()
+        {
+            if (Instance == null)
+                Initialize();
+
+            if (Selection.objects.Length > 1)
+            {
+                Debug.Log("Multiobject editing isn't supported");
+                return;
+            }
+
+            BindController(TryGetVehicleController());
+        }
+
         private CustomVehicleController TryGetVehicleController()
         {
-            if (Selection.activeGameObject != null)
+            if (Selection.activeGameObject != null && Selection.activeGameObject.TryGetComponent(out _controller))
             {
-                if (Selection.activeGameObject.TryGetComponent(out CustomVehicleController controller))
-                {
-                    this._controller = controller;
-                    _serializedController = new SerializedObject(controller);
-                    _serializedCarVisuals = new SerializedObject(controller.GetComponent<CarVisualsEssentials>());
-                    return controller;
-                }
+                _serializedController = new SerializedObject(_controller);
+                _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
+                return _controller;            
+            }
 
-                _controller = null;
-                return null;
+            if(_serializedController != null)
+            {
+                _serializedController.Dispose();
+                _serializedController = null;
             }
 
             _controller = null;
@@ -248,7 +240,6 @@ namespace Assets.VehicleControllerEditor
             _serializedController.ApplyModifiedProperties();
             _serializedController.Update();
         }
-
 
         private void BindController(CustomVehicleController controller)
         {
@@ -276,6 +267,17 @@ namespace Assets.VehicleControllerEditor
             _steeringSettingsEditor.SetVehicleController(so);
             _drivetrainSettingsEditor.SetVehicleController(controller);
             _extraVisualsSettingsEditor.SetVehicleController(so);
+        }
+
+        private string FindPath()
+        {
+            MonoScript ms = MonoScript.FromScriptableObject(this);
+            string scriptFilePath = AssetDatabase.GetAssetPath(ms);
+
+            FileInfo fi = new FileInfo(scriptFilePath);
+            string scriptFolder = fi.Directory.ToString();
+            scriptFolder = Path.GetFullPath(Path.Combine(scriptFolder, "..")) + VEHICLE_PARTS_FOLDER_PATH;
+            return scriptFolder.Substring(scriptFolder.IndexOf("Assets"));
         }
 
         public string GetVehiclePartsFolderPath(string folderName)

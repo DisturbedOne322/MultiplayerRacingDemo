@@ -17,14 +17,14 @@ namespace Assets.VehicleController
         public PartTypes.DrivetrainType DrivetrainType;
         public PartTypes.TransmissionType TransmissionType;
 
-        [Tooltip("Maximum steering angle in degrees")]
+        [Space, Tooltip("Maximum steering angle in degrees")]
         public float SteerAngle = 25;
         [Tooltip("Time in which wheels will reach maximum steering angle." +
             " Since steering uses a smooth damp function, this time is approximate.")]
         public float SteerSpeed = 0.2f;
         #endregion
 
-        [SerializeField, Tooltip("Setting up the center of mass helps with vehicle stability. Place it slightly below the vehicle.")]
+        [Space, SerializeField, Tooltip("Setting up the center of mass helps with vehicle stability. Place it slightly below the vehicle.")]
         private Transform _centerOfMass;
 
         [SerializeField, Tooltip("The center of geometry defines how weight is distributed among the wheels. " +
@@ -39,11 +39,13 @@ namespace Assets.VehicleController
         public float ForwardSlippingThreshold = 0.1f;
         [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be sideways slipping. " +
             "The slipping amount equals the dot product of the car forward vector and car velocity")]
-        public float SidewaysSlippingThreshold = 0.3f;
+        public float SidewaysSlippingThreshold = 0.4f;
         //allows you to control the car in air. 
+        [Space]
         public bool AerialControlsEnabled = false;
         public float AerialControlsSensitivity = 0;
 
+        [Space]
         public bool AutomaticFlipOverRecoverEnabled = false;
         [Min(0f)]
         public float AutomaticFlipOverRecoverDelay = 2;

@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GearRatiosList:
   - 3.45
-  - 2.12
-  - 1.44
-  - 1.13
-  - 0.91
+  - 2.6336594
+  - 2.0104814
+  - 1.5347602
+  - 1.1716045
+  - 0.89437884
   FinalDriveRatio: 3
   ShiftCooldown: 0
   UpShiftRPMPercent: 0.99

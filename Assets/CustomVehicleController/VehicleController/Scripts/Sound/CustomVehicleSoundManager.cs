@@ -26,7 +26,8 @@ namespace Assets.VehicleController
         [SerializeField]
         private AudioClip windNoise;
 
-        private const float ANTI_LAG_CD = 1f;
+        [SerializeField]
+        private float _antiLagSoundCooldown = 1f;
         private float lastAntiLag;
 
         private bool _engineSoundInitialized = false;
@@ -74,7 +75,7 @@ namespace Assets.VehicleController
 
         private void _currentCarStats_OnShiftedAntiLag()
         {
-            if (_antiLagMildSoundExists && Time.time > lastAntiLag + ANTI_LAG_CD)
+            if (_antiLagMildSoundExists && Time.time > lastAntiLag + _antiLagSoundCooldown)
             {
                 _carEffectsSource.PlayOneShot(_carSoundsSO.AntiLagMildSounds[UnityEngine.Random.Range(0, _carSoundsSO.AntiLagMildSounds.Length)], 1 / _carEffectsSource.volume);
                 lastAntiLag = Time.time;

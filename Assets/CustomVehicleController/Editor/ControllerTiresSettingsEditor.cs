@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class TiresSettingsEditor : EditorWindow
+    public class ControllerTiresSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -54,7 +54,7 @@ namespace Assets.VehicleControllerEditor
 
         private const string TIRES_FOLDER_NAME = "Tires";
 
-        public void HandleTiresSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerTiresSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -393,9 +393,6 @@ namespace Assets.VehicleControllerEditor
 
             _rearTiresObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue;
-
-            //_frontTiresObjectField.value = controller == null ? null : controller.VehicleStats.FrontTiresSO;
-            //_rearTiresObjectField.value = controller == null ? null : controller.VehicleStats.RearTiresSO;
 
         }
     }

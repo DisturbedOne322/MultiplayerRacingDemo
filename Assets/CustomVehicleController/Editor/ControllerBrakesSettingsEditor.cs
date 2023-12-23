@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class BrakesSettingsEditor : EditorWindow
+    public class ControllerBrakesSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -36,7 +36,7 @@ namespace Assets.VehicleControllerEditor
 
         private const string BRAKES_FOLDER_NAME = "Brakes";
 
-        public void HandleBrakesSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerBrakesSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -185,7 +185,6 @@ namespace Assets.VehicleControllerEditor
 
             _brakesSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue;
-            //_brakesSOObjectField.value = controller == null ? null : controller.VehicleStats.BrakesSO;
         }
     }
 

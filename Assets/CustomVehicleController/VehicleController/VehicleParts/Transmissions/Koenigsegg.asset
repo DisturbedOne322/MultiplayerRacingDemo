@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Koenigsegg
   m_EditorClassIdentifier: 
   GearRatiosList:
-  - 2
+  - 3.45
   FinalDriveRatio: 1
   ShiftCooldown: 0.2
   UpShiftRPMPercent: 0.99

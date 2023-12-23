@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class ForcedInductionSettingsEditor : EditorWindow
+    public class ControllerForcedInductionSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -42,7 +42,7 @@ namespace Assets.VehicleControllerEditor
 
         private const string FORCED_INDUCTION_FOLDER_NAME = "ForcedInductions";
 
-        public void HandleForcedInductionSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerForcedInductionSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -55,6 +55,7 @@ namespace Assets.VehicleControllerEditor
 
             SetTooltips();
         }
+
 
         private void SetTooltips()
         {

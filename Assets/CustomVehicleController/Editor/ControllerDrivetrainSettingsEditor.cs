@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class DrivetrainSettingsEditor : EditorWindow
+    public class ControllerDrivetrainSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -52,7 +52,7 @@ namespace Assets.VehicleControllerEditor
         private const string CLOSE_WINDOWS_BUTTON_NAME = "CloseWindowButton";
         #endregion
 
-        public void HandleDrivetrainSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerDrivetrainSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -63,6 +63,7 @@ namespace Assets.VehicleControllerEditor
             _mainEditor.OnWindowClosed += _editor_OnWindowClosed;
             SetTooltips();
         }
+
 
         private void SetTooltips()
         {

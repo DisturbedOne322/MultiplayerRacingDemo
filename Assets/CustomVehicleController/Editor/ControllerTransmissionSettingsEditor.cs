@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class TransmissionSettingsEditor : EditorWindow
+    public class ControllerTransmissionSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -37,13 +37,17 @@ namespace Assets.VehicleControllerEditor
 
         private const string TRANSMISSION_UPSHIFT_SLIDER_NAME = "UpshiftRPMSlider";
         private const string TRANSMISSION_DONWSHIFT_SLIDER_NAME = "DownshiftRPMSlider";
+
+        private const string CALCULATE_BUTTON_NAME = "CulculateGearRatiosButton";
         #endregion
+
+        private ControllerAutoGearCalculatorEditor _calculator;
 
         private const string TRANSMISSION_FOLDER_NAME = "Transmissions";
 
         private const float MIN_RPM_DIFFERENCE = 0.15f;
 
-        public void HandleTransmissionSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerTransmissionSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -56,6 +60,8 @@ namespace Assets.VehicleControllerEditor
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
             SetTooltips();
+
+            _calculator = new ControllerAutoGearCalculatorEditor(root);
         }
 
         private void SetTooltips()
@@ -74,8 +80,8 @@ namespace Assets.VehicleControllerEditor
 
         private void _mainEditor_OnWindowClosed()
         {
-            var button = root.Q<Button>(name: TRANSMISSION_CREATE_BUTTON_NAME);
-            button.clicked -= TransmissionCreateAssetButton_onClick;
+            root.Q<Button>(name: TRANSMISSION_CREATE_BUTTON_NAME).clicked -= TransmissionCreateAssetButton_onClick;
+            root.Q<Button>(name: CALCULATE_BUTTON_NAME).clicked -= CalculateGearRatiosArray;
             _mainEditor.OnWindowClosed -= _mainEditor_OnWindowClosed;
         }
 
@@ -123,7 +129,7 @@ namespace Assets.VehicleControllerEditor
                 _transmissionSO.GearRatiosList[indexLast] = 3.45f;
                 return;
             }
-            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(-0.27f * indexLast);           
+            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(_calculator.GetChangeRate() * indexLast);           
         }
 
         private void FindTransmissionFields()
@@ -230,8 +236,14 @@ namespace Assets.VehicleControllerEditor
 
         private void SubscribeToTransmissionSaveButtonClick()
         {
-            var button = root.Q<Button>(name: TRANSMISSION_CREATE_BUTTON_NAME);
-            button.clicked += TransmissionCreateAssetButton_onClick;
+            root.Q<Button>(name: TRANSMISSION_CREATE_BUTTON_NAME).clicked += TransmissionCreateAssetButton_onClick;
+            root.Q<Button>(name: CALCULATE_BUTTON_NAME).clicked += CalculateGearRatiosArray;
+        }
+
+        private void CalculateGearRatiosArray()
+        {
+            _transmissionSO.GearRatiosList = _calculator.CalculateGearArray().ToList();
+            _gearRatiosSlidersListView.Rebuild();
         }
 
         private void TransmissionCreateAssetButton_onClick()
@@ -263,7 +275,6 @@ namespace Assets.VehicleControllerEditor
             }
             _transmissionSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
                     FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue;
-            //_transmissionSOObjectField.value = controller == null ? null : controller.VehicleStats.TransmissionSO;
         }
 
         public class GearRatioVisualElement : VisualElement
@@ -318,6 +329,9 @@ namespace Assets.VehicleControllerEditor
 
         private void BindItem(GearInfoVisualElement elem, int i)
         {
+            if (i >= _transmissionSO.GearRatiosList.Count)
+                return;
+
             var label = elem.Q<Label>(name: "nameLabel");
             var slider = elem.Q<Slider>(name: "Ratio");
             slider.userData = i;

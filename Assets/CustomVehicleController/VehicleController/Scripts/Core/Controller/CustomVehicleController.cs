@@ -55,9 +55,9 @@ namespace Assets.VehicleController
 
         [Header("   Physics"), SerializeField, Tooltip("Assign rigidbody component to avoid using the costly GetComponent operation")]
         private Rigidbody _rigidbody;
-        [SerializeField, Range(1,27), Tooltip("The amount of raycasts that go along the forward axis of the wheel with an offset from -radius to +radius. " +
+        [Range(1,27), Tooltip("The amount of raycasts that go along the forward axis of the wheel with an offset from -radius to +radius. " +
             "Recommended value: at least 3, and it must be an odd number, otherwise there won't be a raycast directly from the center of the wheel.")]
-        private int _suspensionSimulationPrecision = 3;
+        public int SuspensionSimulationPrecision = 3;
 
 
         [SerializeField, Header("   Current Car Stats Scriptable Object"), Tooltip("In case you want to expose current car stats, " +
@@ -111,7 +111,7 @@ namespace Assets.VehicleController
         {
             _partsManager.ManageCarParts(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(),
                 _inputProvider.GetHorizontalInput(), _inputProvider.GetHandbrakeInput(), 
-                SteerAngle, SteerSpeed, TransmissionType, DrivetrainType, _suspensionSimulationPrecision);
+                SteerAngle, SteerSpeed, TransmissionType, DrivetrainType, SuspensionSimulationPrecision);
 
             _partsManager.PerformAirControls(AerialControlsEnabled, AerialControlsSensitivity,
                 _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());

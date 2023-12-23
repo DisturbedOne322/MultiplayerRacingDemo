@@ -1,6 +1,5 @@
 using Assets.VehicleController;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -8,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class EngineSettingsEditor : EditorWindow
+    public class ControllerEngineSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -20,7 +19,7 @@ namespace Assets.VehicleControllerEditor
         private ObjectField _fiSOObjectField;
 
         private EngineSO _engineSO;
-        private ForcedInductionSettingsEditor _forcedInductionSettingsEditor;
+        private ControllerForcedInductionSettingsEditor _forcedInductionSettingsEditor;
 
         private CurveField _engineTorqueCurveField;
         private FloatField _engineMaxSpeedField;
@@ -48,7 +47,7 @@ namespace Assets.VehicleControllerEditor
         private int _ticks = 0;
         private const int TICKS_TO_UPDATE = 500;
 
-        public void HandleEngineSettings(VisualElement root, CustomVehicleControllerEditor editor, ForcedInductionSettingsEditor forcedInductionSettingsEditor)
+        public ControllerEngineSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor, ControllerForcedInductionSettingsEditor forcedInductionSettingsEditor)
         {
             this.root = root;
             _mainEditor = editor;

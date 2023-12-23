@@ -67,7 +67,7 @@ namespace Assets.VehicleController
         private void TryInstantiateExtraEffects()
         {
             if (_skidMarks != null)
-                _skidMarks.InstantiateTireTrailRenderers(_wheelMeshes);
+                _skidMarks.InstantiateTireTrailRenderers(_wheelMeshes, _wheelControllerArray);
             if (_tireSmoke != null)
                 _tireSmoke.InstantiateSmoke(_wheelMeshes);
         }
@@ -119,19 +119,19 @@ namespace Assets.VehicleController
             {
                 if (!_wheelControllerArray[i].HasContactWithGround)
                 {
-                    _skidMarks.DisplayTireTrail(false, i, _wheelControllerArray[i].GetHitPosition());
+                    _skidMarks.DisplayTireTrail(false, i);
                     continue;
                 }
 
                 if (_shouldEmitArray[i])
                 {
-                    _skidMarks.DisplayTireTrail(true, i, _wheelControllerArray[i].GetHitPosition());
+                    _skidMarks.DisplayTireTrail(true, i);
 
                 }
                 else
                 {
                     bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-                    _skidMarks.DisplayTireTrail(display, i, _wheelControllerArray[i].GetHitPosition());
+                    _skidMarks.DisplayTireTrail(display, i);
                 }
             }
         }

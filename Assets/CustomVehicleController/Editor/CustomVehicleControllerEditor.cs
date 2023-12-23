@@ -31,19 +31,20 @@ namespace Assets.VehicleControllerEditor
         private SerializedObject _serializedCarVisuals;
 
         private VehicleStats _vehicleStatsPlayMode;
+        private int _suspensionRaycastNumPlayMode;
 
         #region Parts Editors
-        private TransmissionSettingsEditor _transmissionSettingsEditor;
-        private EngineSettingsEditor _engineSettingsEditor;
-        private ForcedInductionSettingsEditor _fiSettingEditor;
-        private SuspensionSettingsEditor _suspensionSettingsEditor;
-        private BodySettingsEditor _bodySettingsEditor;
-        private TiresSettingsEditor _tiresSettingsEditor;
-        private BrakesSettingsEditor _brakesSettingsEditor;
-        private SteeringSettingsEditor _steeringSettingsEditor;
-        private DrivetrainSettingsEditor _drivetrainSettingsEditor;
+        private ControllerTransmissionSettingsEditor _transmissionSettingsEditor;
+        private ControllerEngineSettingsEditor _engineSettingsEditor;
+        private ControllerForcedInductionSettingsEditor _fiSettingEditor;
+        private ControllerSuspensionSettingsEditor _suspensionSettingsEditor;
+        private ControllerBodySettingsEditor _bodySettingsEditor;
+        private ControllerTiresSettingsEditor _tiresSettingsEditor;
+        private ControllerBrakesSettingsEditor _brakesSettingsEditor;
+        private ControllerSteeringSettingsEditor _steeringSettingsEditor;
+        private ControllerDrivetrainSettingsEditor _drivetrainSettingsEditor;
 
-        private ExtraVisualsSettingsEditor _extraVisualsSettingsEditor;
+        private ControllerExtraVisualsSettingsEditor _extraVisualsSettingsEditor;
         #endregion
 
         private const string VEHICLE_PARTS_FOLDER_PATH = "\\VehicleController\\VehicleParts\\";
@@ -76,39 +77,30 @@ namespace Assets.VehicleControllerEditor
             _saveChangedToggle = root.Q<Toggle>(SAVE_CHANGES_TOGGLE_NAME);
 
 
-            _transmissionSettingsEditor = ScriptableObject.CreateInstance<TransmissionSettingsEditor>();
-            _transmissionSettingsEditor.HandleTransmissionSettings(root, this);
+            _transmissionSettingsEditor = new ControllerTransmissionSettingsEditor(root, this);
 
-            _fiSettingEditor = ScriptableObject.CreateInstance<ForcedInductionSettingsEditor>();
-            _fiSettingEditor.HandleForcedInductionSettings(root, this);
+            _fiSettingEditor = new ControllerForcedInductionSettingsEditor(root, this);
 
-            _engineSettingsEditor = ScriptableObject.CreateInstance<EngineSettingsEditor>();
-            _engineSettingsEditor.HandleEngineSettings(root, this, _fiSettingEditor);
+            _engineSettingsEditor = new ControllerEngineSettingsEditor(root, this, _fiSettingEditor);
 
-            _suspensionSettingsEditor = ScriptableObject.CreateInstance<SuspensionSettingsEditor>();
-            _suspensionSettingsEditor.HandleSuspensionSetting(root, this);
+            _suspensionSettingsEditor = new ControllerSuspensionSettingsEditor(root, this);
 
-            _bodySettingsEditor = ScriptableObject.CreateInstance<BodySettingsEditor>();
-            _bodySettingsEditor.HandleBodySettings(root, this);
+            _bodySettingsEditor = new ControllerBodySettingsEditor(root, this);
 
-            _tiresSettingsEditor = ScriptableObject.CreateInstance<TiresSettingsEditor>();
-            _tiresSettingsEditor.HandleTiresSettings(root, this);
+            _tiresSettingsEditor = new ControllerTiresSettingsEditor(root, this);
 
-            _brakesSettingsEditor = ScriptableObject.CreateInstance<BrakesSettingsEditor>();
-            _brakesSettingsEditor.HandleBrakesSettings(root, this);
+            _brakesSettingsEditor = new ControllerBrakesSettingsEditor(root, this);
 
-            _steeringSettingsEditor = ScriptableObject.CreateInstance<SteeringSettingsEditor>();
-            _steeringSettingsEditor.HandleSteeringSettings(root, this);
+            _steeringSettingsEditor = new ControllerSteeringSettingsEditor(root, this);
 
-            _drivetrainSettingsEditor = ScriptableObject.CreateInstance<DrivetrainSettingsEditor>();
-            _drivetrainSettingsEditor.HandleDrivetrainSettings(root, this);
+            _drivetrainSettingsEditor = new ControllerDrivetrainSettingsEditor(root, this);
 
-            _extraVisualsSettingsEditor = ScriptableObject.CreateInstance<ExtraVisualsSettingsEditor>();
-            _extraVisualsSettingsEditor.HandleExtraSettings(root, this);
+            _extraVisualsSettingsEditor = new ControllerExtraVisualsSettingsEditor(root, this);
 
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
 
             BindController(TryGetVehicleController());
+
         }
 
         private void OnDestroy()
@@ -118,12 +110,6 @@ namespace Assets.VehicleControllerEditor
         }
 
         private void EditorApplication_playModeStateChanged(PlayModeStateChange newState)
-        {
-            SaveVehicleStatsAfterPlayMode(newState);
-            SaveController();
-        }
-
-        private void SaveVehicleStatsAfterPlayMode(PlayModeStateChange newState)
         {
             if (newState == PlayModeStateChange.ExitingPlayMode)
             {
@@ -145,10 +131,15 @@ namespace Assets.VehicleControllerEditor
 
         private void CopyStats()
         {
+            if (_serializedController == null)
+                return;
+            _serializedController.Update();
+
             _extraVisualsSettingsEditor.CopyStats();
             _drivetrainSettingsEditor.CopyStats();
             _steeringSettingsEditor.CopyStats();
 
+            _suspensionRaycastNumPlayMode = _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue;
             _vehicleStatsPlayMode = new VehicleStats();
             SerializedProperty vehicleStats = _serializedController.FindProperty(nameof(CustomVehicleController.VehicleStats));
 
@@ -164,7 +155,12 @@ namespace Assets.VehicleControllerEditor
 
         private void PasteStats()
         {
+
+            if (_serializedController == null)
+                return;
+
             _serializedController.Update();
+
             SerializedProperty vehicleStats = _serializedController.FindProperty(nameof(CustomVehicleController.VehicleStats));
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue = _vehicleStatsPlayMode.EngineSO;
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue = _vehicleStatsPlayMode.TransmissionSO;
@@ -178,6 +174,7 @@ namespace Assets.VehicleControllerEditor
             _extraVisualsSettingsEditor.PasteStats(_serializedController);
             _drivetrainSettingsEditor.PasteStats(_serializedController);
             _steeringSettingsEditor.PasteStats(_serializedController);
+            _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue = _suspensionRaycastNumPlayMode;
         }
 
         private void OnSelectionChange()
@@ -224,13 +221,12 @@ namespace Assets.VehicleControllerEditor
             }
 
             _controller = null;
-            return null;
+            return _controller;
         }
 
         public SerializedObject GetSerializedController() => _serializedController;
         public SerializedObject GetSerializedCarVisuals() => _serializedCarVisuals;
 
-        public bool ControllerSelected() => _controller != null;
         public CustomVehicleController GetController() => _controller;
 
         public void SaveController()

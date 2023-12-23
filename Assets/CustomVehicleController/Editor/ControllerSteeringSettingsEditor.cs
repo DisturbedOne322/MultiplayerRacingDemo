@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class SteeringSettingsEditor : EditorWindow
+    public class ControllerSteeringSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _editor;
@@ -18,12 +18,13 @@ namespace Assets.VehicleControllerEditor
         private float _steerAnglePlayMode;
         private float _steerSpeedPlayMode;
 
-        public void HandleSteeringSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerSteeringSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _editor = editor;
             FindSteeringFields();
         }
+
 
         public void PasteStats(SerializedObject controller)
         {
@@ -47,7 +48,7 @@ namespace Assets.VehicleControllerEditor
 
         private void HandleAngleValueChanges(float newValue)
         {
-            if (_editor.ControllerSelected())
+            if (_editor.GetSerializedController() != null)
             {
                 if (newValue < 0)
                     newValue = 0;
@@ -57,7 +58,7 @@ namespace Assets.VehicleControllerEditor
         }
         private void HandleSpeedValueChanges(float newValue)
         {
-            if (_editor.ControllerSelected())
+            if (_editor.GetSerializedController() != null)
             {
                 if (newValue < 0)
                     newValue = 0;
@@ -75,8 +76,8 @@ namespace Assets.VehicleControllerEditor
             }
             else
             {
-                _steerAngleField.value = 0;
-                _steerSpeedField.value = 0;
+                _steerAngleField.value = 30;
+                _steerSpeedField.value = 0.2f;
             }
         }
     }

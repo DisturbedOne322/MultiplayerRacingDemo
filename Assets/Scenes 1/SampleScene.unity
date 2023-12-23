@@ -545,7 +545,7 @@ GameObject:
   - component: {fileID: 260429242}
   - component: {fileID: 260429241}
   - component: {fileID: 260429240}
-  - component: {fileID: 260429239}
+  - component: {fileID: 260429243}
   m_Layer: 0
   m_Name: Cube (3)
   m_TagString: Untagged
@@ -553,27 +553,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &260429239
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 260429238}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &260429240
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -639,6 +618,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &260429243
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260429238}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &283326414
 GameObject:
   m_ObjectHideFlags: 0
@@ -1773,111 +1773,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   b: 0
---- !u!1 &945880773
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 945880776}
-  - component: {fileID: 945880775}
-  - component: {fileID: 945880774}
-  - component: {fileID: 945880777}
-  m_Layer: 0
-  m_Name: Terrain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
---- !u!154 &945880774
-TerrainCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 945880773}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: 1bc9a090eee6dca408d7c07d24a5a028, type: 2}
-  m_EnableTreeColliders: 1
---- !u!218 &945880775
-Terrain:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 945880773}
-  m_Enabled: 1
-  serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: 1bc9a090eee6dca408d7c07d24a5a028, type: 2}
-  m_TreeDistance: 5000
-  m_TreeBillboardDistance: 50
-  m_TreeCrossFadeLength: 5
-  m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
-  m_DetailObjectDensity: 1
-  m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
-  m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 2
-  m_DrawHeightmap: 1
-  m_DrawInstanced: 0
-  m_DrawTreesAndFoliage: 1
-  m_StaticShadowCaster: 0
-  m_IgnoreQualitySettings: 0
-  m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
-  m_BakeLightProbesForTrees: 1
-  m_PreserveTreePrototypeLayers: 0
-  m_DeringLightProbesForTrees: 1
-  m_ReceiveGI: 1
-  m_ScaleInLightmap: 0.0256
-  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
-  m_GroupingID: 0
-  m_RenderingLayerMask: 1
-  m_AllowAutoConnect: 1
-  m_EnableHeightmapRayTracing: 1
-  m_EnableTreesAndDetailsRayTracing: 0
-  m_TreeMotionVectorModeOverride: 3
---- !u!4 &945880776
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 945880773}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 270.6, y: 0, z: 250.70001}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &945880777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 945880773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81fe195562332d04ead2688a86c7325b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &956646664
 GameObject:
   m_ObjectHideFlags: 0
@@ -3817,14 +3712,15 @@ GameObject:
   - component: {fileID: 2562711910941428478}
   - component: {fileID: 2562711910941428483}
   - component: {fileID: 2562711910941428479}
+  - component: {fileID: 2562711910941428481}
   - component: {fileID: 2562711910941428480}
   - component: {fileID: 2562711910941428493}
-  - component: {fileID: 2562711910941428481}
   - component: {fileID: 2562711910941428487}
   - component: {fileID: 2562711910941428491}
   - component: {fileID: 2562711910941428496}
   - component: {fileID: 2562711910941428497}
   - component: {fileID: 2562711910941428498}
+  - component: {fileID: 2562711910941428499}
   m_Layer: 6
   m_Name: low poly car muscle car 2 (stanced) Variant
   m_TagString: Untagged
@@ -4125,18 +4021,18 @@ MonoBehaviour:
     BodySO: {fileID: 11400000, guid: 3db7fb85ec7a7c3458b60064742f08ea, type: 2}
   DrivetrainType: 0
   TransmissionType: 0
-  SteerAngle: 30
-  SteerSpeed: 0.2
+  SteerAngle: 32
+  SteerSpeed: 0.21
   _centerOfMass: {fileID: 283326415}
   _centerOfGeometry: {fileID: 178501977}
-  ForwardSlippingThreshold: 0.1
-  SidewaysSlippingThreshold: 0.3
+  ForwardSlippingThreshold: 0.11
+  SidewaysSlippingThreshold: 0.31
   AerialControlsEnabled: 1
-  AerialControlsSensitivity: 7500
+  AerialControlsSensitivity: 7501
   AutomaticFlipOverRecoverEnabled: 1
-  AutomaticFlipOverRecoverDelay: 2
+  AutomaticFlipOverRecoverDelay: 2.1
   _rigidbody: {fileID: 2562711910941428478}
-  _suspensionSimulationPrecision: 16
+  SuspensionSimulationPrecision: 13
   CurrentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
   _wheelControllersArray:
   - {fileID: 882263567}
@@ -4279,7 +4175,7 @@ MonoBehaviour:
   - {fileID: 327896590}
   _bodyWindEffect: {fileID: 2562711910941428496}
   _brakeLights: {fileID: 2562711910941428491}
-  _skidMarks: {fileID: 0}
+  _skidMarks: {fileID: 2562711910941428499}
   _tireSmoke: {fileID: 2562711910941428498}
 --- !u!114 &2562711910941428496
 MonoBehaviour:
@@ -4326,6 +4222,21 @@ MonoBehaviour:
     type: 3}
   _tireSmokeParticleSystem: {fileID: 6840747477825600795, guid: b192673840fbe23418c9e05da2648b6f,
     type: 3}
+--- !u!114 &2562711910941428499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311576484562101898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4755e65d0ce6b4479d5abcf488ad7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TireTrail: {fileID: 6269031696299141457, guid: 953cb7b9995c5564a91d4b2cce16fbbb,
+    type: 3}
+  _verticalOffset: 0.05
 --- !u!1 &2661484018289512689
 GameObject:
   m_ObjectHideFlags: 0
@@ -4591,9 +4502,9 @@ MeshRenderer:
   - {fileID: -6551738157171744777, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
   - {fileID: -1084228114978833594, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
   - {fileID: -8171321614650761064, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
-  - {fileID: 118290977305477727, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
+  - {fileID: 2100000, guid: 1155555112358fd4eb0bf32a30ad3569, type: 2}
   - {fileID: 7325407244480957086, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
-  - {fileID: -2499557501209006418, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
+  - {fileID: 2100000, guid: 1155555112358fd4eb0bf32a30ad3569, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4936,7 +4847,6 @@ SceneRoots:
   - {fileID: 22292515}
   - {fileID: 1081317593}
   - {fileID: 260429242}
-  - {fileID: 945880776}
   - {fileID: 2061044724}
   - {fileID: 1894773744}
   - {fileID: 1087937643993381936}

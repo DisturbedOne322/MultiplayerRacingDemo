@@ -1,12 +1,11 @@
 using Assets.VehicleController;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class ExtraVisualsSettingsEditor : EditorWindow
+    public class ControllerExtraVisualsSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _editor;
@@ -47,13 +46,12 @@ namespace Assets.VehicleControllerEditor
         private float _aerialSensitivityPlayMode;
         #endregion
 
-        public void HandleExtraSettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerExtraVisualsSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _editor = editor;
             FindFields();
         }
-
         public void PasteStats(SerializedObject controller)
         {
             controller.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue = _forwardSlipPlayMode;

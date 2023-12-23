@@ -1,15 +1,13 @@
 using Assets.VehicleController;
 using System.Text;
-using System.Threading;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEditorInternal.VR;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class BodySettingsEditor : EditorWindow
+    public class ControllerBodySettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -42,8 +40,7 @@ namespace Assets.VehicleControllerEditor
         #endregion
 
         private const string BODY_FOLDER_NAME = "VehicleBodies";
-
-        public void HandleBodySettings(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerBodySettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -251,7 +248,6 @@ namespace Assets.VehicleControllerEditor
             }
 
             _bodyObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue;
-            //_bodyObjectField.value = controller == null ? null : controller.VehicleStats.BodySO;
         }
     }
 

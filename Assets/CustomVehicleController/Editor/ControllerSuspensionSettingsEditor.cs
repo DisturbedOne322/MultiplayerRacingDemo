@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class SuspensionSettingsEditor : EditorWindow
+    public class ControllerSuspensionSettingsEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -48,7 +48,7 @@ namespace Assets.VehicleControllerEditor
         #endregion
         private const string SUSPENSION_FOLDER_NAME = "Suspensions";
 
-        public void HandleSuspensionSetting(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerSuspensionSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -66,7 +66,6 @@ namespace Assets.VehicleControllerEditor
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
             SetTooltips();
         }
-
         private void SetTooltips()
         {
             StringBuilder sb1 = new StringBuilder();

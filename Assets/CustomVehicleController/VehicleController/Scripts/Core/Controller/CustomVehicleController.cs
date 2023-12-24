@@ -20,25 +20,25 @@ namespace Assets.VehicleController
         [Space, Tooltip("Maximum steering angle in degrees")]
         public float SteerAngle = 25;
         [Tooltip("Time in which wheels will reach maximum steering angle." +
-            " Since steering uses a smooth damp function, this time is approximate.")]
+            "\n Since steering uses a smooth damp function, this time is approximate.")]
         public float SteerSpeed = 0.2f;
         #endregion
 
-        [Space, SerializeField, Tooltip("Setting up the center of mass helps with vehicle stability. Place it slightly below the vehicle.")]
+        [Space, SerializeField, Tooltip("Setting up the center of mass helps with vehicle stability. \n Place it slightly below the vehicle.")]
         private Transform _centerOfMass;
 
         [SerializeField, Tooltip("The center of geometry defines how weight is distributed among the wheels. " +
-            "If you place it closer to the rear axle, the wheel load would shift more to the rear wheels. " +
-            "If not sure, simply place it in the center of the vehicle.")]
+            "\n If you place it closer to the rear axle, the wheel load would shift more to the rear wheels. " +
+            "\n If not sure, simply place it in the center of the vehicle.")]
         private Transform _centerOfGeometry;
 
         #region Extra options
         [Header("   Extra options")]
         [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be forward slipping. " +
-            "Forward slipping occurs when acceleration force is higher than the wheel load * tire grip")]
+            "\n Forward slipping occurs when acceleration force is higher than the wheel load * tire grip.")]
         public float ForwardSlippingThreshold = 0.1f;
         [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be sideways slipping. " +
-            "The slipping amount equals the dot product of the car forward vector and car velocity")]
+            "\n The slipping amount equals the dot product of the car forward vector and normalizd vehicle velocity.")]
         public float SidewaysSlippingThreshold = 0.4f;
         //allows you to control the car in air. 
         [Space]
@@ -56,7 +56,7 @@ namespace Assets.VehicleController
         [Header("   Physics"), SerializeField, Tooltip("Assign rigidbody component to avoid using the costly GetComponent operation")]
         private Rigidbody _rigidbody;
         [Range(1,27), Tooltip("The amount of raycasts that go along the forward axis of the wheel with an offset from -radius to +radius. " +
-            "Recommended value: at least 3, and it must be an odd number, otherwise there won't be a raycast directly from the center of the wheel.")]
+            "\n Recommended values: [3:9]")]
         public int SuspensionSimulationPrecision = 3;
 
 
@@ -69,7 +69,6 @@ namespace Assets.VehicleController
         //Abstract interface for handling input. Create a monobehaviour script that implements this interface,
         //or use the input scripts that come with this package
         private IVehicleControllerInputProvider _inputProvider;
-
 
         #region Wheel Controllers
         [Header("All wheels")]
@@ -154,6 +153,7 @@ namespace Assets.VehicleController
 
             _inputProvider = providersFound[0];
         }
+
 
 #if UNITY_EDITOR
         //tell the scripts to update values when fields are changed

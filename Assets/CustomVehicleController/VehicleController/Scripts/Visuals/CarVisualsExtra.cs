@@ -94,20 +94,20 @@ namespace Assets.VehicleController
             {
                 if (!_wheelControllerArray[i].HasContactWithGround)
                 {
-                    _tireSmoke.DisplaySmokeVFX(false, i, _wheelControllerArray[i].GetHitPosition(),
+                    _tireSmoke.DisplaySmokeVFX(false, i,
                         _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
                     continue;
                 }
 
                 if (_shouldEmitArray[i])
                 {
-                    _tireSmoke.DisplaySmokeVFX(true, i, _wheelControllerArray[i].GetHitPosition(),
+                    _tireSmoke.DisplaySmokeVFX(true, i,
                         _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
                 }
                 else
                 {
                     bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-                    _tireSmoke.DisplaySmokeVFX(display, i, _wheelControllerArray[i].GetHitPosition(),
+                    _tireSmoke.DisplaySmokeVFX(display, i,
                         _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
                 }
             }

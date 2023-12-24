@@ -58,20 +58,20 @@ namespace Assets.VehicleControllerEditor
             controller.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue = _sidewaysSlipPlayMode;
             controller.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverEnabled)).boolValue = _autoFlipPlayMode;
             controller.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverDelay)).floatValue = _flipDelayPlayMode;
-            controller.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverEnabled)).boolValue = _aerialControlsPlayMode;
+            controller.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)).boolValue = _aerialControlsPlayMode;
             controller.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue = _aerialSensitivityPlayMode;
         }
 
-        public void CopyStats()
+        public void CopyStats(SerializedObject serializedObject)
         {
-            _forwardSlipPlayMode = _forwardSlipField.value;
-            _sidewaysSlipPlayMode = _sidewaysSlipField.value;
+            _forwardSlipPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue;
+            _sidewaysSlipPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue;
 
-            _autoFlipPlayMode = _autoFlipToggle.value;
-            _flipDelayPlayMode = _flipDelayField.value;
+            _autoFlipPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverEnabled)).boolValue;
+            _flipDelayPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.AutomaticFlipOverRecoverDelay)).floatValue;
 
-            _aerialControlsPlayMode = _aerialControlsToggle.value;
-            _aerialSensitivityPlayMode = _aerialSensitivityField.value;
+            _aerialControlsPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)).boolValue;
+            _aerialSensitivityPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue;
         }
 
         private void FindFields()

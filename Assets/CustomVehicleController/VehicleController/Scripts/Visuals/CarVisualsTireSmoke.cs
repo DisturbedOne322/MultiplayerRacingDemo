@@ -8,6 +8,8 @@ namespace Assets.VehicleController
     {
         public VisualEffectAssetType.Type _tireSmokeVisualEffectType;
 
+        private Transform[] _wheelMeshes;
+
         #region VFX
         [SerializeField]
         private VisualEffectAsset _tireSmokeVFX;
@@ -22,7 +24,9 @@ namespace Assets.VehicleController
 
         public void InstantiateSmoke(Transform[] wheelMeshes)
         {
-            if(_tireSmokeVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            _wheelMeshes = wheelMeshes;
+
+            if (_tireSmokeVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 TryInstantiateVFX(wheelMeshes);
             else
                 TryInstantiatePS(wheelMeshes);
@@ -59,19 +63,19 @@ namespace Assets.VehicleController
             for (int i = 0; i < size; i++)
             {
                 _tireSmokePSArray[i] = Instantiate(_tireSmokeParticleSystem);
-                _tireSmokePSArray[i].transform.parent = wheelMeshes[i].parent;
+                _tireSmokePSArray[i].transform.parent = wheelMeshes[i];
                 _tireSmokePSArray[i].Stop();
             }
         }
 
-        public void DisplaySmokeVFX(bool display, int id, Vector3 position, Vector3 rbVelocityNorm, float speed)
+        public void DisplaySmokeVFX(bool display, int id, Vector3 rbVelocityNorm, float speed)
         {
             if(_tireSmokeVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
-                DisplayVFX(display, id, position, rbVelocityNorm, speed);
+                DisplayVFX(display, id, rbVelocityNorm, speed);
             else
-                DisplayPS(display, id, position, rbVelocityNorm, speed);         
+                DisplayPS(display, id, rbVelocityNorm, speed);         
         }
-        private void DisplayVFX(bool display, int id, Vector3 position, Vector3 rbVelocityNorm, float speed)
+        private void DisplayVFX(bool display, int id, Vector3 rbVelocityNorm, float speed)
         {
             if (_tireSmokeVFX == null)
                 return;
@@ -79,7 +83,7 @@ namespace Assets.VehicleController
             if (display)
             {
                 _tireSmokeVFXArray[id].Play();
-                _tireSmokeVFXArray[id].SetVector3("position", position);
+                _tireSmokeVFXArray[id].SetVector3("position", _wheelMeshes[id].position);
                 if (speed < 1)
                 {
                     _tireSmokeVFXArray[id].SetVector3("velocity", -transform.forward);
@@ -94,7 +98,7 @@ namespace Assets.VehicleController
                 _tireSmokeVFXArray[id].Stop();
             }
         }
-        private void DisplayPS(bool display, int id, Vector3 position, Vector3 rbVelocityNorm, float speed)
+        private void DisplayPS(bool display, int id, Vector3 rbVelocityNorm, float speed)
         {
             if (_tireSmokeParticleSystem == null)
                 return;
@@ -103,7 +107,7 @@ namespace Assets.VehicleController
                 if(Mathf.Abs(speed) < 1)
                     rbVelocityNorm = transform.forward;
 
-                _tireSmokePSArray[id].transform.position = position;
+                _tireSmokePSArray[id].transform.position = _wheelMeshes[id].position;
                 _tireSmokePSArray[id].transform.forward = -rbVelocityNorm;
                 _tireSmokePSArray[id].Play();
             }

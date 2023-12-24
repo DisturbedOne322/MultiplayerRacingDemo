@@ -73,28 +73,19 @@ namespace Assets.VehicleControllerEditor
             _controllerSelectedLabel = root.Q<Label>(CONTROLLER_SELECTED_LABEL);
 
             _lockWindowToggle = root.Q<Toggle>(LOCK_WINDOW_TOGGLE);
+            //_lockWindowToggle.RegisterValueChangedCallback(evt => { Debug.Log(_serializedController.FindProperty("m_Name")); BindController(TryGetVehicleController()); });
 
             _saveChangedToggle = root.Q<Toggle>(SAVE_CHANGES_TOGGLE_NAME);
 
-
             _transmissionSettingsEditor = new ControllerTransmissionSettingsEditor(root, this);
-
             _fiSettingEditor = new ControllerForcedInductionSettingsEditor(root, this);
-
             _engineSettingsEditor = new ControllerEngineSettingsEditor(root, this, _fiSettingEditor);
-
             _suspensionSettingsEditor = new ControllerSuspensionSettingsEditor(root, this);
-
             _bodySettingsEditor = new ControllerBodySettingsEditor(root, this);
-
             _tiresSettingsEditor = new ControllerTiresSettingsEditor(root, this);
-
             _brakesSettingsEditor = new ControllerBrakesSettingsEditor(root, this);
-
             _steeringSettingsEditor = new ControllerSteeringSettingsEditor(root, this);
-
             _drivetrainSettingsEditor = new ControllerDrivetrainSettingsEditor(root, this);
-
             _extraVisualsSettingsEditor = new ControllerExtraVisualsSettingsEditor(root, this);
 
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
@@ -135,9 +126,9 @@ namespace Assets.VehicleControllerEditor
                 return;
             _serializedController.Update();
 
-            _extraVisualsSettingsEditor.CopyStats();
-            _drivetrainSettingsEditor.CopyStats();
-            _steeringSettingsEditor.CopyStats();
+            _extraVisualsSettingsEditor.CopyStats(_serializedController);
+            _drivetrainSettingsEditor.CopyStats(_serializedController);
+            _steeringSettingsEditor.CopyStats(_serializedController);
 
             _suspensionRaycastNumPlayMode = _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue;
             _vehicleStatsPlayMode = new VehicleStats();
@@ -151,6 +142,7 @@ namespace Assets.VehicleControllerEditor
             _vehicleStatsPlayMode.RearTiresSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue as TiresSO;
             _vehicleStatsPlayMode.BrakesSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue as BrakesSO;
             _vehicleStatsPlayMode.BodySO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue as VehicleBodySO;
+
         }
 
         private void PasteStats()
@@ -193,6 +185,9 @@ namespace Assets.VehicleControllerEditor
 
         private void OnBecameVisible()
         {
+            if (_lockWindowToggle.value)
+                return;
+
             if (Instance == null)
                 Initialize();
 
@@ -218,6 +213,8 @@ namespace Assets.VehicleControllerEditor
             {
                 _serializedController.Dispose();
                 _serializedController = null;
+                _serializedCarVisuals.Dispose();
+                _serializedCarVisuals=null;
             }
 
             _controller = null;

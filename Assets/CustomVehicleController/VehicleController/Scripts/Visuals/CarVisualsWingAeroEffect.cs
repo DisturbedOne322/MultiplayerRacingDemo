@@ -18,9 +18,6 @@ namespace Assets.VehicleController
         [SerializeField, Range(0,1f)]
         private float _maxAlpha = 0.5f;
 
-        [SerializeField, Min(0)]
-        private float _lifetime = 0.2f;
-
         // Start is called before the first frame update
         void Start()
         {

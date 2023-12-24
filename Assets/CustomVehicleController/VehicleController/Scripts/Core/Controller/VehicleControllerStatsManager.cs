@@ -25,6 +25,11 @@ namespace Assets.VehicleController
         private VehicleStats _stats;
         private int _wheelsAmount;
 
+        private const string REVERSE_GEAR_NAME = "R";
+        private const string NEUTRAL_GEAR_NAME = "N";
+
+        private string[] _gearsArray;
+
 #if UNITY_EDITOR
         private EngineSO _engineSO;
 #endif
@@ -50,6 +55,8 @@ namespace Assets.VehicleController
             _stats = stats;
             _maxRPM = _stats.EngineSO.MaxRPM;
 
+            CreateGearCharArray();
+
 #if UNITY_EDITOR
             _engineSO = _stats.EngineSO;
             _engineSO.OnEngineStatsChanged += OnStatsChanged;
@@ -70,6 +77,14 @@ namespace Assets.VehicleController
             _engineSO.OnEngineStatsChanged += OnStatsChanged;
         }
 #endif
+
+        private void CreateGearCharArray()
+        {
+            _gearsArray = new string[_stats.TransmissionSO.GearRatiosList.Count];
+
+            for (int i = 1; i <= _gearsArray.Length; i++)
+                _gearsArray[i - 1] = i.ToString();
+        }
 
         public void ManageStats(float gasInput, float brakeInput, float sideSlipThreshold, float fwdSlipThreshold, PartTypes.DrivetrainType drivetrainType)
         {
@@ -101,7 +116,6 @@ namespace Assets.VehicleController
             HaveDriveWheelNoGroundContact();
             HasCarLostTraction(sideSlipThreshold, fwdSlipThreshold);
             UpdateCurrentGear();
-
         }
 
         private void UpdateDriveWheels(PartTypes.DrivetrainType drivetrainType)
@@ -146,18 +160,22 @@ namespace Assets.VehicleController
         {
             if (_shifter.InReverseGear())
             {
-                _currentCarStats.CurrentGear = "R";
+                _currentCarStats.CurrentGear = REVERSE_GEAR_NAME;
                 return;
             }
 
             if (_shifter.InNeutralGear())
             {
-                _currentCarStats.CurrentGear = "N";
+                _currentCarStats.CurrentGear = NEUTRAL_GEAR_NAME;
                 return;
             }
 
-            int gearID = _shifter.GetCurrentGearID() + 1;
-            _currentCarStats.CurrentGear = gearID.ToString();
+            int gearID = _shifter.GetCurrentGearID();
+
+            if (gearID >= _gearsArray.Length)
+                CreateGearCharArray();
+
+            _currentCarStats.CurrentGear = _gearsArray[gearID];
         }
 
         private void HasCarLostTraction(float sideSlipThres, float fwdSlipThres)

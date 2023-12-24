@@ -19,6 +19,12 @@ namespace Assets.VehicleControllerEditor
         private ObjectField _frontRightWheelObjField;
         private ObjectField _rearLeftWheelObjField;
         private ObjectField _rearRightWheelObjField;
+
+        private ObjectField _bodyMeshField;
+        private ObjectField _bodyRWDField;
+        private ObjectField _bodyFWDField;
+        private ObjectField _bodyAWDField;
+
         private VisualElement _carAWDImage;
         private VisualElement _carRWDImage;
         private VisualElement _carFWDImage;
@@ -33,8 +39,11 @@ namespace Assets.VehicleControllerEditor
         private const string REAR_LEFT_FIELD_NAME = "RearLeftWheelObjField";
         private const string REAR_RIGHT_FIELD_NAME = "RearRightWheelObjField";
         private const string CAR_AWD_IMG_NAME = "CarAWDImage";
+        private const string BODY_AWD_FIELD_NAME = "AWDBodyField";
         private const string CAR_RWD_IMG_NAME = "CarRWDImage";
+        private const string BODY_RWD_FIELD_NAME = "RWDBodyField";
         private const string CAR_FWD_IMG_NAME = "CarFWDImage";
+        private const string BODY_FWD_FIELD_NAME = "FWDBodyField";
         private const string INIT_BUTTON_NAME = "InitializeController";
         private const string NOT_INITIALIZED_LABEL_NAME = "ControllerNotInitializedLabel";
 
@@ -70,7 +79,7 @@ namespace Assets.VehicleControllerEditor
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Drag and drop appropriate game objects which represent wheels into transform fields, ideally the ones with MeshRenderer components (this will allow automatic wheel radius and suspension position calculation).");
             sb.AppendLine();
-            sb.AppendLine("This button will create a hierarchy of game objects, add needed scripts and populate scripts with appropriate references.");
+            sb.AppendLine("This button will create a hierarchy of game objects, add needed scripts, populate scripts with appropriate references, and position game objects at correct location if mesh renderer is provided.");
             sb.AppendLine("");
             sb.AppendLine("Since hierarchy will be changed, the root game object can't be a prefab.");
             root.Q<Button>(INIT_BUTTON_NAME).tooltip = sb.ToString();
@@ -89,9 +98,9 @@ namespace Assets.VehicleControllerEditor
             serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)_drivetrainTypePlayMode;
         }
 
-        public void CopyStats()
+        public void CopyStats(SerializedObject serializedObject)
         {
-            _drivetrainTypePlayMode = (PartTypes.DrivetrainType)_drivetrainTypeEnum.value;
+            _drivetrainTypePlayMode = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
         }
 
         private void FindDrivetrainFields()
@@ -109,6 +118,10 @@ namespace Assets.VehicleControllerEditor
             _carAWDImage = root.Q<VisualElement>(CAR_AWD_IMG_NAME);
             _carRWDImage = root.Q<VisualElement>(CAR_RWD_IMG_NAME);
             _carFWDImage = root.Q<VisualElement>(CAR_FWD_IMG_NAME);
+
+            _bodyRWDField = root.Q<ObjectField>(BODY_RWD_FIELD_NAME);
+            _bodyAWDField = root.Q<ObjectField>(BODY_AWD_FIELD_NAME);
+            _bodyFWDField = root.Q<ObjectField>(BODY_FWD_FIELD_NAME);
 
             _notInitializedMessageLabel = root.Q<Label>(NOT_INITIALIZED_LABEL_NAME);
         }
@@ -202,8 +215,9 @@ namespace Assets.VehicleControllerEditor
             init.SetSteerWheelTransforms(steerWheels);
             init.SetWheelTransforms(wheels);
             init.SetDrivetrainType((PartTypes.DrivetrainType)_drivetrainTypeEnum.value);
+            SetReferenceToBodyField((PartTypes.DrivetrainType)_drivetrainTypeEnum.value);
             init.CreateHierarchyAndInitializeController(_mainEditor.GetSerializedController(),
-                _mainEditor.GetSerializedCarVisuals(), _mainEditor.GetController());
+                _mainEditor.GetSerializedCarVisuals(), _mainEditor.GetController(), _bodyMeshField.value as MeshRenderer);
 
             DisplayControllerNotInitializedMessage(false);
         }
@@ -274,6 +288,28 @@ namespace Assets.VehicleControllerEditor
             if (notInitialized)
                 _foldout.value = true;
             _notInitializedMessageLabel.style.display = notInitialized ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void SetReferenceToBodyField(PartTypes.DrivetrainType type)
+        {
+            switch(type)
+            {
+                case PartTypes.DrivetrainType.AWD:
+                    _bodyMeshField = _bodyAWDField;
+                    _bodyFWDField.value = _bodyAWDField.value;
+                    _bodyRWDField.value = _bodyAWDField.value;
+                    break;
+                case PartTypes.DrivetrainType.RWD:
+                    _bodyMeshField = _bodyRWDField;
+                    _bodyFWDField.value = _bodyRWDField.value;
+                    _bodyAWDField.value = _bodyRWDField.value;
+                    break;
+                case PartTypes.DrivetrainType.FWD:
+                    _bodyMeshField = _bodyFWDField;
+                    _bodyAWDField.value = _bodyFWDField.value;
+                    _bodyRWDField.value = _bodyFWDField.value;
+                    break;
+            }
         }
     }
 

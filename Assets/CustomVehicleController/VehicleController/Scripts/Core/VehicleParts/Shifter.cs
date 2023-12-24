@@ -13,7 +13,14 @@ namespace Assets.VehicleController
 
         public bool CheckIsClutchEngaged() => false;
 
-        public int GetCurrentGearID() => _currentGear;
+        public int GetCurrentGearID()
+        {
+            if(_currentGear < _stats.TransmissionSO.GearRatiosList.Count)
+                return _currentGear;
+
+            return _stats.TransmissionSO.GearRatiosList.Count - 1;
+        }
+
 
         public int GetGearAmount() => _stats.TransmissionSO.GearRatiosList.Count;
 

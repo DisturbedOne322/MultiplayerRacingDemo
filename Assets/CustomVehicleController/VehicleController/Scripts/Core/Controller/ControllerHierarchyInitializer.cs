@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 namespace Assets.VehicleController
 {
@@ -25,7 +26,7 @@ namespace Assets.VehicleController
         private WheelController[] _steerWheelControllers;
 
         public void CreateHierarchyAndInitializeController(SerializedObject serializedController,
-            SerializedObject serializedCarVisuals, CustomVehicleController controller)
+            SerializedObject serializedCarVisuals, CustomVehicleController controller, MeshRenderer mesh)
         {
             GameObject wheelsParent = new ("Wheels");
             wheelsParent.transform.parent = controller.transform.root;
@@ -46,11 +47,16 @@ namespace Assets.VehicleController
             TryMoveUpControllers();
             CreateSteerWheelsHierarcy(wheelsMeshesParent.transform);
 
-            CreateCoG(controller.transform);
-            CreateCoM(controller.transform);
+            SetTransforms(mesh, controller.transform);
 
             InjectCustomVehicleFields(serializedController);
             InjectCarVisualsFields(serializedCarVisuals);
+        }
+
+        public void SetTransforms(MeshRenderer mesh, Transform controller)
+        {
+            CreateCoG(controller.transform, mesh);
+            CreateCoM(controller.transform, mesh);
         }
 
         private void CreateWheelsHierarcy(Transform meshesParent, Transform controllerParent)
@@ -109,19 +115,29 @@ namespace Assets.VehicleController
             }
         }
 
-        private void CreateCoM(Transform transform)
+        private void CreateCoM(Transform transform, MeshRenderer mesh)
         {
+            Vector3 position = mesh != null ? mesh.localBounds.center - new Vector3(0,mesh.localBounds.size.y / 2,0) : Vector3.zero;
+
+            if (mesh == null)
+                Debug.LogWarning("Mesh Renderer wasn't provided, so Center Of Mass position couldn't be calculated automatically.");
+
             _centerOfMass = new GameObject("CenterOfMass").transform;
             _centerOfMass.transform.parent = transform.root;
-            _centerOfMass.transform.localPosition = new (0, 0, 0);
+            _centerOfMass.transform.localPosition = position;    
             _centerOfMass.transform.localRotation = Quaternion.identity;
         }
 
-        private void CreateCoG(Transform transform)
+        private void CreateCoG(Transform transform, MeshRenderer mesh)
         {
+            Vector3 position = mesh != null ? mesh.localBounds.center : Vector3.zero;
+
+            if (mesh == null)
+                Debug.LogWarning("Mesh Renderer wasn't provided, so Center Of Geometry position couldn't be calculated automatically.");
+
             _centerOfGeometry = new GameObject("CenterOfGeometry").transform;
             _centerOfGeometry.transform.parent = transform.root;
-            _centerOfGeometry.transform.localPosition = new (0, 0, 0);
+            _centerOfGeometry.transform.localPosition = position;
             _centerOfGeometry.transform.localRotation = Quaternion.identity;
         }
 
@@ -138,7 +154,7 @@ namespace Assets.VehicleController
             }
 
             //set steer wheels parents
-            var steerWheelsArray = serializedCarVisuals.FindProperty("_steerableWheels");
+            var steerWheelsArray = serializedCarVisuals.FindProperty("_steerWheelTransformArray");
             steerWheelsArray.ClearArray();
             int size2 = _steerParentTransforms.Length;
             for (int i = 0; i < size2; i++)

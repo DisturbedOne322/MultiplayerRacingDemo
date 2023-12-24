@@ -74,13 +74,16 @@ namespace Assets.VehicleController
         private void DisplayPS(float speed, Vector3 rbVelocity)
         {
             _bodyWindPSInstance.transform.forward = rbVelocity.normalized;
-            _bodyWindPSInstance.startLifetime = Mathf.Clamp(1 / (speed / 120), 0.2f, 1);
-            _bodyWindPSInstance.emissionRate = Mathf.Clamp(speed, 0 , 100);
-            _bodyWindPSInstance.startSpeed = -speed / 2;
+
+            var main = _bodyWindPSInstance.main;
+            var emission = _bodyWindPSInstance.emission;
+            main.startLifetime = Mathf.Clamp(1 / (speed / 120), 0.2f, 1);
+            emission.rateOverTime = Mathf.Clamp(speed, 0 , 100);
+            main.startSpeed = -speed / 2;
 
             Color targetColor = Color.white;
             targetColor.a = Mathf.Clamp(1 / (150 / (speed + 1)), 0.1f, 0.5f);
-            _bodyWindPSInstance.startColor = targetColor;
+            main.startColor = targetColor;
         }
     }
 

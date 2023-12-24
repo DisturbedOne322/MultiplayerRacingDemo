@@ -67,8 +67,8 @@
     font-size: 14px;
     width: 100%;
     align-self: flex-start;
-    align-items: flex-start;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: space-between;
     -unity-font-style: normal;
     -unity-text-align: upper-left;
     white-space: nowrap;

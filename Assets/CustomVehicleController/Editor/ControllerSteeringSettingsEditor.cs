@@ -32,10 +32,10 @@ namespace Assets.VehicleControllerEditor
             controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue = _steerSpeedPlayMode;
         }
 
-        public void CopyStats()
+        public void CopyStats(SerializedObject controller)
         {
-            _steerAnglePlayMode = _steerAngleField.value;
-            _steerSpeedPlayMode = _steerSpeedField.value;
+            _steerAnglePlayMode = controller.FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue;
+            _steerSpeedPlayMode = controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue;
         }
 
         private void FindSteeringFields()

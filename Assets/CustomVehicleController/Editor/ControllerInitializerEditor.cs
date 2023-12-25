@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
-    public class ControllerDrivetrainSettingsEditor
+    public class ControllerInitializerEditor
     {
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
@@ -18,20 +18,12 @@ namespace Assets.VehicleControllerEditor
         private Toggle _addColliderToggle;
 
 
-        private EnumField _drivetrainTypeEnum;
         private ObjectField _frontLeftWheelObjField;
         private ObjectField _frontRightWheelObjField;
         private ObjectField _rearLeftWheelObjField;
         private ObjectField _rearRightWheelObjField;
 
         private ObjectField _bodyMeshField;
-        private ObjectField _bodyRWDField;
-        private ObjectField _bodyFWDField;
-        private ObjectField _bodyAWDField;
-
-        private VisualElement _carAWDImage;
-        private VisualElement _carRWDImage;
-        private VisualElement _carFWDImage;
 
         private Label _notInitializedMessageLabel;
 
@@ -41,27 +33,19 @@ namespace Assets.VehicleControllerEditor
         private const string ADD_COLLIDER_TOGGLE_NAME = "AddColliderToggle";
         private const string ADD_COMPONENT_BUTTON_NAME = "AddComponentButton";
 
-        private const string DRIVETRAIN_TYPE_ENUM_NAME = "DrivetrainTypeEnum";
         private const string FRONT_LEFT_FIELD_NAME = "FrontLeftWheelObjField";
         private const string FRONT_RIGHT_FIELD_NAME = "FrontRightWheelObjField";
         private const string REAR_LEFT_FIELD_NAME = "RearLeftWheelObjField";
         private const string REAR_RIGHT_FIELD_NAME = "RearRightWheelObjField";
-        private const string CAR_AWD_IMG_NAME = "CarAWDImage";
-        private const string BODY_AWD_FIELD_NAME = "AWDBodyField";
-        private const string CAR_RWD_IMG_NAME = "CarRWDImage";
-        private const string BODY_RWD_FIELD_NAME = "RWDBodyField";
-        private const string CAR_FWD_IMG_NAME = "CarFWDImage";
-        private const string BODY_FWD_FIELD_NAME = "FWDBodyField";
+        private const string BODY_FIELD_NAME = "BodyField";
         private const string INIT_BUTTON_NAME = "InitializeController";
         private const string NOT_INITIALIZED_LABEL_NAME = "ControllerNotInitializedLabel";
-
-        private PartTypes.DrivetrainType _drivetrainTypePlayMode;
 
         #region prefab unpack
         private VisualElement _warningWindow;
         private Button _closeWindowsButton;
         private Button _confirmButton;
-        private Button _denyButton;   
+        private Button _denyButton;
 
         private const string WINDOW_NAME = "WarningWindow";
         private const string CONFIRM_BUTTON_NAME = "ConfirmButton";
@@ -69,7 +53,7 @@ namespace Assets.VehicleControllerEditor
         private const string CLOSE_WINDOWS_BUTTON_NAME = "CloseWindowButton";
         #endregion
 
-        public ControllerDrivetrainSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
+        public ControllerInitializerEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
             this.root = root;
             _mainEditor = editor;
@@ -102,16 +86,6 @@ namespace Assets.VehicleControllerEditor
             _mainEditor.OnWindowClosed -= _editor_OnWindowClosed;
         }
 
-        public void PasteStats(SerializedObject serializedObject)
-        {
-            serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)_drivetrainTypePlayMode;
-        }
-
-        public void CopyStats(SerializedObject serializedObject)
-        {
-            _drivetrainTypePlayMode = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
-        }
-
         private void FindAddComponentMenuFields()
         {
             _addComponentMenu = root.Q<VisualElement>(ADD_COMPONENT_MENU_NAME);
@@ -129,22 +103,13 @@ namespace Assets.VehicleControllerEditor
         {
             _foldout = root.Q<Foldout>(FOLDOUT_NAME);
 
-            _drivetrainTypeEnum = root.Q<EnumField>(DRIVETRAIN_TYPE_ENUM_NAME);
-            _drivetrainTypeEnum.RegisterValueChangedCallback(val => { UpdateDrivetrainType((PartTypes.DrivetrainType)_drivetrainTypeEnum.value); });
 
             _frontLeftWheelObjField = root.Q<ObjectField>(FRONT_LEFT_FIELD_NAME);
             _frontRightWheelObjField = root.Q<ObjectField>(FRONT_RIGHT_FIELD_NAME);
             _rearLeftWheelObjField = root.Q<ObjectField>(REAR_LEFT_FIELD_NAME);
             _rearRightWheelObjField = root.Q<ObjectField>(REAR_RIGHT_FIELD_NAME);
 
-            _carAWDImage = root.Q<VisualElement>(CAR_AWD_IMG_NAME);
-            _carRWDImage = root.Q<VisualElement>(CAR_RWD_IMG_NAME);
-            _carFWDImage = root.Q<VisualElement>(CAR_FWD_IMG_NAME);
-
-            _bodyRWDField = root.Q<ObjectField>(BODY_RWD_FIELD_NAME);
-            _bodyAWDField = root.Q<ObjectField>(BODY_AWD_FIELD_NAME);
-            _bodyFWDField = root.Q<ObjectField>(BODY_FWD_FIELD_NAME);
-
+            _bodyMeshField = root.Q<ObjectField>(BODY_FIELD_NAME);
             _notInitializedMessageLabel = root.Q<Label>(NOT_INITIALIZED_LABEL_NAME);
         }
 
@@ -193,7 +158,7 @@ namespace Assets.VehicleControllerEditor
                 return;
             }
 
-            if(PrefabUtility.GetPrefabAssetType(_mainEditor.GetController().gameObject) != PrefabAssetType.NotAPrefab)
+            if (PrefabUtility.GetPrefabAssetType(_mainEditor.GetController().gameObject) != PrefabAssetType.NotAPrefab)
             {
                 HandleWarningWindow(_mainEditor.GetController().gameObject);
                 return;
@@ -217,7 +182,7 @@ namespace Assets.VehicleControllerEditor
             GameObject gameObject = Selection.activeGameObject;
 
             gameObject.AddComponent<CustomVehicleController>();
-            if(_addColliderToggle.value)
+            if (_addColliderToggle.value)
                 gameObject.AddComponent<BoxCollider>();
 
             _addColliderToggle.value = false;
@@ -231,7 +196,6 @@ namespace Assets.VehicleControllerEditor
         {
             GameObject rootGO = selectedGO.transform.root.gameObject;
             ControllerHierarchyInitializer init = new ();
-
             Transform[] wheels = new Transform[4];
             wheels[0] = _frontLeftWheelObjField.value as Transform;
             wheels[1] = _frontRightWheelObjField.value as Transform;
@@ -244,43 +208,13 @@ namespace Assets.VehicleControllerEditor
 
             init.SetSteerWheelTransforms(steerWheels);
             init.SetWheelTransforms(wheels);
-            init.SetDrivetrainType((PartTypes.DrivetrainType)_drivetrainTypeEnum.value);
-            SetReferenceToBodyField((PartTypes.DrivetrainType)_drivetrainTypeEnum.value);
             init.CreateHierarchyAndInitializeController(_mainEditor.GetSerializedController(),
                 _mainEditor.GetSerializedCarVisuals(), _mainEditor.GetController(), _bodyMeshField.value as MeshRenderer);
 
             DisplayControllerNotInitializedMessage(false);
         }
 
-        private void UpdateDrivetrainType(PartTypes.DrivetrainType type)
-        {
-            switch (type)
-            {
-                case PartTypes.DrivetrainType.FWD:
-                    _carFWDImage.style.display = DisplayStyle.Flex;
-                    _carAWDImage.style.display = DisplayStyle.None;
-                    _carRWDImage.style.display = DisplayStyle.None;
-                    break;
-                case PartTypes.DrivetrainType.RWD:
-                    _carRWDImage.style.display = DisplayStyle.Flex;
-                    _carFWDImage.style.display = DisplayStyle.None;
-                    _carAWDImage.style.display = DisplayStyle.None;
-                    break;
-                case PartTypes.DrivetrainType.AWD:
-                    _carAWDImage.style.display = DisplayStyle.Flex;
-                    _carRWDImage.style.display = DisplayStyle.None;
-                    _carFWDImage.style.display = DisplayStyle.None;
-                    break;
-            }
 
-            SerializedObject serializedObject = _mainEditor.GetSerializedController();
-
-            if (serializedObject != null)
-            {
-                serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)type;
-                _mainEditor.SaveController();
-            }
-        }
 
         public void SetVehicleController(SerializedObject serializedObject)
         {
@@ -288,7 +222,6 @@ namespace Assets.VehicleControllerEditor
             {
                 _addComponentMenu.style.display = DisplayStyle.None;
 
-                _drivetrainTypeEnum.value = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
                 var wheels = serializedObject.FindProperty("_wheelControllersArray");
 
                 if (wheels == null || wheels.arraySize < 4)
@@ -301,7 +234,7 @@ namespace Assets.VehicleControllerEditor
                 return;
             }
 
-            if(Selection.activeGameObject == null)
+            if (Selection.activeGameObject == null)
             {
                 _foldout.value = false;
                 _addComponentMenu.style.display = DisplayStyle.None;
@@ -311,7 +244,7 @@ namespace Assets.VehicleControllerEditor
 
             _foldout.value = true;
             _addComponentMenu.style.display = DisplayStyle.Flex;
-            _notInitializedMessageLabel.style.display = DisplayStyle.None;      
+            _notInitializedMessageLabel.style.display = DisplayStyle.None;
         }
 
         private void DisplayControllerNotInitializedMessage(bool notInitialized)
@@ -319,28 +252,5 @@ namespace Assets.VehicleControllerEditor
             _foldout.value = notInitialized;
             _notInitializedMessageLabel.style.display = notInitialized ? DisplayStyle.Flex : DisplayStyle.None;
         }
-
-        private void SetReferenceToBodyField(PartTypes.DrivetrainType type)
-        {
-            switch(type)
-            {
-                case PartTypes.DrivetrainType.AWD:
-                    _bodyMeshField = _bodyAWDField;
-                    _bodyFWDField.value = _bodyAWDField.value;
-                    _bodyRWDField.value = _bodyAWDField.value;
-                    break;
-                case PartTypes.DrivetrainType.RWD:
-                    _bodyMeshField = _bodyRWDField;
-                    _bodyFWDField.value = _bodyRWDField.value;
-                    _bodyAWDField.value = _bodyRWDField.value;
-                    break;
-                case PartTypes.DrivetrainType.FWD:
-                    _bodyMeshField = _bodyFWDField;
-                    _bodyAWDField.value = _bodyFWDField.value;
-                    _bodyRWDField.value = _bodyFWDField.value;
-                    break;
-            }
-        }
     }
-
 }

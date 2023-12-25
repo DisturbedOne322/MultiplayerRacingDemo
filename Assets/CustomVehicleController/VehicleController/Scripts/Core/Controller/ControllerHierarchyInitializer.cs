@@ -5,7 +5,7 @@ namespace Assets.VehicleController
 {
 #if UNITY_EDITOR
     [RequireComponent(typeof(CustomVehicleController))]
-    public class ControllerHierarchyInitializer : MonoBehaviour
+    public class ControllerHierarchyInitializer
     {
         [SerializeField]
         private Transform[] _wheelTransforms;
@@ -127,7 +127,7 @@ namespace Assets.VehicleController
             {
                 BoxCollider tempBox = mesh.gameObject.AddComponent<BoxCollider>();
                 position = transform.root.InverseTransformPoint(tempBox.bounds.center - new Vector3(0,tempBox.bounds.size.y / 2,0));
-                DestroyImmediate(tempBox);
+                GameObject.DestroyImmediate(tempBox);
             }
             else
                 position = Vector3.zero;
@@ -151,7 +151,7 @@ namespace Assets.VehicleController
             {
                 BoxCollider tempBox = mesh.gameObject.AddComponent<BoxCollider>();
                 position = transform.root.InverseTransformPoint(tempBox.bounds.center);
-                DestroyImmediate(tempBox);
+                GameObject.DestroyImmediate(tempBox);
             }
             else
                 position = Vector3.zero;
@@ -239,10 +239,6 @@ namespace Assets.VehicleController
         public void SetSteerWheelTransforms(Transform[] steerTransforms)
         {
             _steerWheelTransforms = steerTransforms;
-        }
-        public void SetDrivetrainType(PartTypes.DrivetrainType type)
-        {
-            _drivetrainType = type;
         }
     }
 #endif

@@ -1,6 +1,5 @@
 using Assets.VehicleController;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -42,7 +41,7 @@ namespace Assets.VehicleControllerEditor
         private ControllerTiresSettingsEditor _tiresSettingsEditor;
         private ControllerBrakesSettingsEditor _brakesSettingsEditor;
         private ControllerSteeringSettingsEditor _steeringSettingsEditor;
-        private ControllerDrivetrainSettingsEditor _drivetrainSettingsEditor;
+        private ControllerInitializerEditor _drivetrainSettingsEditor;
 
         private ControllerExtraVisualsSettingsEditor _extraVisualsSettingsEditor;
         #endregion
@@ -85,7 +84,7 @@ namespace Assets.VehicleControllerEditor
             _tiresSettingsEditor = new ControllerTiresSettingsEditor(root, this);
             _brakesSettingsEditor = new ControllerBrakesSettingsEditor(root, this);
             _steeringSettingsEditor = new ControllerSteeringSettingsEditor(root, this);
-            _drivetrainSettingsEditor = new ControllerDrivetrainSettingsEditor(root, this);
+            _drivetrainSettingsEditor = new ControllerInitializerEditor(root, this);
             _extraVisualsSettingsEditor = new ControllerExtraVisualsSettingsEditor(root, this);
 
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
@@ -129,7 +128,7 @@ namespace Assets.VehicleControllerEditor
             _serializedController.Update();
 
             _extraVisualsSettingsEditor.CopyStats(_serializedController);
-            _drivetrainSettingsEditor.CopyStats(_serializedController);
+            _bodySettingsEditor.CopyStats(_serializedController);
             _steeringSettingsEditor.CopyStats(_serializedController);
 
             _suspensionRaycastNumPlayMode = _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue;
@@ -166,7 +165,7 @@ namespace Assets.VehicleControllerEditor
             vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue = _vehicleStatsPlayMode.BodySO;
 
             _extraVisualsSettingsEditor.PasteStats(_serializedController);
-            _drivetrainSettingsEditor.PasteStats(_serializedController);
+            _bodySettingsEditor.PasteStats(_serializedController);
             _steeringSettingsEditor.PasteStats(_serializedController);
             _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue = _suspensionRaycastNumPlayMode;
         }

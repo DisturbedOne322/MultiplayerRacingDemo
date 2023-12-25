@@ -39,6 +39,10 @@ namespace Assets.VehicleControllerEditor
         private const string BODY_CREATE_BUTTON_NAME = "CreateNewBodyButton";
         #endregion
 
+        private EnumField _drivetrainTypeEnum;
+        private const string DRIVETRAIN_TYPE_ENUM_NAME = "DrivetrainTypeEnum";
+        private PartTypes.DrivetrainType _drivetrainTypePlayMode;
+
         private const string BODY_FOLDER_NAME = "VehicleBodies";
         public ControllerBodySettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {
@@ -95,6 +99,16 @@ namespace Assets.VehicleControllerEditor
             _mainEditor.OnWindowClosed -= Editor_OnWindowClosed;
         }
 
+        public void PasteStats(SerializedObject serializedObject)
+        {
+            serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)_drivetrainTypePlayMode;
+        }
+
+        public void CopyStats(SerializedObject serializedObject)
+        {
+            _drivetrainTypePlayMode = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
+        }
+
         private void FindBodyFields()
         {
             _massField = root.Q<FloatField>(BODY_MASS_FIELD);
@@ -113,18 +127,21 @@ namespace Assets.VehicleControllerEditor
             _corneringResistanceField.RegisterValueChangedCallback(evt => { _corneringResistanceField.value = Mathf.Max(0, _corneringResistanceField.value); });
 
             _corneringResistanceCurve = root.Q<CurveField>(BODY_CORNERING_RES_CURVE);
-            _corneringResistanceCurve.RegisterValueChangedCallback(evt => ClampGraph(_corneringResistanceCurve.value));
 
             _bodyNameField = root.Q<TextField>(BODY_NAME_FIELD);
+
+            _drivetrainTypeEnum = root.Q<EnumField>(DRIVETRAIN_TYPE_ENUM_NAME);
+            _drivetrainTypeEnum.RegisterValueChangedCallback(val => { UpdateDrivetrainType((PartTypes.DrivetrainType)_drivetrainTypeEnum.value); });
         }
 
-        private void ClampGraph(AnimationCurve curve)
+        private void UpdateDrivetrainType(PartTypes.DrivetrainType type)
         {
-            Keyframe[] keys = curve.keys;
-            int size = keys.Length;
-            for (int i = 0; i < size; i++)
+            SerializedObject serializedObject = _mainEditor.GetSerializedController();
+
+            if (serializedObject != null)
             {
-                keys[i].time = Mathf.Clamp01(keys[i].time);
+                serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue = (int)type;
+                _mainEditor.SaveController();
             }
         }
 
@@ -247,6 +264,7 @@ namespace Assets.VehicleControllerEditor
                 return;
             }
 
+            _drivetrainTypeEnum.value = (PartTypes.DrivetrainType)so.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
             _bodyObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue;
         }
     }

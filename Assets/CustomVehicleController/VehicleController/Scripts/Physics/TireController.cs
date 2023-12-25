@@ -44,8 +44,6 @@ namespace Assets.VehicleController
         private float _minLoad;
         private float _maxLoad;
 
-        public bool b;
-
         public void Initialize(VehicleStats stats, bool front, float axelLen,
             float wheelBaseLen, Rigidbody rb)
         {

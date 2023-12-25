@@ -14,6 +14,10 @@ namespace Assets.VehicleControllerEditor
 
         private Foldout _foldout;
 
+        private VisualElement _addComponentMenu;
+        private Toggle _addColliderToggle;
+
+
         private EnumField _drivetrainTypeEnum;
         private ObjectField _frontLeftWheelObjField;
         private ObjectField _frontRightWheelObjField;
@@ -32,6 +36,10 @@ namespace Assets.VehicleControllerEditor
         private Label _notInitializedMessageLabel;
 
         private const string FOLDOUT_NAME = "DrivetrainFoldout";
+
+        private const string ADD_COMPONENT_MENU_NAME = "AddComponentMenu";
+        private const string ADD_COLLIDER_TOGGLE_NAME = "AddColliderToggle";
+        private const string ADD_COMPONENT_BUTTON_NAME = "AddComponentButton";
 
         private const string DRIVETRAIN_TYPE_ENUM_NAME = "DrivetrainTypeEnum";
         private const string FRONT_LEFT_FIELD_NAME = "FrontLeftWheelObjField";
@@ -65,6 +73,7 @@ namespace Assets.VehicleControllerEditor
         {
             this.root = root;
             _mainEditor = editor;
+            FindAddComponentMenuFields();
             FindDrivetrainFields();
             FindWarningWindowFields();
             SubscribeToInitializeButtonClickEvent();
@@ -89,7 +98,7 @@ namespace Assets.VehicleControllerEditor
         {
             Button initializeButton = root.Q<Button>(INIT_BUTTON_NAME);
             initializeButton.clicked -= InitializeButton_clicked;
-
+            root.Q<Button>(ADD_COMPONENT_BUTTON_NAME).clicked -= ControllerDrivetrainSettingsEditor_onClick;
             _mainEditor.OnWindowClosed -= _editor_OnWindowClosed;
         }
 
@@ -101,6 +110,19 @@ namespace Assets.VehicleControllerEditor
         public void CopyStats(SerializedObject serializedObject)
         {
             _drivetrainTypePlayMode = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
+        }
+
+        private void FindAddComponentMenuFields()
+        {
+            _addComponentMenu = root.Q<VisualElement>(ADD_COMPONENT_MENU_NAME);
+            _addColliderToggle = root.Q<Toggle>(ADD_COLLIDER_TOGGLE_NAME);
+
+            root.Q<Button>(ADD_COMPONENT_BUTTON_NAME).clicked += ControllerDrivetrainSettingsEditor_onClick;
+        }
+
+        private void ControllerDrivetrainSettingsEditor_onClick()
+        {
+            AddComponents();
         }
 
         private void FindDrivetrainFields()
@@ -140,19 +162,11 @@ namespace Assets.VehicleControllerEditor
         }
         private void SubscribeToInitializeButtonClickEvent()
         {
-            Button initializeButton = root.Q<Button>(INIT_BUTTON_NAME);
-            initializeButton.clicked += InitializeButton_clicked;
+            root.Q<Button>(INIT_BUTTON_NAME).clicked += InitializeButton_clicked;
         }
-
 
         private void InitializeButton_clicked()
         {
-            GameObject selectedGO = Selection.activeGameObject;
-            if (selectedGO == null)
-            {
-                Debug.LogError("No game object selected");
-                return;
-            }
             if (_mainEditor.GetController() == null)
             {
                 Debug.LogError("CustomVehicleController script is missing");
@@ -179,13 +193,13 @@ namespace Assets.VehicleControllerEditor
                 return;
             }
 
-            if(PrefabUtility.GetPrefabAssetType(selectedGO) != PrefabAssetType.NotAPrefab)
+            if(PrefabUtility.GetPrefabAssetType(_mainEditor.GetController().gameObject) != PrefabAssetType.NotAPrefab)
             {
-                HandleWarningWindow(selectedGO);
+                HandleWarningWindow(_mainEditor.GetController().gameObject);
                 return;
             }
 
-            InitializeController(selectedGO);
+            InitializeController(_mainEditor.GetController().gameObject);
         }
 
         private void HandleWarningWindow(GameObject selectedGO)
@@ -197,6 +211,22 @@ namespace Assets.VehicleControllerEditor
             GameObject rootGO = selectedGO.transform.root.gameObject;
             PrefabUtility.UnpackPrefabInstance(rootGO, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         }
+
+        private void AddComponents()
+        {
+            GameObject gameObject = Selection.activeGameObject;
+
+            gameObject.AddComponent<CustomVehicleController>();
+            if(_addColliderToggle.value)
+                gameObject.AddComponent<BoxCollider>();
+
+            _addColliderToggle.value = false;
+
+            _addComponentMenu.style.display = DisplayStyle.None;
+
+            _mainEditor.RequestUpdate();
+        }
+
         private void InitializeController(GameObject selectedGO)
         {
             GameObject rootGO = selectedGO.transform.root.gameObject;
@@ -252,41 +282,41 @@ namespace Assets.VehicleControllerEditor
             }
         }
 
-        public void SetVehicleController(CustomVehicleController controller)
+        public void SetVehicleController(SerializedObject serializedObject)
         {
-            if (controller != null)
+            if (serializedObject != null)
             {
-                _drivetrainTypeEnum.value = controller.DrivetrainType;
-                WheelController[] wheels = controller.GetWheelControllers();
-                if (wheels == null)
+                _addComponentMenu.style.display = DisplayStyle.None;
+
+                _drivetrainTypeEnum.value = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
+                var wheels = serializedObject.FindProperty("_wheelControllersArray");
+
+                if (wheels == null || wheels.arraySize < 4)
                 {
                     DisplayControllerNotInitializedMessage(true);
+                    return;
                 }
-                else
-                {
-                    if (wheels.Length == 4)
-                    {
-                        _frontLeftWheelObjField.value = wheels[0].GetWheelTransform();
-                        _frontRightWheelObjField.value = wheels[1].GetWheelTransform();
-                        _rearLeftWheelObjField.value = wheels[2].GetWheelTransform();
-                        _rearRightWheelObjField.value = wheels[3].GetWheelTransform();
-                    }
-                    DisplayControllerNotInitializedMessage(wheels.Length == 0);
-                }
+
+                DisplayControllerNotInitializedMessage(false);
+                return;
             }
-            else
+
+            if(Selection.activeGameObject == null)
             {
-                _frontLeftWheelObjField.value =
-                _frontRightWheelObjField.value =
-                _rearLeftWheelObjField.value =
-                _rearRightWheelObjField.value = null;
+                _foldout.value = false;
+                _addComponentMenu.style.display = DisplayStyle.None;
+                _notInitializedMessageLabel.style.display = DisplayStyle.None;
+                return;
             }
+
+            _foldout.value = true;
+            _addComponentMenu.style.display = DisplayStyle.Flex;
+            _notInitializedMessageLabel.style.display = DisplayStyle.None;      
         }
 
         private void DisplayControllerNotInitializedMessage(bool notInitialized)
         {
-            if (notInitialized)
-                _foldout.value = true;
+            _foldout.value = notInitialized;
             _notInitializedMessageLabel.style.display = notInitialized ? DisplayStyle.Flex : DisplayStyle.None;
         }
 

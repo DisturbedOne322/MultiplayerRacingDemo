@@ -144,16 +144,16 @@ namespace Assets.VehicleController
 
         private void CalculateDriftTime(float sideSlipThreshold)
         {
-            if (_wheelControllersArray[0].SidewaysSlip > sideSlipThreshold)
+            for(int i = 0;  i < _wheelsAmount; i++)
             {
-                _lastDriftTime = Time.time;
-                _currentCarStats.DriftTime += Time.deltaTime;
+                if (_wheelControllersArray[i].SidewaysSlip > sideSlipThreshold)
+                {
+                    _lastDriftTime = Time.time;
+                    break;
+                }            
             }
-            else
-            {
-                _currentCarStats.DriftTime = Time.time < _lastDriftTime + 1 ?
-                    _currentCarStats.DriftTime + Time.deltaTime : 0;
-            }
+            
+            _currentCarStats.DriftTime = Time.time < _lastDriftTime + 1 ? _currentCarStats.DriftTime + Time.deltaTime : 0;
         }
 
         private void UpdateCurrentGear()
@@ -200,13 +200,12 @@ namespace Assets.VehicleController
         private void IsCarInAir()
         {
             int wheelsInAir = 0;
-            int size = _wheelControllersArray.Length;
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < _wheelsAmount; i++)
             {
                 if (!_wheelControllersArray[i].HasContactWithGround)
                     wheelsInAir++;
             }
-            _currentCarStats.InAir = wheelsInAir == size;
+            _currentCarStats.InAir = wheelsInAir == _wheelsAmount;
             _currentCarStats.AirTime = _currentCarStats.InAir ? _currentCarStats.AirTime + Time.deltaTime : 0;
         }
 

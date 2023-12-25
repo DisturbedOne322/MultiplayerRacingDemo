@@ -73,7 +73,7 @@ namespace Assets.VehicleController
         #region Wheel Controllers
         [Header("All wheels")]
         [SerializeField]
-        private WheelController[] _wheelControllersArray;
+        public WheelController[] _wheelControllersArray;
         [Header("Steer wheels")]
         [SerializeField]
         private WheelController[] _steerWheelControllersArray;
@@ -117,7 +117,6 @@ namespace Assets.VehicleController
         }
 
         public Transform GetCenterOfGeometry() => _centerOfGeometry;
-        public WheelController[] GetWheelControllers() => _wheelControllersArray;
         public CurrentCarStats GetCurrentCarStats() => CurrentCarStats;
         public Rigidbody GetRigidbody() => _rigidbody;
 

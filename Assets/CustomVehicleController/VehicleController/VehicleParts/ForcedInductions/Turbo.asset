@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a07113725e0bf9b40a510170f9f94e8e, type: 3}
   m_Name: Turbo
   m_EditorClassIdentifier: 
-  ForcedInductionType: 1
+  ForcedInductionType: 2
   MaxTorqueBoostAmount: 500
   TurboRPMPercentDelay: 0.3
   TurboSpinTime: 2

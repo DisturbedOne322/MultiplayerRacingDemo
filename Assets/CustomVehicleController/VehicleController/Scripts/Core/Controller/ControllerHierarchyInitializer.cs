@@ -1,12 +1,11 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 namespace Assets.VehicleController
 {
 #if UNITY_EDITOR
     [RequireComponent(typeof(CustomVehicleController))]
-    public class ControllerHierarchyInitializer
+    public class ControllerHierarchyInitializer : MonoBehaviour
     {
         [SerializeField]
         private Transform[] _wheelTransforms;
@@ -117,10 +116,21 @@ namespace Assets.VehicleController
 
         private void CreateCoM(Transform transform, MeshRenderer mesh)
         {
-            Vector3 position = mesh != null ? mesh.localBounds.center - new Vector3(0,mesh.localBounds.size.y / 2,0) : Vector3.zero;
-
             if (mesh == null)
                 Debug.LogWarning("Mesh Renderer wasn't provided, so Center Of Mass position couldn't be calculated automatically.");
+
+            Vector3 position;
+
+            //create temporary box collider to find the true center of body
+            //if the origin of the body is not in the center, mesh.localBounds.center doesn't give correct results
+            if (mesh != null)
+            {
+                BoxCollider tempBox = mesh.gameObject.AddComponent<BoxCollider>();
+                position = transform.root.InverseTransformPoint(tempBox.bounds.center - new Vector3(0,tempBox.bounds.size.y / 2,0));
+                DestroyImmediate(tempBox);
+            }
+            else
+                position = Vector3.zero;
 
             _centerOfMass = new GameObject("CenterOfMass").transform;
             _centerOfMass.transform.parent = transform.root;
@@ -130,15 +140,28 @@ namespace Assets.VehicleController
 
         private void CreateCoG(Transform transform, MeshRenderer mesh)
         {
-            Vector3 position = mesh != null ? mesh.localBounds.center : Vector3.zero;
-
             if (mesh == null)
                 Debug.LogWarning("Mesh Renderer wasn't provided, so Center Of Geometry position couldn't be calculated automatically.");
+
+            Vector3 position;
+
+            //create temporary box collider to find the true center of body
+            //if the origin of the body is not in the center, mesh.localBounds.center doesn't give correct result
+            if (mesh != null)
+            {
+                BoxCollider tempBox = mesh.gameObject.AddComponent<BoxCollider>();
+                position = transform.root.InverseTransformPoint(tempBox.bounds.center);
+                DestroyImmediate(tempBox);
+            }
+            else
+                position = Vector3.zero;
+
 
             _centerOfGeometry = new GameObject("CenterOfGeometry").transform;
             _centerOfGeometry.transform.parent = transform.root;
             _centerOfGeometry.transform.localPosition = position;
             _centerOfGeometry.transform.localRotation = Quaternion.identity;
+
         }
 
         private void InjectCarVisualsFields(SerializedObject serializedCarVisuals)

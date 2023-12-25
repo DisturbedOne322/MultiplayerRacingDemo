@@ -16,8 +16,8 @@ namespace Assets.VehicleController
 
         #region Variables
 
-        [Header("Wheel")]
-        [SerializeField, Tooltip("Wheel radius can be calculated automatically from the mesh renderer. In case, radius is wrong, you can set it yourself")]
+        [Header("Wheel radius can be calculated automatically from the mesh renderer. \nIn case the radius is wrong, set it manually.\nIf the radius value isn't 0, radius won't be calculated.")]
+        [SerializeField]
         private float _wheelRadius;
         public float Radius
         {
@@ -61,8 +61,7 @@ namespace Assets.VehicleController
         #endregion
 
         #region Visuals
-        [Header("Wheel Visuals")]
-        [SerializeField]
+        [SerializeField, Tooltip("Transform component of the wheel this this component represents.")]
         private Transform _wheelMeshTransform;
         public Vector3 WheelPosition
         {
@@ -70,7 +69,6 @@ namespace Assets.VehicleController
         }
         #endregion
 
-        public bool b;
         public void Initialize(VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
             if (_wheelRadius == 0)

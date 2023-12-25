@@ -113,7 +113,9 @@ namespace Assets.VehicleControllerEditor
             if (newState == PlayModeStateChange.EnteredEditMode)
             {
                 if (_saveChangedToggle.value)
+                {
                     PasteStats();
+                }
                 SaveController();
                 //update field values in the editor after play mode. even though the vehicle stats object gets reset, the fields in editor don't
                 SetVehicleControllerToSettingEditors(_serializedController, _controller);
@@ -173,40 +175,50 @@ namespace Assets.VehicleControllerEditor
         {
             if (_lockWindowToggle.value)
                 return;
-
-            if(Selection.objects.Length > 1)
-            {
-                Debug.Log("Multiobject editing isn't supported");
-                return;
-            }
                 
             BindController(TryGetVehicleController());
         }
 
         private void OnBecameVisible()
         {
-            if (_lockWindowToggle.value)
-                return;
-
             if (Instance == null)
                 Initialize();
 
-            if (Selection.objects.Length > 1)
-            {
-                Debug.Log("Multiobject editing isn't supported");
+            if (_lockWindowToggle.value)
                 return;
-            }
 
             BindController(TryGetVehicleController());
         }
 
+        public void RequestUpdate() => BindController(TryGetVehicleController());
+
         private CustomVehicleController TryGetVehicleController()
         {
-            if (Selection.activeGameObject != null && Selection.activeGameObject.TryGetComponent(out _controller))
+            if (Selection.activeGameObject != null)
             {
-                _serializedController = new SerializedObject(_controller);
-                _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
-                return _controller;            
+                if(Selection.activeGameObject.TryGetComponent(out _controller))
+                {
+                    if (Selection.objects.Length > 1)
+                    {
+                        Debug.Log("Multiobject editing isn't supported");
+                    }
+
+                    _serializedController = new SerializedObject(_controller);
+                    _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
+                    return _controller;
+                }
+                else if(Selection.activeGameObject.transform.root.TryGetComponent(out _controller))
+                {
+
+                    if (Selection.objects.Length > 1)
+                    {
+                        Debug.Log("Multiobject editing isn't supported");
+                    }
+
+                    _serializedController = new SerializedObject(_controller);
+                    _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
+                    return _controller;
+                }
             }
 
             if(_serializedController != null)
@@ -258,7 +270,7 @@ namespace Assets.VehicleControllerEditor
             _tiresSettingsEditor.SetVehicleController(so);
             _brakesSettingsEditor.SetVehicleController(so);
             _steeringSettingsEditor.SetVehicleController(so);
-            _drivetrainSettingsEditor.SetVehicleController(controller);
+            _drivetrainSettingsEditor.SetVehicleController(so);
             _extraVisualsSettingsEditor.SetVehicleController(so);
         }
 

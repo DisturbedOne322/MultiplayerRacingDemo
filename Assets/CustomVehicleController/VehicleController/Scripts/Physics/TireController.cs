@@ -116,16 +116,15 @@ namespace Assets.VehicleController
 
             if (_isFrontTire)
                 return CalculateTiresSidewaysForce(speed, speedPercent, steeringVel, steeringDir,
-                                                    _stats.FrontTiresSO.CorneringStiffness,
+                                                    _stats.FrontTiresSO.SteeringStiffness,
                                                     _stats.FrontTiresSO.SidewaysGripCurve,
                                                     _stats.FrontTiresSO.SidewaysSlipCurve);
             else
                 return CalculateTiresSidewaysForce(speed, speedPercent, steeringVel, steeringDir, 
-                                                    _stats.RearTiresSO.CorneringStiffness,
+                                                    _stats.RearTiresSO.SteeringStiffness,
                                                     _stats.RearTiresSO.SidewaysGripCurve,
                                                     _stats.RearTiresSO.SidewaysSlipCurve);
         }
-
         private Vector3 CalculateTiresSidewaysForce(float speed, float speedPercent, float steeringVel, Vector3 steeringDir, 
             float tireCorneringStiffness, AnimationCurve gripCurve, AnimationCurve slipCurve)
         {

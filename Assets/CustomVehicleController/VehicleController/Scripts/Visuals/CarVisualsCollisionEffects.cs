@@ -3,18 +3,10 @@ using UnityEngine.VFX;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Collision Effect")]
-    public class CarVisualsCollisionEffects : MonoBehaviour
+    public class CarVisualsCollisionEffects
     {
-        [SerializeField]
-        private VisualEffectAsset _continuousSparksVFXAsset;
-        [SerializeField]
-        private VisualEffectAsset _burstSparksVFXAsset;
-        [SerializeField]
-        private float _burstSparkCooldown = 0.5f;
+        private CollisionEffectParameters _parameters;
         private float _lastCollisionTime;
-        [SerializeField]
-        private Light _collisionLight;
 
         private Light _leftCollisionLight;
         private Light _rightCollisionLight;
@@ -27,76 +19,74 @@ namespace Assets.VehicleController
         private VisualEffect _leftSideSparks;
         private VisualEffect _rightSideSparks;
 
-        [SerializeField]
-        private CollisionHandler _collisionHandler;
-
-        // Start is called before the first frame update
-        void Start()
+        public CarVisualsCollisionEffects(CollisionEffectParameters parameters, Transform transform)
         {
-            if (_collisionHandler == null)
+            _parameters = parameters;
+
+            if (_parameters.CollisionHandler == null)
             {
                 Debug.LogWarning("You have Collision Effects, but Collision Handler is not assigned");
                 return;
             }
 
-            if (_continuousSparksVFXAsset == null)
+            if (_parameters.ContinuousSparksVFXAsset == null)
             {
                 Debug.LogWarning("You have Collision Effects, but Visual Effect Asset is not assigned");
                 return;
             }
 
-            if (_burstSparksVFXAsset == null)
+            if (_parameters.BurstSparksVFXAsset == null)
             {
                 Debug.LogWarning("You have Collision Effects, but Visual Effect Asset is not assigned");
                 return;
             }
 
 
-            GameObject parent = new ("Collision Effects");
+            GameObject parent = new("Collision Effects");
             parent.transform.parent = transform.root;
 
-            GameObject burstSparks = new ("Burst Sparks");
+            GameObject burstSparks = new("Burst Sparks");
             burstSparks.transform.parent = parent.transform;
             _burstSparks = burstSparks.AddComponent<VisualEffect>();
-            _burstSparks.visualEffectAsset = _burstSparksVFXAsset;
+            _burstSparks.visualEffectAsset = _parameters.BurstSparksVFXAsset;
             _burstSparks.Stop();
 
-            GameObject leftSideSparksGO = new ("Left Side Sparks");
+            GameObject leftSideSparksGO = new("Left Side Sparks");
             Vector3 scale = leftSideSparksGO.transform.localScale;
             scale.x *= -1;
             leftSideSparksGO.transform.localScale = scale;
             leftSideSparksGO.transform.parent = parent.transform;
             _leftSideSparks = leftSideSparksGO.AddComponent<VisualEffect>();
-            _leftSideSparks.visualEffectAsset = _continuousSparksVFXAsset;
+            _leftSideSparks.visualEffectAsset = _parameters.ContinuousSparksVFXAsset;
             _leftSideSparks.Stop();
 
-            GameObject rightSideSparksGO = new ("Right Side Sparks");
+            GameObject rightSideSparksGO = new("Right Side Sparks");
             rightSideSparksGO.transform.parent = parent.transform;
             _rightSideSparks = rightSideSparksGO.AddComponent<VisualEffect>();
-            _rightSideSparks.visualEffectAsset = _continuousSparksVFXAsset;
+            _rightSideSparks.visualEffectAsset = _parameters.ContinuousSparksVFXAsset;
             _rightSideSparks.Stop();
 
-            if (_collisionLight != null)
+            if (_parameters.CollisionLight != null)
             {
-                _collisionLight.enabled = false;
-                _leftCollisionLight = Instantiate(_collisionLight);
+                _parameters.CollisionLight.enabled = false;
+                _leftCollisionLight = GameObject.Instantiate(_parameters.CollisionLight);
                 _leftCollisionLight.transform.parent = leftSideSparksGO.transform;
-                _rightCollisionLight = Instantiate(_collisionLight);
+                _rightCollisionLight = GameObject.Instantiate(_parameters.CollisionLight);
                 _rightCollisionLight.transform.parent = rightSideSparksGO.transform;
             }
 
-            _collisionHandler.OnLeftSideCollisionStay += _collisionHandler_OnLeftSideCollisionStay;
-            _collisionHandler.OnLeftSideCollisionExit += _collisionHandler_OnLeftSideCollisionExit;
+            _parameters.CollisionHandler.OnLeftSideCollisionStay += _collisionHandler_OnLeftSideCollisionStay;
+            _parameters.CollisionHandler.OnLeftSideCollisionExit += _collisionHandler_OnLeftSideCollisionExit;
 
-            _collisionHandler.OnRightSideCollisionStay += _collisionHandler_OnRightSideCollisionStay;
-            _collisionHandler.OnRightSideCollisionExit += _collisionHandler_OnRightSideCollisionExit;
+            _parameters.CollisionHandler.OnRightSideCollisionStay += _collisionHandler_OnRightSideCollisionStay;
+            _parameters.CollisionHandler.OnRightSideCollisionExit += _collisionHandler_OnRightSideCollisionExit;
 
-            _collisionHandler.OnCollision += _collisionHandler_OnCollision;
+            _parameters.CollisionHandler.OnCollision += _collisionHandler_OnCollision;
         }
 
         private void _collisionHandler_OnCollision(Vector3 pos, int collAmount, float collSpeed)
         {
-            if (Time.time < _lastCollisionTime + _burstSparkCooldown)
+            if (Time.time < _lastCollisionTime + _parameters.BurstSparkCooldown)
                 return;
 
             _burstSparks.SetFloat("spawnAmount", collSpeed / 5f);
@@ -148,15 +138,15 @@ namespace Assets.VehicleController
                 pos, ref _rightLightSmDampVelocity, SM_DAMP_TIME);
         }
 
-        private void OnDestroy()
+        public void OnDestroy()
         {
-            _collisionHandler.OnLeftSideCollisionStay -= _collisionHandler_OnLeftSideCollisionStay;
-            _collisionHandler.OnLeftSideCollisionExit -= _collisionHandler_OnLeftSideCollisionExit;
+            _parameters.CollisionHandler.OnLeftSideCollisionStay -= _collisionHandler_OnLeftSideCollisionStay;
+            _parameters.CollisionHandler.OnLeftSideCollisionExit -= _collisionHandler_OnLeftSideCollisionExit;
 
-            _collisionHandler.OnRightSideCollisionStay -= _collisionHandler_OnRightSideCollisionStay;
-            _collisionHandler.OnRightSideCollisionExit -= _collisionHandler_OnRightSideCollisionExit;
+            _parameters.CollisionHandler.OnRightSideCollisionStay -= _collisionHandler_OnRightSideCollisionStay;
+            _parameters.CollisionHandler.OnRightSideCollisionExit -= _collisionHandler_OnRightSideCollisionExit;
 
-            _collisionHandler.OnCollision -= _collisionHandler_OnCollision;
+            _parameters.CollisionHandler.OnCollision -= _collisionHandler_OnCollision;
         }
     }
 

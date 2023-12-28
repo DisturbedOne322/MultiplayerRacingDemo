@@ -24,6 +24,8 @@ namespace Assets.VehicleController
         private WheelController[] _wheelControllers;
         private WheelController[] _steerWheelControllers;
 
+        private Rigidbody _rigidbody;
+
         public void CreateHierarchyAndInitializeController(SerializedObject serializedController,
             SerializedObject serializedCarVisuals, CustomVehicleController controller, MeshRenderer mesh)
         {
@@ -41,6 +43,8 @@ namespace Assets.VehicleController
             wheelControllersParent.transform.parent = wheelsParent.transform;
             wheelControllersParent.transform.localPosition = new (0, 0, 0);
             wheelControllersParent.transform.localRotation = Quaternion.identity;
+
+            _rigidbody = controller.GetComponent<Rigidbody>();
 
             CreateWheelsHierarcy(wheelsMeshesParent.transform, wheelControllersParent.transform);
             TryMoveUpControllers();
@@ -66,7 +70,7 @@ namespace Assets.VehicleController
             for (int i = 0; i < size; i++)
             {
                 _wheelTransforms[i].transform.parent = meshesParent.transform;
-                GameObject wheelObj = new (_wheelTransforms[i].name + "Controller");
+                GameObject wheelObj = new (_wheelTransforms[i].name + "_CONTROLLER");
                 wheelObj.transform.parent = controllerParent.transform;
                 wheelObj.transform.localPosition = _wheelTransforms[i].transform.localPosition;
                 wheelObj.transform.localRotation = Quaternion.identity;
@@ -227,7 +231,7 @@ namespace Assets.VehicleController
             serializedController.FindProperty("_centerOfGeometry").objectReferenceValue = _centerOfGeometry;
             serializedController.FindProperty("_centerOfMass").objectReferenceValue = _centerOfMass;
             serializedController.FindProperty("DrivetrainType").intValue = (int)_drivetrainType;
-
+            serializedController.FindProperty("_rigidbody").objectReferenceValue = _rigidbody;
             serializedController.ApplyModifiedProperties();
             serializedController.Update();
         }

@@ -3,30 +3,24 @@ using UnityEngine.VFX;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Tire Smoke Effect")]
-    public class CarVisualsTireSmoke : MonoBehaviour
+    public class CarVisualsTireSmoke
     {
-        public VisualEffectAssetType.Type _tireSmokeVisualEffectType;
+        private VisualEffect[] _tireSmokeVFXArray;
+        private ParticleSystem[] _tireSmokePSArray;
+
+        private EffectParameters _effectParameters;
 
         private Transform[] _wheelMeshes;
 
-        #region VFX
-        [SerializeField]
-        private VisualEffectAsset _tireSmokeVFX;
-        private VisualEffect[] _tireSmokeVFXArray;
-        #endregion
+        private Transform _transform;
 
-        #region ParticleSystem
-        [SerializeField]
-        private ParticleSystem _tireSmokeParticleSystem;
-        private ParticleSystem[] _tireSmokePSArray;
-        #endregion
-
-        public void InstantiateSmoke(Transform[] wheelMeshes)
+        public CarVisualsTireSmoke(Transform[] wheelMeshes, Transform transform, EffectParameters effectParameters)
         {
             _wheelMeshes = wheelMeshes;
+            _transform = transform;
+            _effectParameters  = effectParameters;
 
-            if (_tireSmokeVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            if (_effectParameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 TryInstantiateVFX(wheelMeshes);
             else
                 TryInstantiatePS(wheelMeshes);
@@ -34,7 +28,7 @@ namespace Assets.VehicleController
 
         private void TryInstantiateVFX(Transform[] wheelMeshes)
         {
-            if (_tireSmokeVFX == null)
+            if (_effectParameters.VFXAsset == null)
             {
                 Debug.LogWarning("You have Tire Smoke Effect, but Visual Effect Asset is not assigned");
                 return;
@@ -45,14 +39,14 @@ namespace Assets.VehicleController
             for (int i = 0; i < size; i++)
             {
                 _tireSmokeVFXArray[i] = wheelMeshes[i].gameObject.AddComponent<VisualEffect>();
-                _tireSmokeVFXArray[i].visualEffectAsset = _tireSmokeVFX;
+                _tireSmokeVFXArray[i].visualEffectAsset = _effectParameters.VFXAsset;
                 _tireSmokeVFXArray[i].Stop();
             }
         }
 
         private void TryInstantiatePS(Transform[] wheelMeshes)
         {
-            if (_tireSmokeParticleSystem == null)
+            if (_effectParameters.ParticleSystem == null)
             {
                 Debug.LogWarning("You have Tire Smoke Effect, but Particle System is not assigned");
                 return;
@@ -62,22 +56,22 @@ namespace Assets.VehicleController
             int size = wheelMeshes.Length;
             for (int i = 0; i < size; i++)
             {
-                _tireSmokePSArray[i] = Instantiate(_tireSmokeParticleSystem);
+                _tireSmokePSArray[i] = GameObject.Instantiate(_effectParameters.ParticleSystem);
                 _tireSmokePSArray[i].transform.parent = wheelMeshes[i];
                 _tireSmokePSArray[i].Stop();
             }
         }
 
-        public void DisplaySmokeVFX(bool display, int id, Vector3 rbVelocityNorm, float speed)
+        public void HandleSmokeEffects(bool display, int id, Vector3 rbVelocityNorm, float speed)
         {
-            if(_tireSmokeVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            if(_effectParameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 DisplayVFX(display, id, rbVelocityNorm, speed);
             else
                 DisplayPS(display, id, rbVelocityNorm, speed);         
         }
         private void DisplayVFX(bool display, int id, Vector3 rbVelocityNorm, float speed)
         {
-            if (_tireSmokeVFX == null)
+            if (_effectParameters.VFXAsset == null)
                 return;
 
             if (display)
@@ -86,7 +80,7 @@ namespace Assets.VehicleController
                 _tireSmokeVFXArray[id].SetVector3("position", _wheelMeshes[id].position);
                 if (speed < 1)
                 {
-                    _tireSmokeVFXArray[id].SetVector3("velocity", -transform.forward);
+                    _tireSmokeVFXArray[id].SetVector3("velocity", -_transform.forward);
                 }
                 else
                 {
@@ -100,12 +94,12 @@ namespace Assets.VehicleController
         }
         private void DisplayPS(bool display, int id, Vector3 rbVelocityNorm, float speed)
         {
-            if (_tireSmokeParticleSystem == null)
+            if (_effectParameters.ParticleSystem == null)
                 return;
             if (display)
             {
                 if(Mathf.Abs(speed) < 1)
-                    rbVelocityNorm = transform.forward;
+                    rbVelocityNorm = _transform.forward;
 
                 _tireSmokePSArray[id].transform.position = _wheelMeshes[id].position;
                 _tireSmokePSArray[id].transform.forward = -rbVelocityNorm;

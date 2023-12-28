@@ -58,7 +58,9 @@ namespace Assets.VehicleControllerEditor
             sb.AppendLine("");
             sb.AppendLine("The car is slowed down by increasing drag.");
             sb.AppendLine("");
-            sb.AppendLine("Recommended values [15:30].");
+            sb.AppendLine("The weight of the vehicle affects the stopping ability");
+            sb.AppendLine("");
+            sb.AppendLine("Recommended values [15000:30000].");
 
             _brakesForceField.tooltip = sb.ToString();
 

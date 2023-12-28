@@ -1,28 +1,30 @@
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Brake Lights Effect")]
-    public class CarVisualsBrakeLights : MonoBehaviour
+    public class CarVisualsBrakeLights
     {
-        [SerializeField]
-        private MeshRenderer[] _rearLightMeshes;
-
-        [SerializeField, ColorUsageAttribute(true, true)]
-        private Color _brakeColor;
-
-
+        private BrakeLightsParameters _parameters;
         private Material _defaultMaterial;
         private Color _defaultColor;
 
-        private void Awake()
+        public CarVisualsBrakeLights(BrakeLightsParameters parameters)
         {
-            _defaultMaterial = new Material(_rearLightMeshes[0].material);
+            _parameters = parameters;
+
+            if (_parameters.RearLightMeshes.Length == 0)
+            {
+                Debug.LogWarning("You have Brake Lights Effect, but MeshRenderer array is not assigned");
+                return;
+            }
+
+            _defaultMaterial = new Material(_parameters.RearLightMeshes[0].material);
             _defaultColor = _defaultMaterial.color;
 
-            for(int i = 0; i < _rearLightMeshes.Length; i++)
+            for (int i = 0; i < parameters.RearLightMeshes.Length; i++)
             {
-                _rearLightMeshes[i].material = _defaultMaterial;
+                parameters.RearLightMeshes[i].material = _defaultMaterial;
             }
         }
 
@@ -35,7 +37,7 @@ namespace Assets.VehicleController
 
             _lastState = braking;
 
-            _defaultMaterial.SetColor("_BaseColor", braking ? _brakeColor : _defaultColor);
+            _defaultMaterial.SetColor("_BaseColor", braking ? _parameters.BrakeColor : _defaultColor);
         }
     }
 }

@@ -30,7 +30,11 @@ namespace Assets.VehicleController
             this._transform = transform;
         }
 
-        public void AddDownforce() => _rb.AddForce(_stats.BodySO.Downforce * Mathf.Abs(_currentCarStats.SpeedInMsPerS) * -Vector3.up);
+        public void AddDownforce()
+        {
+            _rb.mass = _stats.BodySO.Mass;
+            _rb.AddForce(_stats.BodySO.Downforce * Mathf.Abs(_currentCarStats.SpeedInMsPerS) * -Vector3.up);
+        }
 
         public void AddCorneringForce()
         {
@@ -53,16 +57,6 @@ namespace Assets.VehicleController
             //car control becoming stiffer and higher speed effect
             _rb.angularDrag = 1 + _stats.BodySO.CorneringResistanceCurve.Evaluate(_currentCarStats.SpeedPercent) *
                               _stats.BodySO.CorneringResistanceStrength * (1 - _handbrakeEffect);
-        }
-
-        public void HandleAirDrag()
-        {
-            //since braking is performed by changing drag, refrain from changing it here
-            if (_currentCarStats.Braking)
-                return;
-
-            _rb.mass = _stats.BodySO.Mass;
-            _rb.drag = _currentCarStats.InAir ? _stats.BodySO.MidAirDrag : _stats.BodySO.ForwardDrag;
         }
 
         public void AutomaticFlipOverRecover(float flipOverRecoverTimerTotal)

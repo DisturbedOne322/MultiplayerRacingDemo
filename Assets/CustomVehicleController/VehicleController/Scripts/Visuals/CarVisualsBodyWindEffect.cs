@@ -3,72 +3,74 @@ using UnityEngine.VFX;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Body Aero Effect")]
-    public class CarVisualsBodyWindEffect : MonoBehaviour
+    public class CarVisualsBodyWindEffect
     {
-        [SerializeField]
-        private VisualEffectAssetType.Type _bodyWindVisualEffectType;
-        #region VFX
-        [SerializeField]
-        private VisualEffectAsset _bodyWindVisualEffectAsset;
         private VisualEffect _bodySpeedEffect;
 
         private const string SPEED_FIELD_NAME = "Speed";
         private const string SIDE_VELOCITY_FIELD_NAME = "Velocity";
-        #endregion
 
-        #region PS
-        [SerializeField]
-        private ParticleSystem _bodyWindParticleSystem;
         private ParticleSystem _bodyWindPSInstance;
-        #endregion
 
-        private void Awake()
+        private EffectParameters _parameters;
+
+        private Transform _transform;
+
+        public CarVisualsBodyWindEffect(EffectParameters parameters, Transform transform)
         {
-            if (_bodyWindVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            _parameters = parameters;
+            _transform = transform;
+
+            if (parameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 InitializeVFX();
             else
                 InitializePS();
+
         }
 
+        private void InitializeVFX()
+        {
+            if (_parameters.VFXAsset == null)
+                return;
+
+            GameObject parent = new("Body Speed Effect");
+            parent.transform.parent = this._transform.root;
+            parent.transform.localPosition = Vector3.zero;
+            parent.transform.localRotation = Quaternion.identity;
+            _bodySpeedEffect = parent.AddComponent<VisualEffect>();
+            _bodySpeedEffect.visualEffectAsset = _parameters.VFXAsset;
+        }
+
+        private void InitializePS()
+        {
+            if (_parameters.ParticleSystem == null)
+                return;
+
+            GameObject parent = new("Body Speed Effect");
+            parent.transform.parent = this._transform.root;
+            parent.transform.localPosition = Vector3.zero;
+            parent.transform.localRotation = Quaternion.identity;
+            _bodyWindPSInstance = GameObject.Instantiate(_parameters.ParticleSystem, parent.transform);
+        }
 
         public void HandleSpeedEffect(float speed, Vector3 rbVelocity)
         {
-            if(_bodyWindVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            if(_parameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 DisplayVFX(speed, rbVelocity);
             else
                 DisplayPS(speed, rbVelocity);
         }
 
-        private void InitializeVFX()
-        {
-            GameObject parent = new("Body Speed Effect");
-            parent.transform.parent = this.transform.root;
-            parent.transform.localPosition = Vector3.zero;
-            parent.transform.localRotation = Quaternion.identity;
-            _bodySpeedEffect = parent.AddComponent<VisualEffect>();
-            _bodySpeedEffect.visualEffectAsset = _bodyWindVisualEffectAsset;
-        }
-
-        private void InitializePS()
-        {
-            GameObject parent = new("Body Speed Effect");
-            parent.transform.parent = this.transform.root;
-            parent.transform.localPosition = Vector3.zero;
-            parent.transform.localRotation = Quaternion.identity;
-            _bodyWindPSInstance = Instantiate(_bodyWindParticleSystem, parent.transform);
-        }
-
         private void DisplayVFX(float speed, Vector3 rbVelocity)
         {
-            if (_bodyWindVisualEffectAsset == null)
+            if (_parameters.VFXAsset == null)
             {
                 Debug.LogWarning("You have Body Wind Effect, but Visual Effect Asset is not assigned");
                 return;
             }
 
             _bodySpeedEffect.SetFloat(SPEED_FIELD_NAME, speed);
-            _bodySpeedEffect.SetFloat(SIDE_VELOCITY_FIELD_NAME, transform.InverseTransformDirection(rbVelocity).x);
+            _bodySpeedEffect.SetFloat(SIDE_VELOCITY_FIELD_NAME, _transform.InverseTransformDirection(rbVelocity).x);
         }
 
         private void DisplayPS(float speed, Vector3 rbVelocity)

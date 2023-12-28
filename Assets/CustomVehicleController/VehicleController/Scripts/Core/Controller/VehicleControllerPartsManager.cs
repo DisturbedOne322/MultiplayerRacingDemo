@@ -47,7 +47,6 @@ namespace Assets.VehicleController
 
             _body.AddDownforce();
             _body.AddCorneringForce();
-            _body.HandleAirDrag();
 
             _engine.Accelerate(_driveWheelsArray, gasInput, breakInput, _currentCarStats.EngineRPM);
 

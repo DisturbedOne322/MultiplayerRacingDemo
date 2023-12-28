@@ -10,8 +10,6 @@ namespace Assets.VehicleController
         [Min(0)]
         public float ForwardDrag;
         [Min(0)]
-        public float MidAirDrag;
-        [Min(0)]
         public float Downforce;
         [Min(0)]
         public float CorneringResistanceStrength;

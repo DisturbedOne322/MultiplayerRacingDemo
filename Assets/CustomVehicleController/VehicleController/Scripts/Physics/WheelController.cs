@@ -110,7 +110,6 @@ namespace Assets.VehicleController
             if (!_hasContactWithGround)
                 return;
 
-
             ApplyBraking(_hitPosition);
             ApplySuspension(_springForce, _hitPosition);
             ApplySteering(_hitPosition, speed, speedPercent);
@@ -189,5 +188,10 @@ namespace Assets.VehicleController
 
         //for the editor, it uses it to define if the controller has been initialized
         public Transform GetWheelTransform() => _wheelMeshTransform;
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireSphere(_wheelMeshTransform.position, _wheelRadius);
+        }
     }
 }

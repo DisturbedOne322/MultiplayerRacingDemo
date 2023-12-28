@@ -18,7 +18,6 @@ namespace Assets.VehicleControllerEditor
         private ObjectField _bodyObjectField;
         private FloatField _massField;
         private FloatField _forwardDragField;
-        private FloatField _midAirDragField;
         private FloatField _downforceField;
         private FloatField _corneringResistanceField;
         private CurveField _corneringResistanceCurve;
@@ -29,7 +28,6 @@ namespace Assets.VehicleControllerEditor
         private const string BODY_OBJECT_FIELD = "BodyObjectField";
         private const string BODY_MASS_FIELD = "MassField";
         private const string BODY_FORWARD_DRAG_FIELD = "ForwardDragField";
-        private const string BODY_MID_AIR_DRAG_FIELD = "MidAirDragField";
         private const string BODY_DOWNFORCE_FIELD = "DownforceField";
         private const string BODY_CORNERING_RES_FIELD = "CorneringResistanceField";
         private const string BODY_CORNERING_RES_CURVE = "CorneringResistanceCurve";
@@ -117,9 +115,6 @@ namespace Assets.VehicleControllerEditor
             _forwardDragField = root.Q<FloatField>(BODY_FORWARD_DRAG_FIELD);
             _forwardDragField.RegisterValueChangedCallback(evt => { _forwardDragField.value = Mathf.Max(0, _forwardDragField.value); });
 
-            _midAirDragField = root.Q<FloatField>(BODY_MID_AIR_DRAG_FIELD);
-            _midAirDragField.RegisterValueChangedCallback(evt => { _midAirDragField.value = Mathf.Max(0, _midAirDragField.value); });
-
             _downforceField = root.Q<FloatField>(BODY_DOWNFORCE_FIELD);
             _downforceField.RegisterValueChangedCallback(evt => { _downforceField.value = Mathf.Max(0, _downforceField.value); });
 
@@ -179,7 +174,6 @@ namespace Assets.VehicleControllerEditor
             BindBodyCorneringResField(so);
             BindResCurve(so);
             BindForwardDragField(so);
-            BindMidAirDragField(so);
         }
 
         private void BindBodyMasFields(SerializedObject so)
@@ -202,11 +196,7 @@ namespace Assets.VehicleControllerEditor
             _forwardDragField.bindingPath = nameof(_bodySO.ForwardDrag);
             _forwardDragField.Bind(so);
         }
-        private void BindMidAirDragField(SerializedObject so)
-        {
-            _midAirDragField.bindingPath = nameof(_bodySO.MidAirDrag);
-            _midAirDragField.Bind(so);
-        }
+
         private void BindResCurve(SerializedObject so)
         {
             _corneringResistanceCurve.bindingPath = nameof(_bodySO.CorneringResistanceCurve);

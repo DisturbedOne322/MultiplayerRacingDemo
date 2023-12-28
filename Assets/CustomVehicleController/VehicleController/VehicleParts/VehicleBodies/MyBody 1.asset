@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82044c98410c19146b7592afd1d240e9, type: 3}
   m_Name: MyBody 1
   m_EditorClassIdentifier: 
-  Mass: 1300
+  Mass: 1000
   ForwardDrag: 0.05
-  MidAirDrag: 0
   Downforce: 100
-  CorneringResistanceStrength: 15
+  CorneringResistanceStrength: 3
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:

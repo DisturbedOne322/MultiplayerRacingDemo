@@ -4,41 +4,25 @@ using UnityEngine.VFX;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Anti Lag Effect")]
-    public class CarVisualsAntiLag : MonoBehaviour
+    public class CarVisualsAntiLag
     {
-        [SerializeField]
-        private VisualEffectAssetType.Type _antiLagVisualEffectType;
+        private CarVisualsExtra _carVisualsExtra;
 
-        [SerializeField]
-        private Transform[] _exhaustsPositionArray;
+        private AntiLagParameters _antiLagParameters;
 
-        #region PS
-        [SerializeField]
-        private ParticleSystem _antiLagParticleSystem;
         private ParticleSystem[] _antiLagParticleSystemArray;
-        #endregion
 
-        #region VFX
-        [SerializeField]
-        private VisualEffectAsset _antiLagVFXAsset;
         private VisualEffect[] _antiLagVFXArray;
-        #endregion
 
-        [SerializeField]
-        private float _backfireDelay = 0.25f;
-
-        [SerializeField]
         private CurrentCarStats _currentCarStats;
 
-        [SerializeField, Min(1)]
-        private int _minBackfireCount = 2;
-        [SerializeField]
-        private int _maxBackfireCount = 5;
-
-        private void Awake()
+        public CarVisualsAntiLag(CarVisualsExtra carVisualsExtra, CurrentCarStats currentCarStats, AntiLagParameters antiLagParameters)
         {
-            if(_antiLagVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            _carVisualsExtra = carVisualsExtra;
+            _currentCarStats = currentCarStats;
+            _antiLagParameters = antiLagParameters;
+
+            if (_antiLagParameters.AntiLagVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
             {
                 InitializeVFX();
             }
@@ -51,26 +35,65 @@ namespace Assets.VehicleController
             _currentCarStats.OnShiftedAntiLag += _currentCarStats_OnShiftedAntiLag;
         }
 
+        private void InstantiateAntiLagPS()
+        {
+            if (_antiLagParameters.AntiLagParticleSystem == null)
+            {
+                Debug.LogError("You have Anti-Lag Effect, but Particle System is not assigned"); ;
+                return;
+            }
+
+            int size = _antiLagParameters.ExhaustsPositionArray.Length;
+            _antiLagParticleSystemArray = new ParticleSystem[size];
+            for (int i = 0; i < size; i++)
+            {
+                _antiLagParticleSystemArray[i] = GameObject.Instantiate(_antiLagParameters.AntiLagParticleSystem);
+                _antiLagParticleSystemArray[i].Stop();
+                _antiLagParticleSystemArray[i].transform.parent = _antiLagParameters.ExhaustsPositionArray[i].transform;
+                _antiLagParticleSystemArray[i].transform.localPosition = new(0, 0, 0);
+                _antiLagParticleSystemArray[i].transform.localRotation = Quaternion.Euler(0, 0, 0);
+            }
+        }
+
+        private void InitializeVFX()
+        {
+            if (_antiLagParameters.AntiLagVFXAsset == null)
+            {
+                Debug.LogWarning("You have Anti Lag Effect, but Visual Effect Asset is not assigned");
+                return;
+            }
+
+            int size = _antiLagParameters.ExhaustsPositionArray.Length;
+
+            _antiLagVFXArray = new VisualEffect[size];
+
+            for (int i = 0; i < size; i++)
+            {
+                _antiLagVFXArray[i] = _antiLagParameters.ExhaustsPositionArray[i].gameObject.AddComponent<VisualEffect>();
+                _antiLagVFXArray[i].visualEffectAsset = _antiLagParameters.AntiLagVFXAsset;
+                _antiLagVFXArray[i].Stop();
+            }
+        }
 
         private void _currentCarStats_OnShiftedAntiLag()
         {
-            int size = _exhaustsPositionArray.Length;
+            int size = _antiLagParameters.ExhaustsPositionArray.Length;
             for (int i = 0; i < size; i++)
             {
-                StartCoroutine(PlayAntilagNTimes(1, i, _backfireDelay));
+                _carVisualsExtra.StartCoroutine(PlayAntilagNTimes(1, i, _antiLagParameters.BackfireDelay));
             }
         }
 
         private void _currentCarStats_OnAntiLag()
         {
-            int size = _exhaustsPositionArray.Length;
+            int size = _antiLagParameters.ExhaustsPositionArray.Length;
             for (int i = 0; i < size; i++)
             {
-                StartCoroutine(PlayAntilagNTimes(Random.Range(_minBackfireCount, _maxBackfireCount), i, _backfireDelay));
+                _carVisualsExtra.StartCoroutine(PlayAntilagNTimes(Random.Range(_antiLagParameters.MinBackfireCount, _antiLagParameters.MaxBackfireCount), i, _antiLagParameters.BackfireDelay));
             }
         }
 
-        private void OnDestroy()
+        public void OnDestroy()
         {
             _currentCarStats.OnAntiLag -= _currentCarStats_OnAntiLag;
             _currentCarStats.OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;
@@ -79,7 +102,7 @@ namespace Assets.VehicleController
         private IEnumerator PlayAntilagNTimes(int times, int id, float delay)
         {
 
-            if(_antiLagVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            if(_antiLagParameters.AntiLagVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
             {
                 for (int i = 0; i < times; i++)
                 {
@@ -97,46 +120,5 @@ namespace Assets.VehicleController
                 _antiLagParticleSystemArray[id].TriggerSubEmitter(0);
             }
         }
-
-        private void InstantiateAntiLagPS()
-        {
-            if (_antiLagParticleSystem == null)
-            {
-                Debug.LogError("You have Anti-Lag Effect, but Particle System is not assigned"); ;
-                return;
-            }
-
-            int size = _exhaustsPositionArray.Length;
-            _antiLagParticleSystemArray = new ParticleSystem[size];
-            for (int i = 0; i < size; i++)
-            {
-                _antiLagParticleSystemArray[i] = Instantiate(_antiLagParticleSystem);
-                _antiLagParticleSystemArray[i].Stop();
-                _antiLagParticleSystemArray[i].transform.parent = _exhaustsPositionArray[i].transform;
-                _antiLagParticleSystemArray[i].transform.localPosition = new (0, 0, 0);
-                _antiLagParticleSystemArray[i].transform.localRotation = Quaternion.Euler(0, 0, 0);
-            }
-        }
-
-        private void InitializeVFX()
-        {
-            if (_antiLagVFXAsset == null)
-            {
-                Debug.LogWarning("You have Anti Lag Effect, but Visual Effect Asset is not assigned");
-                return;
-            }
-
-            int size = _exhaustsPositionArray.Length;
-
-            _antiLagVFXArray = new VisualEffect[size];
-
-            for (int i = 0; i < size; i++)
-            {
-                _antiLagVFXArray[i] = _exhaustsPositionArray[i].gameObject.AddComponent<VisualEffect>();
-                _antiLagVFXArray[i].visualEffectAsset = _antiLagVFXAsset;
-                _antiLagVFXArray[i].Stop();
-            }
-        }
-
     }
 }

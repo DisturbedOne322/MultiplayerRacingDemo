@@ -235,7 +235,7 @@ namespace Assets.VehicleControllerEditor
 
         private void BindForwardTiresCorneringStiffnessField(SerializedObject so)
         {
-            _forwardTiresCorneringStiffnessField.bindingPath = nameof(_forwardTiresSO.CorneringStiffness);
+            _forwardTiresCorneringStiffnessField.bindingPath = nameof(_forwardTiresSO.SteeringStiffness);
             _forwardTiresCorneringStiffnessField.Bind(so);
         }
         private void BindForwardTireSidewaysGripCurve(SerializedObject so)
@@ -292,7 +292,7 @@ namespace Assets.VehicleControllerEditor
 
         private void BindRearTiresCorneringStiffnessField(SerializedObject so)
         {
-            _rearTiresCorneringStiffnessField.bindingPath = nameof(_rearTiresSO.CorneringStiffness);
+            _rearTiresCorneringStiffnessField.bindingPath = nameof(_rearTiresSO.SteeringStiffness);
             _rearTiresCorneringStiffnessField.Bind(so);
         }
         private void BindRearTiresSideGripCurve(SerializedObject so)
@@ -314,7 +314,7 @@ namespace Assets.VehicleControllerEditor
         private TiresSO CreateDefaultTires()
         {
             TiresSO defaultTires = ScriptableObject.CreateInstance<TiresSO>();
-            defaultTires.CorneringStiffness = 15;
+            defaultTires.SteeringStiffness = 15;
             defaultTires.ForwardGrip = 1.5f;
 
             AnimationCurve sidewaysGripCurve = new();

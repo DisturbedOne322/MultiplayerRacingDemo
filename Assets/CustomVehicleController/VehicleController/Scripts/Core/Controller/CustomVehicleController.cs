@@ -99,7 +99,7 @@ namespace Assets.VehicleController
 
         private void Update()
         {
-            _statsManager.ManageStats(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(),
+            _statsManager.ManageStats(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetHandbrakeInput(),
                             SidewaysSlippingThreshold, ForwardSlippingThreshold, DrivetrainType);
             _partsManager.AutomaticFlipOverRecover(AutomaticFlipOverRecoverEnabled, AutomaticFlipOverRecoverDelay);
             _partsManager.ManageTransmissionUpShift(_inputProvider.GetGearUpInput());

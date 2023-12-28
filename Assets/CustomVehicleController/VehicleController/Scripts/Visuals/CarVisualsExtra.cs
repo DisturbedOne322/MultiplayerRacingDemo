@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Assets.VehicleController
 {
@@ -24,13 +26,46 @@ namespace Assets.VehicleController
         #region Extra Effects
         [Header("Extra Visual Effects")]
         [SerializeField]
-        private CarVisualsBodyWindEffect _bodyWindEffect;
+        private bool _enableTireSmoke;
         [SerializeField]
-        private CarVisualsBrakeLights _brakeLights;
-        [SerializeField]
-        private CarVisualsSkidMarks _skidMarks;
-        [SerializeField]
+        private EffectParameters _tireSmokeParameters;
         private CarVisualsTireSmoke _tireSmoke;
+
+        [SerializeField]
+        private bool _enableTireTrails;
+        [SerializeField]
+        private TireTrailParameters _tireTrailParameters;
+        private CarVisualsTireTrails _tireTrails;
+
+        [SerializeField]
+        private bool _enableBrakeLightsEffect;
+        [SerializeField]
+        private BrakeLightsParameters _brakeLightsParameters;
+        private CarVisualsBrakeLights _brakeLightsEffect;
+
+        [SerializeField]
+        private bool _enableBodyAeroEffect;
+        [SerializeField]
+        private EffectParameters _bodyEffectParameters;
+        private CarVisualsBodyWindEffect _bodyWindEffect;
+
+        [SerializeField]
+        private bool _enableWingAeroEffect;
+        [SerializeField]
+        private WingAeroParameters _wingAeroParameters;
+        private CarVisualsWingAeroEffect _wingAeroEffect;
+
+        [SerializeField]
+        private bool _enableAntiLagEffect;
+        [SerializeField]
+        private AntiLagParameters _antiLagParameters;
+        private CarVisualsAntiLag _antiLagEffect;
+
+        [SerializeField]
+        private bool _enableCollisionEffects;
+        [SerializeField]
+        private CollisionEffectParameters _collisionEffectsParameters;
+        private CarVisualsCollisionEffects _collisionEffects;
         #endregion
 
         private const float DELAY_BEFORE_DISABLING_EFFECTS = 0.15f;
@@ -48,28 +83,47 @@ namespace Assets.VehicleController
 
         private void Update()
         {
-            if (_tireSmoke != null || _skidMarks != null)
+            if (_enableTireSmoke || _enableTireTrails)
                 ShouldEmitWheelEffects();
 
-            if (_tireSmoke != null)
+            if (_enableTireSmoke)
                 DisplaySmokeEffects();
-            if (_skidMarks != null)
+            if (_enableTireTrails)
                 DisplaySkidMarksEffects();
 
 
-            if (_bodyWindEffect != null)
+            if (_enableBodyAeroEffect)
                 _bodyWindEffect.HandleSpeedEffect(_currentCarStats.SpeedInMsPerS, _rigidbody.velocity);
-            if (_brakeLights != null)
-                _brakeLights.HandleRearLights(_currentCarStats.Braking);
-        }
 
+            if (_enableWingAeroEffect)
+                _wingAeroEffect.HandleWingAeroEffect();
+
+            if (_enableBrakeLightsEffect)
+                _brakeLightsEffect.HandleRearLights(_currentCarStats.Braking);
+        }
 
         private void TryInstantiateExtraEffects()
         {
-            if (_skidMarks != null)
-                _skidMarks.InstantiateTireTrailRenderers(_wheelMeshes, _wheelControllerArray);
-            if (_tireSmoke != null)
-                _tireSmoke.InstantiateSmoke(_wheelMeshes);
+            if(_enableTireSmoke)
+                _tireSmoke = new (_wheelMeshes, transform, _tireSmokeParameters);
+
+            if (_enableTireTrails)
+                _tireTrails = new(_wheelMeshes, _wheelControllerArray, _tireTrailParameters);
+
+            if (_enableAntiLagEffect)
+                _antiLagEffect = new(this, _currentCarStats, _antiLagParameters);
+
+            if (_enableBrakeLightsEffect)
+                _brakeLightsEffect = new(_brakeLightsParameters);
+
+            if (_enableBodyAeroEffect)
+                _bodyWindEffect = new(_bodyEffectParameters, transform);
+
+            if (_enableWingAeroEffect)
+                _wingAeroEffect = new(_wingAeroParameters, _currentCarStats);
+
+            if (_enableCollisionEffects)
+                _collisionEffects = new CarVisualsCollisionEffects(_collisionEffectsParameters, transform);
         }
 
         private void ShouldEmitWheelEffects()
@@ -94,20 +148,20 @@ namespace Assets.VehicleController
             {
                 if (!_wheelControllerArray[i].HasContactWithGround)
                 {
-                    _tireSmoke.DisplaySmokeVFX(false, i,
+                    _tireSmoke.HandleSmokeEffects(false, i,
                         _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
                     continue;
                 }
 
                 if (_shouldEmitArray[i])
                 {
-                    _tireSmoke.DisplaySmokeVFX(true, i,
+                    _tireSmoke.HandleSmokeEffects(true, i,
                         _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
                 }
                 else
                 {
                     bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-                    _tireSmoke.DisplaySmokeVFX(display, i,
+                    _tireSmoke.HandleSmokeEffects(display, i,
                         _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
                 }
             }
@@ -119,26 +173,26 @@ namespace Assets.VehicleController
             {
                 if (!_wheelControllerArray[i].HasContactWithGround)
                 {
-                    _skidMarks.DisplayTireTrail(false, i);
+                    _tireTrails.DisplayTireTrail(false, i);
                     continue;
                 }
 
                 if (_shouldEmitArray[i])
                 {
-                    _skidMarks.DisplayTireTrail(true, i);
+                    _tireTrails.DisplayTireTrail(true, i);
 
                 }
                 else
                 {
                     bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-                    _skidMarks.DisplayTireTrail(display, i);
+                    _tireTrails.DisplayTireTrail(display, i);
                 }
             }
         }
 
         public void CopyValuesFromEssentials()
         {
-            if(_carVisualsEssentials == null)
+            if (_carVisualsEssentials == null)
             {
                 Debug.LogError("CarVisualsEssentials is not assigned");
                 return;
@@ -149,6 +203,70 @@ namespace Assets.VehicleController
             _currentCarStats = _carVisualsEssentials.GetCurrentCarStats();
             _rigidbody = _carVisualsEssentials.GetRigidbody();
         }
+
+        private void OnDestroy()
+        {
+            if(_enableAntiLagEffect)
+                _antiLagEffect.OnDestroy();
+
+            if(_enableCollisionEffects)
+                _collisionEffects.OnDestroy();
+        }
+    }
+    [Serializable]
+    public class AntiLagParameters
+    {
+        public VisualEffectAssetType.Type AntiLagVisualEffectType;
+        public ParticleSystem AntiLagParticleSystem;
+        public VisualEffectAsset AntiLagVFXAsset;
+        public Transform[] ExhaustsPositionArray;
+        public float BackfireDelay = 0.25f;
+        [Min(1)]
+        public int MinBackfireCount = 2;
+        [Min(1)]
+        public int MaxBackfireCount = 5;
+    }
+
+    [Serializable]
+    public class EffectParameters
+    {
+        public VisualEffectAssetType.Type VisualEffectType;
+        public ParticleSystem ParticleSystem;
+        public VisualEffectAsset VFXAsset;
+    }
+
+    [Serializable]
+    public class BrakeLightsParameters
+    {
+        public MeshRenderer[] RearLightMeshes;
+        [ColorUsageAttribute(true, true)]
+        public Color BrakeColor;
+    }
+
+    [Serializable]
+    public class WingAeroParameters
+    {
+        public TrailRenderer[] TrailRendererArray;
+        public int MinSpeedMStoDisplay = 20;
+        [Range(0, 1f)]
+        public float MaxAlpha = 0.5f;
+    }
+
+    [Serializable]
+    public class TireTrailParameters
+    {
+        public TrailRenderer TrailRenderer;
+        public float VerticalOffset;
+    }
+
+    [Serializable]
+    public class CollisionEffectParameters
+    {
+        public VisualEffectAsset ContinuousSparksVFXAsset;
+        public float BurstSparkCooldown = 0.5f;
+        public VisualEffectAsset BurstSparksVFXAsset;
+        public Light CollisionLight;
+        public CollisionHandler CollisionHandler;
     }
 }
 

@@ -2,49 +2,42 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Wing Aero Effect")]
-    public class CarVisualsWingAeroEffect : MonoBehaviour
+    public class CarVisualsWingAeroEffect
     {
-        [SerializeField]
         private CurrentCarStats _currentCarStats;
+        private WingAeroParameters _parameters;
 
-        [SerializeField]
-        private TrailRenderer[] _trailRenderers;
         private int _size;
 
-        [SerializeField]
-        private int _minSpeedMStoDisplay = 20;
-
-        [SerializeField, Range(0,1f)]
-        private float _maxAlpha = 0.5f;
-
-        // Start is called before the first frame update
-        void Start()
+        public CarVisualsWingAeroEffect(WingAeroParameters parameters, CurrentCarStats currentCarStats)
         {
-            _size = _trailRenderers.Length;
+            _parameters = parameters;
+            _size = _parameters.TrailRendererArray.Length;
+            _currentCarStats = currentCarStats;
+
+            if (parameters.TrailRendererArray.Length == 0)
+                Debug.LogWarning("You have Wing Wind Effect, but TrailRenderer is not assigned");
         }
-
-        // Update is called once per frame
-        void Update()
+        
+        public void HandleWingAeroEffect()
         {
-            if(_currentCarStats.SpeedInMsPerS < _minSpeedMStoDisplay)
+            if (_currentCarStats.SpeedInMsPerS < _parameters.MinSpeedMStoDisplay)
             {
-                for(int i = 0; i < _size; i++)
+                for (int i = 0; i < _size; i++)
                 {
-                    _trailRenderers[i].emitting = false;
+                    _parameters.TrailRendererArray[i].emitting = false;
                 }
                 return;
             }
 
             for (int i = 0; i < _size; i++)
             {
-                if (!_trailRenderers[i].emitting)
-                    _trailRenderers[i].emitting = true;
+                if (!_parameters.TrailRendererArray[i].emitting)
+                    _parameters.TrailRendererArray[i].emitting = true;
 
-                Color currentColor = _trailRenderers[i].startColor;
-                currentColor.a = _maxAlpha *  _currentCarStats.SpeedPercent;
-                _trailRenderers[i].startColor = currentColor;
-                
+                Color currentColor = _parameters.TrailRendererArray[i].startColor;
+                currentColor.a = _parameters.MaxAlpha * _currentCarStats.SpeedPercent;
+                _parameters.TrailRendererArray[i].startColor = currentColor;
             }
         }
     }

@@ -150,11 +150,6 @@ namespace Assets.VehicleController
             return (true, averageHitPoint, normalAverage, averageDistance);
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawWireSphere(transform.parent.TransformPoint(_wheelPosition), _wheelRadius);
-        }
-
         private Vector3 GetSuspForce(Vector3 normal)
         {
             float stiffness = _isFrontSusp? _stats.FrontSuspensionSO.SpringStiffness: _stats.RearSuspensionSO.SpringStiffness;

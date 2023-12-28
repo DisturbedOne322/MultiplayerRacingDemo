@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df78e93dab8aa0d4889b0ff2a71015a3, type: 3}
   m_Name: MyBrakes
   m_EditorClassIdentifier: 
-  BrakesStrength: 30
+  BrakesStrength: 30000
   HandbrakeForce: 10000
   HandbrakeTractionPercent: 0

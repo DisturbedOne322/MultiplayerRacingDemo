@@ -86,7 +86,7 @@ namespace Assets.VehicleController
                 _gearsArray[i - 1] = i.ToString();
         }
 
-        public void ManageStats(float gasInput, float brakeInput, float sideSlipThreshold, float fwdSlipThreshold, PartTypes.DrivetrainType drivetrainType)
+        public void ManageStats(float gasInput, float brakeInput, bool handbrakeInput, float sideSlipThreshold, float fwdSlipThreshold, PartTypes.DrivetrainType drivetrainType)
         {
             UpdateDriveWheels(drivetrainType);
             float speedMS = Vector3.Dot(_rb.velocity, _transform.forward);
@@ -101,6 +101,8 @@ namespace Assets.VehicleController
 
             _currentCarStats.Accelerating = gasInput > 0;
             _currentCarStats.Braking = _transmission.DetermineBreakInput(gasInput, brakeInput) > 0;
+            _currentCarStats.HandbrakePulled = handbrakeInput;
+
             _currentCarStats.FlipperOver = Vector3.Dot(Vector3.up, _transform.up) < 0f;
 
             _currentCarStats.AccelerationForce = (_currentCarStats.SpeedInMsPerS - _lastSpeed) / Time.deltaTime;

@@ -71,9 +71,8 @@ namespace Assets.VehicleControllerEditor
             sb.AppendLine();
             sb.AppendLine("The higher the ratio the more torque the gear produces, but the top speed gets lower.");
             sb.AppendLine();
-            sb.AppendLine("Gear ratios must decrease as the gear number increases. When adding a new gear, its ratio will be approximated using the formula:");
-            sb.AppendLine();
-            sb.AppendLine("Gear N Ratio = Gear 0 Ratio * e^(-0.27f * N).");
+            sb.AppendLine("Gear ratios must decrease as the gear number increases.");
+
 
             _gearRatiosSlidersListView.tooltip = sb.ToString();
         }
@@ -129,7 +128,7 @@ namespace Assets.VehicleControllerEditor
                 _transmissionSO.GearRatiosList[indexLast] = 3.45f;
                 return;
             }
-            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(_calculator.GetChangeRate() * indexLast);           
+            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(_calculator.GetChangeRate() * indexLast);   
         }
 
         private void FindTransmissionFields()

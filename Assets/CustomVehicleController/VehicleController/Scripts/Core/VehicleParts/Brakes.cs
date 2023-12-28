@@ -45,7 +45,7 @@ namespace Assets.VehicleController
             brakeInput = _transmission.DetermineBreakInput(gasInput, brakeInput);
 
             if (brakeInput != 0)
-                _rb.drag = _stats.BrakesSO.BrakesStrength / (Mathf.Abs(_currentCarStats.SpeedInMsPerS) + 1);
+                _rb.drag = _stats.BrakesSO.BrakesStrength / _stats.BodySO.Mass / (Mathf.Abs(_currentCarStats.SpeedInMsPerS) + 1);
             else
                 _rb.drag = _stats.BodySO.ForwardDrag;
 
@@ -59,14 +59,13 @@ namespace Assets.VehicleController
 
         private void Handbrake(bool engaged, float gasInput)
         {
-            _currentCarStats.HandbrakePulled = engaged;
-
             float speedMultiplier = _currentCarStats.SpeedInMsPerS > 0 ? -1 : 1;
 
             if (engaged)
                 _rb.drag = _stats.BrakesSO.BrakesStrength / 2 / 
                     (Mathf.Abs(_currentCarStats.SidewaysForce) + 1) / 
                     (Mathf.Abs(_currentCarStats.AccelerationForce) + 1) / 
+                    _stats.BodySO.Mass / 
                     (Mathf.Abs(_currentCarStats.SpeedInMsPerS) + 1);
             else
                 _rb.drag = _stats.BodySO.ForwardDrag;   

@@ -33,19 +33,30 @@ namespace Assets.VehicleController
             return keys[keys.Length - 1].time;
         }
 
-
-
-        public float FindMaxHP()
+        public float FindMaxTorque()
         {
-            // Ensure there are at least two keys in the curve
-            if (TorqueCurve.keys.Length < 2)
-            {
-                Debug.LogWarning("Torque curve must have at least two keys.");
-                return float.MinValue;
-            }
+            float maxEngineRPM = FindMaxRpm();
 
             float maxTorque = float.MinValue;
+            float step = maxEngineRPM / 1000;
+
+            for (float t = FindMinRpm(); t < maxEngineRPM; t += step)
+            {
+                float value = TorqueCurve.Evaluate(t);
+                if (value > maxTorque)
+                {
+                    maxTorque = value;
+                }
+            }
+
+            return maxTorque;
+        }
+
+        public float FindPeakTorqueRPM()
+        {
             float maxEngineRPM = FindMaxRpm();
+
+            float maxTorque = float.MinValue;
             float step = maxEngineRPM / 1000;
 
             float maxTorqueRPM = 0;
@@ -59,6 +70,24 @@ namespace Assets.VehicleController
                     maxTorqueRPM = t;
                 }
             }
+
+            return maxTorqueRPM;
+        }
+
+        public float FindMaxHP()
+        {
+            // Ensure there are at least two keys in the curve
+            if (TorqueCurve.keys.Length < 2)
+            {
+                Debug.LogWarning("Torque curve must have at least two keys.");
+                return float.MinValue;
+            }
+
+
+
+            float maxTorque = FindMaxTorque();
+            float maxTorqueRPM = FindPeakTorqueRPM();
+            float maxEngineRPM = FindMaxRpm();
 
             float boost = 0;
             if(ForcedInductionSO != null)

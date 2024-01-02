@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ForcedInductionType: 1
   MaxTorqueBoostAmount: 500
-  TurboRPMPercentDelay: 0.3
-  TurboSpinTime: 2
+  TurboRPMPercentDelay: 0
+  TurboSpinTime: 1

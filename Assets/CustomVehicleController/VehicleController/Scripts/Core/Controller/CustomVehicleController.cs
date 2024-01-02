@@ -92,8 +92,8 @@ namespace Assets.VehicleController
                 CurrentCarStats.Reset();
 
             VehicleControllerInitializer initializer = new();
-            (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_wheelControllersArray, 
-                _steerWheelControllersArray, _rigidbody, transform, VehicleStats, _centerOfMass, 
+            (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_wheelControllersArray,
+                _steerWheelControllersArray, _rigidbody, transform, VehicleStats, _centerOfMass,
                 _centerOfGeometry, CurrentCarStats);
         }
 

@@ -22,7 +22,8 @@ namespace Assets.VehicleController
             _tireTrailArray = new TrailRenderer[size];
             _radiusArray = new float[size];
             _wheelMeshesArray = wheelMeshesArray;
-
+            _parameters.TrailRenderer.enabled = false;
+            _parameters.TrailRenderer.emitting = false;
             for (int i = 0; i < size; i++)
             {
                 _tireTrailArray[i] = GameObject.Instantiate(_parameters.TrailRenderer);
@@ -30,6 +31,8 @@ namespace Assets.VehicleController
                 _tireTrailArray[i].transform.forward = Vector3.up;
                 _tireTrailArray[i].transform.parent = wheelMeshesArray[i].parent;
                 _radiusArray[i] = wheelControllers[i].Radius;
+                _tireTrailArray[i].transform.position = _wheelMeshesArray[i].position - new Vector3(0, _radiusArray[i] - _parameters.VerticalOffset, 0);
+                _tireTrailArray[i].enabled = true;
             }
         }
 

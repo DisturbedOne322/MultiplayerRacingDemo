@@ -28,7 +28,7 @@ namespace Assets.VehicleController
         [SerializeField]
         private bool _enableTireSmoke;
         [SerializeField]
-        private EffectParameters _tireSmokeParameters;
+        private TireSmokeParameters _tireSmokeParameters;
         private CarVisualsTireSmoke _tireSmoke;
 
         [SerializeField]
@@ -46,7 +46,7 @@ namespace Assets.VehicleController
         [SerializeField]
         private bool _enableBodyAeroEffect;
         [SerializeField]
-        private EffectParameters _bodyEffectParameters;
+        private EffectTypeParameters _bodyEffectParameters;
         private CarVisualsBodyWindEffect _bodyWindEffect;
 
         [SerializeField]
@@ -105,7 +105,7 @@ namespace Assets.VehicleController
         private void TryInstantiateExtraEffects()
         {
             if(_enableTireSmoke)
-                _tireSmoke = new (_wheelMeshes, transform, _tireSmokeParameters);
+                _tireSmoke = new (_wheelMeshes, _wheelControllerArray, transform, _tireSmokeParameters);
 
             if (_enableTireTrails)
                 _tireTrails = new(_wheelMeshes, _wheelControllerArray, _tireTrailParameters);
@@ -216,9 +216,7 @@ namespace Assets.VehicleController
     [Serializable]
     public class AntiLagParameters
     {
-        public VisualEffectAssetType.Type AntiLagVisualEffectType;
-        public ParticleSystem AntiLagParticleSystem;
-        public VisualEffectAsset AntiLagVFXAsset;
+        public EffectTypeParameters VisualEffect;
         public Transform[] ExhaustsPositionArray;
         public float BackfireDelay = 0.25f;
         [Min(1)]
@@ -228,7 +226,14 @@ namespace Assets.VehicleController
     }
 
     [Serializable]
-    public class EffectParameters
+    public class TireSmokeParameters
+    {
+        public EffectTypeParameters VisualEffect;
+        public float VerticalOffset;
+    }
+
+    [Serializable]
+    public class EffectTypeParameters
     {
         public VisualEffectAssetType.Type VisualEffectType;
         public ParticleSystem ParticleSystem;
@@ -263,8 +268,9 @@ namespace Assets.VehicleController
     public class CollisionEffectParameters
     {
         public VisualEffectAsset ContinuousSparksVFXAsset;
-        public float BurstSparkCooldown = 0.5f;
+        public float HorizontalOffset;
         public VisualEffectAsset BurstSparksVFXAsset;
+        public float BurstSparkCooldown = 0.5f;
         public Light CollisionLight;
         public CollisionHandler CollisionHandler;
     }

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
   m_Name: MySuspension 5
   m_EditorClassIdentifier: 
-  SpringRestDistance: 0.25
-  SpringStiffness: 90000
-  SpringDampingStiffness: 1000
+  SpringRestDistance: 0.2
+  SpringStiffness: 150000
+  SpringDampingStiffness: 2000

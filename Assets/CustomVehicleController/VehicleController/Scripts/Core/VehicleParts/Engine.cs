@@ -28,7 +28,7 @@ namespace Assets.VehicleController
         public void Accelerate(WheelController[] driveWheelsArray, float gasInput, float breakInput, float rpm)
         {
             float input = _transmission.DetermineGasInput(gasInput, breakInput);
-            float boost = _forcedInduction.GetForcedInductionBoost(Mathf.Abs(input), _transmission.InShiftingCooldown());
+            float boost = _forcedInduction.GetForcedInductionBoost(Mathf.Abs(input));
 
             _totalTorque = CalculateAccelerationForce(input, rpm, boost);
 

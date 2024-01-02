@@ -109,8 +109,9 @@ namespace Assets.VehicleController
         {
             _leftSideSparks.Play();
             _leftSideSparks.SetVector3("position", pos);
+            _leftSideSparks.SetFloat("horizontalOffset", _parameters.HorizontalOffset);
 
-            if(Time.time + 0.1f > _lastCollisionTime)
+            if (Time.time + 0.1f > _lastCollisionTime)
             {
                 _leftCollisionLight.transform.position = pos;
             }
@@ -129,6 +130,7 @@ namespace Assets.VehicleController
         {
             _rightSideSparks.Play();
             _rightSideSparks.SetVector3("position", pos);
+            _rightSideSparks.SetFloat("horizontalOffset", _parameters.HorizontalOffset);
             if (Time.time + 0.1f > _lastCollisionTime)
             {
                 _rightCollisionLight.transform.position = pos;

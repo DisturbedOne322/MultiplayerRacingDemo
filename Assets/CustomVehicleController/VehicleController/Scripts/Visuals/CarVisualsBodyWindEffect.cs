@@ -12,11 +12,11 @@ namespace Assets.VehicleController
 
         private ParticleSystem _bodyWindPSInstance;
 
-        private EffectParameters _parameters;
+        private EffectTypeParameters _parameters;
 
         private Transform _transform;
 
-        public CarVisualsBodyWindEffect(EffectParameters parameters, Transform transform)
+        public CarVisualsBodyWindEffect(EffectTypeParameters parameters, Transform transform)
         {
             _parameters = parameters;
             _transform = transform;

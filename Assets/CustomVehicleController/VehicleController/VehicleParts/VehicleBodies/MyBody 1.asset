@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Mass: 1000
   ForwardDrag: 0.05
-  Downforce: 100
-  CorneringResistanceStrength: 3
+  Downforce: 10
+  CorneringResistanceStrength: 15
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:

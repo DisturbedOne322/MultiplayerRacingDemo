@@ -22,7 +22,7 @@ namespace Assets.VehicleController
             _currentCarStats = currentCarStats;
             _antiLagParameters = antiLagParameters;
 
-            if (_antiLagParameters.AntiLagVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            if (_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
             {
                 InitializeVFX();
             }
@@ -37,7 +37,7 @@ namespace Assets.VehicleController
 
         private void InstantiateAntiLagPS()
         {
-            if (_antiLagParameters.AntiLagParticleSystem == null)
+            if (_antiLagParameters.VisualEffect.ParticleSystem == null)
             {
                 Debug.LogError("You have Anti-Lag Effect, but Particle System is not assigned"); ;
                 return;
@@ -47,7 +47,7 @@ namespace Assets.VehicleController
             _antiLagParticleSystemArray = new ParticleSystem[size];
             for (int i = 0; i < size; i++)
             {
-                _antiLagParticleSystemArray[i] = GameObject.Instantiate(_antiLagParameters.AntiLagParticleSystem);
+                _antiLagParticleSystemArray[i] = GameObject.Instantiate(_antiLagParameters.VisualEffect.ParticleSystem);
                 _antiLagParticleSystemArray[i].Stop();
                 _antiLagParticleSystemArray[i].transform.parent = _antiLagParameters.ExhaustsPositionArray[i].transform;
                 _antiLagParticleSystemArray[i].transform.localPosition = new(0, 0, 0);
@@ -57,7 +57,7 @@ namespace Assets.VehicleController
 
         private void InitializeVFX()
         {
-            if (_antiLagParameters.AntiLagVFXAsset == null)
+            if (_antiLagParameters.VisualEffect.VFXAsset == null)
             {
                 Debug.LogWarning("You have Anti Lag Effect, but Visual Effect Asset is not assigned");
                 return;
@@ -70,7 +70,7 @@ namespace Assets.VehicleController
             for (int i = 0; i < size; i++)
             {
                 _antiLagVFXArray[i] = _antiLagParameters.ExhaustsPositionArray[i].gameObject.AddComponent<VisualEffect>();
-                _antiLagVFXArray[i].visualEffectAsset = _antiLagParameters.AntiLagVFXAsset;
+                _antiLagVFXArray[i].visualEffectAsset = _antiLagParameters.VisualEffect.VFXAsset;
                 _antiLagVFXArray[i].Stop();
             }
         }
@@ -102,7 +102,7 @@ namespace Assets.VehicleController
         private IEnumerator PlayAntilagNTimes(int times, int id, float delay)
         {
 
-            if(_antiLagParameters.AntiLagVisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+            if(_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
             {
                 for (int i = 0; i < times; i++)
                 {

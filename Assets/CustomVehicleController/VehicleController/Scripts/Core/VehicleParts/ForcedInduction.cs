@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Assets.VehicleController
@@ -10,12 +9,13 @@ namespace Assets.VehicleController
 
         private float _boostPercent;
 
+        private const float DROP_BOOST_TIME = 0.15f;
+        private float _lastShiftTime;
 
         public ForcedInduction(VehicleStats stats, CurrentCarStats currentCarStats, ITransmission transmission)
         {
             _stats = stats;
             _currentCarStats = currentCarStats;
-
             transmission.OnShifted += _transmission_OnShifted;
         }
 
@@ -30,12 +30,12 @@ namespace Assets.VehicleController
             
             if (_boostPercent == 1)
                 _currentCarStats.ShiftedAntiLagHappened();
-            
+
+            _lastShiftTime = Time.time;
         }
 
-        public float GetForcedInductionBoost(float gasInput, bool inCD)
+        public float GetForcedInductionBoost(float gasInput)
         {
-            //
             if (_stats.EngineSO.ForcedInductionSO == null)
                 return 0;
 
@@ -46,7 +46,7 @@ namespace Assets.VehicleController
                 case PartTypes.ForcedInductionType.Supercharger:
                     return GetSuperchargerBoost();
                 case PartTypes.ForcedInductionType.Turbocharger:
-                    return GetTurbochargerBoost(gasInput, inCD);
+                    return GetTurbochargerBoost(gasInput);
                 default:
                     return 0;
             }
@@ -71,10 +71,17 @@ namespace Assets.VehicleController
         }
 
         //turbocharger provides boost based on gas input
-        private float GetTurbochargerBoost(float gasInput, bool inCD)
+        private float GetTurbochargerBoost(float gasInput)
         {
-            if(inCD) 
-                gasInput = 0;
+            if(Time.time <= _lastShiftTime + DROP_BOOST_TIME)
+            {
+                _boostPercent -= Time.deltaTime / DROP_BOOST_TIME;
+
+                if (_boostPercent < 0)
+                    _boostPercent = 0;
+
+                return _boostPercent * _stats.EngineSO.ForcedInductionSO.MaxTorqueBoostAmount;
+            }
 
             if (gasInput > 0)
             {
@@ -85,14 +92,14 @@ namespace Assets.VehicleController
                 }
                 else
                 {
-                    _boostPercent -= Time.deltaTime  * _boostPercent;
+                    _boostPercent -= Time.deltaTime / DROP_BOOST_TIME * _boostPercent;
                 }
             }
             else
             {
-                if (_boostPercent >= 1 && !inCD)
+                if (_boostPercent >= 1)
                     _currentCarStats.AntiLagHappened();
-                _boostPercent -= Time.deltaTime * _boostPercent;
+                _boostPercent -= Time.deltaTime / DROP_BOOST_TIME * _boostPercent;
             }
 
             _boostPercent = Mathf.Clamp01(_boostPercent);

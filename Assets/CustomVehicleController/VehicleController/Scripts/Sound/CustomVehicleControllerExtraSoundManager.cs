@@ -27,6 +27,8 @@ namespace Assets.VehicleController
 
         [SerializeField, Min(1)]
         private float _forcedInductionMaxPitch = 1.5f;
+        [SerializeField, Min(0)]
+        private float _forcedInductionMaxVolume = 0.7f;
 
         private const float TIRE_VOLUME_INREASE_TIME = 0.75f;
 
@@ -73,18 +75,18 @@ namespace Assets.VehicleController
                 _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagMildSounds[UnityEngine.Random.Range(0, _extraSoundSO.AntiLagMildSounds.Length)], 1 / _carEffectsAudioSource.volume);
                 lastAntiLag = Time.time;
             }
+
+            if(_flutterSoundExists)
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound);
         }
 
         private void _currentCarStats_OnAntiLag()
         {
             if (_flutterSoundExists)
-            {
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound, 1 / _carEffectsAudioSource.volume);
-            }
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound);
+
             if (_antiLagSoundExists)
-            {
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagSound, 1 / _carEffectsAudioSource.volume);
-            }
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagSound);
         }
 
         private void InitializeForcedInductionSound()
@@ -164,7 +166,7 @@ namespace Assets.VehicleController
 
         private void HandleForcedInductionSound()
         {
-            _forcedInductionAudioSource.volume = _currentCarStats.ForcedInductionBoostPercent;
+            _forcedInductionAudioSource.volume = _currentCarStats.ForcedInductionBoostPercent * _forcedInductionMaxVolume;
             _forcedInductionAudioSource.pitch = _currentCarStats.ForcedInductionBoostPercent * _forcedInductionMaxPitch;
         }
 

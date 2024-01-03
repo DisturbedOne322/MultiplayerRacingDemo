@@ -123,7 +123,7 @@ namespace Assets.VehicleControllerEditor
 
             _closeWindowsButton.clicked += () => { _warningWindow.style.display = DisplayStyle.None; };
             _denyButton.clicked += () => { _warningWindow.style.display = DisplayStyle.None; };
-            _confirmButton.clicked += () => { _warningWindow.style.display = DisplayStyle.None; UnpackPrefab(Selection.activeGameObject); InitializeController(Selection.activeGameObject); };
+            _confirmButton.clicked += () => { _warningWindow.style.display = DisplayStyle.None; UnpackPrefab(Selection.activeGameObject); InitializeController(); };
         }
         private void SubscribeToInitializeButtonClickEvent()
         {
@@ -164,7 +164,7 @@ namespace Assets.VehicleControllerEditor
                 return;
             }
 
-            InitializeController(_mainEditor.GetController().gameObject);
+            InitializeController();
         }
 
         private void HandleWarningWindow(GameObject selectedGO)
@@ -174,27 +174,34 @@ namespace Assets.VehicleControllerEditor
         private void UnpackPrefab(GameObject selectedGO)
         {
             GameObject rootGO = selectedGO.transform.root.gameObject;
-            PrefabUtility.UnpackPrefabInstance(rootGO, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            PrefabUtility.UnpackPrefabInstance(rootGO, PrefabUnpackMode.Completely, InteractionMode.UserAction);        
         }
 
         private void AddComponents()
         {
             GameObject gameObject = Selection.activeGameObject;
 
-            gameObject.AddComponent<CustomVehicleController>();
+            Undo.IncrementCurrentGroup();
+            Undo.SetCurrentGroupName("Add Controller Component");
+            int undoID = Undo.GetCurrentGroup();
+
+            Undo.AddComponent<CustomVehicleController>(gameObject);
+
             if (_addColliderToggle.value)
-                gameObject.AddComponent<BoxCollider>();
+                Undo.AddComponent<BoxCollider>(gameObject);
 
             _addColliderToggle.value = false;
 
             _addComponentMenu.style.display = DisplayStyle.None;
 
             _mainEditor.RequestUpdate();
+
+
+            Undo.CollapseUndoOperations(undoID);
         }
 
-        private void InitializeController(GameObject selectedGO)
+        private void InitializeController()
         {
-            GameObject rootGO = selectedGO.transform.root.gameObject;
             ControllerHierarchyInitializer init = new ();
             Transform[] wheels = new Transform[4];
             wheels[0] = _frontLeftWheelObjField.value as Transform;

@@ -41,7 +41,7 @@ namespace Assets.VehicleControllerEditor
         private ControllerTiresSettingsEditor _tiresSettingsEditor;
         private ControllerBrakesSettingsEditor _brakesSettingsEditor;
         private ControllerSteeringSettingsEditor _steeringSettingsEditor;
-        private ControllerInitializerEditor _drivetrainSettingsEditor;
+        private ControllerInitializerEditor _initializerEditor;
 
         private ControllerExtraVisualsSettingsEditor _extraVisualsSettingsEditor;
         #endregion
@@ -72,7 +72,6 @@ namespace Assets.VehicleControllerEditor
             _controllerSelectedLabel = root.Q<Label>(CONTROLLER_SELECTED_LABEL);
 
             _lockWindowToggle = root.Q<Toggle>(LOCK_WINDOW_TOGGLE);
-            //_lockWindowToggle.RegisterValueChangedCallback(evt => { Debug.Log(_serializedController.FindProperty("m_Name")); BindController(TryGetVehicleController()); });
 
             _saveChangedToggle = root.Q<Toggle>(SAVE_CHANGES_TOGGLE_NAME);
 
@@ -84,19 +83,40 @@ namespace Assets.VehicleControllerEditor
             _tiresSettingsEditor = new ControllerTiresSettingsEditor(root, this);
             _brakesSettingsEditor = new ControllerBrakesSettingsEditor(root, this);
             _steeringSettingsEditor = new ControllerSteeringSettingsEditor(root, this);
-            _drivetrainSettingsEditor = new ControllerInitializerEditor(root, this);
+            _initializerEditor = new ControllerInitializerEditor(root, this);
             _extraVisualsSettingsEditor = new ControllerExtraVisualsSettingsEditor(root, this);
 
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
 
             BindController(TryGetVehicleController());
+            Undo.undoRedoPerformed += OnUndo;
+        }
 
+        private void OnUndo()
+        {
+            if (_serializedController == null)
+                return;
+            if (_serializedController.targetObject == null)
+            {
+                _controllerSelectedLabel.text = "CURRENTLY SELECTED VEHICLE CONTROLLER: NONE";
+                _controllerSelectedLabel.style.color = Color.red;
+                _initializerEditor.SetVehicleController(null);
+                return;
+            }
+
+            if (!_lockWindowToggle.value)
+                BindController(TryGetVehicleController());
+
+
+            _serializedController.Update();
+            SetVehicleControllerToSettingEditors(_serializedController);
         }
 
         private void OnDestroy()
         {
             OnWindowClosed?.Invoke();
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
+            Undo.undoRedoPerformed -= OnUndo;
         }
 
         private void EditorApplication_playModeStateChanged(PlayModeStateChange newState)
@@ -117,7 +137,7 @@ namespace Assets.VehicleControllerEditor
                 }
                 SaveController();
                 //update field values in the editor after play mode. even though the vehicle stats object gets reset, the fields in editor don't
-                SetVehicleControllerToSettingEditors(_serializedController, _controller);
+                SetVehicleControllerToSettingEditors(_serializedController);
             }
         }
 
@@ -195,25 +215,13 @@ namespace Assets.VehicleControllerEditor
         {
             if (Selection.activeGameObject != null)
             {
-                if(Selection.activeGameObject.TryGetComponent(out _controller))
+                if(Selection.activeGameObject.TryGetComponent(out _controller) || 
+                    Selection.activeGameObject.transform.root.TryGetComponent(out _controller))
                 {
                     if (Selection.objects.Length > 1)
                     {
                         Debug.Log("Multiobject editing isn't supported");
                     }
-
-                    _serializedController = new SerializedObject(_controller);
-                    _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
-                    return _controller;
-                }
-                else if(Selection.activeGameObject.transform.root.TryGetComponent(out _controller))
-                {
-
-                    if (Selection.objects.Length > 1)
-                    {
-                        Debug.Log("Multiobject editing isn't supported");
-                    }
-
                     _serializedController = new SerializedObject(_controller);
                     _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
                     return _controller;
@@ -247,7 +255,7 @@ namespace Assets.VehicleControllerEditor
 
         private void BindController(CustomVehicleController controller)
         {
-            SetVehicleControllerToSettingEditors(_serializedController, controller);
+            SetVehicleControllerToSettingEditors(_serializedController);
 
             if (controller != null)
             {
@@ -260,7 +268,7 @@ namespace Assets.VehicleControllerEditor
             _controllerSelectedLabel.style.color = Color.red;
         }
 
-        private void SetVehicleControllerToSettingEditors(SerializedObject so, CustomVehicleController controller)
+        private void SetVehicleControllerToSettingEditors(SerializedObject so)
         {
             _engineSettingsEditor.SetVehicleController(so);
             _transmissionSettingsEditor.SetVehicleController(so);
@@ -269,7 +277,7 @@ namespace Assets.VehicleControllerEditor
             _tiresSettingsEditor.SetVehicleController(so);
             _brakesSettingsEditor.SetVehicleController(so);
             _steeringSettingsEditor.SetVehicleController(so);
-            _drivetrainSettingsEditor.SetVehicleController(so);
+            _initializerEditor.SetVehicleController(so);
             _extraVisualsSettingsEditor.SetVehicleController(so);
         }
 

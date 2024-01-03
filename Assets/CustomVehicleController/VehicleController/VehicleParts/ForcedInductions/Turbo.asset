@@ -15,4 +15,4 @@ MonoBehaviour:
   ForcedInductionType: 1
   MaxTorqueBoostAmount: 500
   TurboRPMPercentDelay: 0
-  TurboSpinTime: 1
+  TurboSpinTime: 0.31

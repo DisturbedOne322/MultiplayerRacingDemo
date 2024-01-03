@@ -8,8 +8,6 @@ namespace Assets.VehicleController
         private CurrentCarStats _currentCarStats;
 
         private float _boostPercent;
-
-        private const float DROP_BOOST_TIME = 0.15f;
         private float _lastShiftTime;
 
         public ForcedInduction(VehicleStats stats, CurrentCarStats currentCarStats, ITransmission transmission)
@@ -73,9 +71,10 @@ namespace Assets.VehicleController
         //turbocharger provides boost based on gas input
         private float GetTurbochargerBoost(float gasInput)
         {
-            if(Time.time <= _lastShiftTime + DROP_BOOST_TIME)
+            float dropSpeed = _stats.EngineSO.ForcedInductionSO.TurboSpinTime / 5f;
+            if (Time.time <= _lastShiftTime + dropSpeed)
             {
-                _boostPercent -= Time.deltaTime / DROP_BOOST_TIME;
+                _boostPercent -= Time.deltaTime / dropSpeed;
 
                 if (_boostPercent < 0)
                     _boostPercent = 0;
@@ -92,14 +91,14 @@ namespace Assets.VehicleController
                 }
                 else
                 {
-                    _boostPercent -= Time.deltaTime / DROP_BOOST_TIME * _boostPercent;
+                    _boostPercent -= Time.deltaTime / dropSpeed * _boostPercent;
                 }
             }
             else
             {
                 if (_boostPercent >= 1)
                     _currentCarStats.AntiLagHappened();
-                _boostPercent -= Time.deltaTime / DROP_BOOST_TIME * _boostPercent;
+                _boostPercent -= Time.deltaTime / dropSpeed * _boostPercent;
             }
 
             _boostPercent = Mathf.Clamp01(_boostPercent);

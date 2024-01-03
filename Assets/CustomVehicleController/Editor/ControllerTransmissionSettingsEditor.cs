@@ -231,6 +231,7 @@ namespace Assets.VehicleControllerEditor
         {
             _gearRatiosSlidersListView.bindingPath = nameof(_transmissionSO.GearRatiosList);
             _gearRatiosSlidersListView.Bind(so);
+            
         }
 
         private void SubscribeToTransmissionSaveButtonClick()

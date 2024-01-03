@@ -29,17 +29,24 @@ namespace Assets.VehicleController
         public void CreateHierarchyAndInitializeController(SerializedObject serializedController,
             SerializedObject serializedCarVisuals, CustomVehicleController controller, MeshRenderer mesh)
         {
+            Undo.IncrementCurrentGroup();
+            Undo.SetCurrentGroupName("Create Controller Hierarchy");
+            int group = Undo.GetCurrentGroup();
+
             GameObject wheelsParent = new ("Wheels");
+            Undo.RegisterCreatedObjectUndo(wheelsParent, "Wheels Parent GO");
             wheelsParent.transform.parent = controller.transform.root;
             wheelsParent.transform.localPosition = new (0, 0, 0);
             wheelsParent.transform.localRotation = Quaternion.identity;
 
             GameObject wheelsMeshesParent = new ("WheelsMeshes");
+            Undo.RegisterCreatedObjectUndo(wheelsMeshesParent, "Wheel Meshes Parent GO");
             wheelsMeshesParent.transform.parent = wheelsParent.transform;
             wheelsMeshesParent.transform.localPosition = new (0, 0, 0);
             wheelsMeshesParent.transform.localRotation = Quaternion.identity;
 
             GameObject wheelControllersParent = new ("WheelControllers");
+            Undo.RegisterCreatedObjectUndo(wheelControllersParent, "Wheel Controllers Parent GO");
             wheelControllersParent.transform.parent = wheelsParent.transform;
             wheelControllersParent.transform.localPosition = new (0, 0, 0);
             wheelControllersParent.transform.localRotation = Quaternion.identity;
@@ -54,6 +61,7 @@ namespace Assets.VehicleController
 
             InjectCustomVehicleFields(serializedController);
             InjectCarVisualsFields(serializedCarVisuals);
+            Undo.CollapseUndoOperations(group);
         }
 
         public void SetTransforms(MeshRenderer mesh, Transform controller)
@@ -69,13 +77,16 @@ namespace Assets.VehicleController
 
             for (int i = 0; i < size; i++)
             {
-                _wheelTransforms[i].transform.parent = meshesParent.transform;
+                Undo.SetTransformParent(_wheelTransforms[i], meshesParent, $"Wheel Transform Before Hierarchy Change {i}");
+
                 GameObject wheelObj = new (_wheelTransforms[i].name + "_CONTROLLER");
+                Undo.RegisterCreatedObjectUndo(wheelObj, "Controller Game Object");
+
                 wheelObj.transform.parent = controllerParent.transform;
                 wheelObj.transform.localPosition = _wheelTransforms[i].transform.localPosition;
                 wheelObj.transform.localRotation = Quaternion.identity;
-                wheelObj.AddComponent<WheelController>();
-                _wheelControllers[i] = wheelObj.GetComponent<WheelController>();
+                
+                _wheelControllers[i] = wheelObj.AddComponent<WheelController>();
                 _wheelControllers[i].SetWheelMeshTransform(_wheelTransforms[i]);
             }
         }
@@ -86,14 +97,19 @@ namespace Assets.VehicleController
             _steerParentTransforms = new Transform[size];
             for (int i = 0; i < size; i++)
             {
-                GameObject steerWheelParent = new ("SteerWheel");
+                GameObject steerWheelParent = new ($"SteerWheel {i}");
+                Undo.RegisterCreatedObjectUndo(steerWheelParent, $"Steer Wheel Parent {i}");
+
                 steerWheelParent.transform.parent = meshesParent.transform;
                 steerWheelParent.transform.localPosition = _steerWheelTransforms[i].localPosition;
                 steerWheelParent.transform.localRotation = Quaternion.identity;
+
                 _steerWheelControllers[i] = _wheelControllers[i];
-                _steerWheelTransforms[i].transform.parent = steerWheelParent.transform;
+
+                Undo.SetTransformParent(_steerWheelTransforms[i], steerWheelParent.transform, $"{i} Steer Parenting");
                 _steerWheelTransforms[i].transform.localPosition = new (0, 0, 0);
                 _steerWheelTransforms[i].transform.localRotation = Quaternion.identity;
+
                 _steerParentTransforms[i] = steerWheelParent.transform;
             }
         }
@@ -136,7 +152,9 @@ namespace Assets.VehicleController
             else
                 position = Vector3.zero;
 
-            _centerOfMass = new GameObject("CenterOfMass").transform;
+            GameObject _centerOfMassGO = new GameObject("CenterOfMass");
+            _centerOfMass = _centerOfMassGO.transform;
+            Undo.RegisterCreatedObjectUndo(_centerOfMassGO, "Center Of Mass Creation");
             _centerOfMass.transform.parent = transform.root;
             _centerOfMass.transform.localPosition = position;    
             _centerOfMass.transform.localRotation = Quaternion.identity;
@@ -160,8 +178,9 @@ namespace Assets.VehicleController
             else
                 position = Vector3.zero;
 
-
-            _centerOfGeometry = new GameObject("CenterOfGeometry").transform;
+            GameObject _centerOfGeometryGO = new GameObject("CenterOfGeometry");
+            _centerOfGeometry = _centerOfGeometryGO.transform;
+            Undo.RegisterCreatedObjectUndo(_centerOfGeometryGO, "Center Of Geometry Creation");
             _centerOfGeometry.transform.parent = transform.root;
             _centerOfGeometry.transform.localPosition = position;
             _centerOfGeometry.transform.localRotation = Quaternion.identity;

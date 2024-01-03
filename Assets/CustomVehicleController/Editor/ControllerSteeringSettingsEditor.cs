@@ -52,6 +52,7 @@ namespace Assets.VehicleControllerEditor
             {
                 if (newValue < 0)
                     newValue = 0;
+                _steerAngleField.value = newValue;
                 _editor.GetSerializedController().FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue = newValue;
                 _editor.SaveController();
             }
@@ -62,6 +63,7 @@ namespace Assets.VehicleControllerEditor
             {
                 if (newValue < 0)
                     newValue = 0;
+                _steerSpeedField.value = newValue;
                 _editor.GetSerializedController().FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue = newValue;
                 _editor.SaveController();
             }

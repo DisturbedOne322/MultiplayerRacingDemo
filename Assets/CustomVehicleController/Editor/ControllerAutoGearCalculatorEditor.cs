@@ -45,7 +45,6 @@ namespace Assets.VehicleControllerEditor
             _firstGearRatioField.RegisterValueChangedCallback(evt => {
                 _firstGearRatioField.value =
                 evt.newValue < 1 ? 1 : evt.newValue; });
-
             _gearAmountField = root.Q<IntegerField>(GEAR_AMOUNT_FIELD_NAME);
             _gearAmountField.RegisterValueChangedCallback(evt =>
             {

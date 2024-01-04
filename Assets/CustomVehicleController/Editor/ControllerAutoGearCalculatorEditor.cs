@@ -15,17 +15,15 @@ namespace Assets.VehicleControllerEditor
         private VisualElement root;
 
         #region Auto Gear Ratio Calculator
-        private Toggle _autoCalculateToggle;
+        private Foldout _autoCalculateFoldout;
         private Slider _gearRatioChangeRateSlider;
         private FloatField _firstGearRatioField;
         private IntegerField _gearAmountField;
-        private VisualElement _calculatorParentElement;
 
-        private const string TOGGLE_NAME = "AutoCalculateGearsToggle";
+        private const string FOLDOUT_NAME = "AutoCalculateGearsFoldout";
         private const string GEAR_RATIO_CHANGE_SLIDER_NAME = "GearRatioChangeRateSlider";
         private const string FIRST_GEAR_FIELD_NAME = "GearRatioChangeRateSlider";
         private const string GEAR_AMOUNT_FIELD_NAME = "GearAmountField";
-        private const string PARENT_NAME = "CalculateGearsMenu";
         #endregion
 
         public ControllerAutoGearCalculatorEditor(VisualElement _root)
@@ -37,8 +35,7 @@ namespace Assets.VehicleControllerEditor
 
         private void FindFields()
         {
-            _autoCalculateToggle = root.Q<Toggle>(TOGGLE_NAME);
-            _autoCalculateToggle.RegisterValueChangedCallback(evt => _calculatorParentElement.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None);
+            _autoCalculateFoldout = root.Q<Foldout>(FOLDOUT_NAME);
 
             _gearRatioChangeRateSlider = root.Q<Slider>(GEAR_RATIO_CHANGE_SLIDER_NAME);
             _firstGearRatioField = root.Q<FloatField>(FIRST_GEAR_FIELD_NAME);
@@ -50,7 +47,6 @@ namespace Assets.VehicleControllerEditor
             {
                 _gearAmountField.value = evt.newValue < 1? 1 : evt.newValue;
             });
-            _calculatorParentElement = root.Q<VisualElement>(PARENT_NAME);
 
             SetTooltip();
         }
@@ -86,6 +82,6 @@ namespace Assets.VehicleControllerEditor
             return array;
         }
 
-        public float GetChangeRate() => _autoCalculateToggle.value ? _gearRatioChangeRateSlider.value : 0;
+        public float GetChangeRate() => _autoCalculateFoldout.value ? _gearRatioChangeRateSlider.value : 0;
     }
 }

@@ -5,11 +5,11 @@ namespace Assets.VehicleController
     [AddComponentMenu("CustomVehicleController/Input/Vehicle Controller Input Provider New")]
     public class VehicleControllerInputProviderNew : MonoBehaviour, IVehicleControllerInputProvider
     {
-        private PlayerInputActions _playerInput;
+        private PlayerVehicleInputActions _playerInput;
 
         private void Awake()
         {
-            _playerInput = new PlayerInputActions();
+            _playerInput = new PlayerVehicleInputActions();
             _playerInput.Enable();
         }
 

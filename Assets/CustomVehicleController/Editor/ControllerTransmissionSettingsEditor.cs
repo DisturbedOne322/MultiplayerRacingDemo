@@ -102,20 +102,16 @@ namespace Assets.VehicleControllerEditor
                 return gearInfoVisualElement;
             };
 
-            // The ListView calls this if a new item becomes visible when the item first appears on the screen, 
-            // when a user scrolls, or when the dimensions of the scroller are changed.
             Action<VisualElement, int> bindItem = (e, i) => BindItem(e as GearInfoVisualElement, i);
 
-            // Height used by the ListView to determine the total height of items in the list.
             int itemHeight = 27;
-
-
             _gearRatiosSlidersListView = root.Q<ListView>(TRANSMISSION_GEAR_RATIOS_SLIDERS_LIST_NAME);
             _gearRatiosSlidersListView.fixedItemHeight = itemHeight;
             _gearRatiosSlidersListView.makeItem = makeItem;
             _gearRatiosSlidersListView.bindItem = bindItem;
+
             _gearRatiosSlidersListView.reorderable = false;
-            _gearRatiosSlidersListView.style.flexGrow = 1f; // Fills the window, at least until the toggle below.
+            _gearRatiosSlidersListView.style.flexGrow = 1f;
             _gearRatiosSlidersListView.showBorder = true;
             _gearRatiosSlidersListView.itemsAdded += _gearRatiosSlidersListView_itemsAdded;
         }
@@ -128,7 +124,12 @@ namespace Assets.VehicleControllerEditor
                 _transmissionSO.GearRatiosList[indexLast] = 3.45f;
                 return;
             }
-            _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(_calculator.GetChangeRate() * indexLast);   
+            float changeRate = _calculator.GetChangeRate();
+
+            if (changeRate == 0)
+                _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[indexLast - 1];
+            else
+                _transmissionSO.GearRatiosList[indexLast] = _transmissionSO.GearRatiosList[0] * Mathf.Exp(_calculator.GetChangeRate() * indexLast);   
         }
 
         private void FindTransmissionFields()
@@ -230,8 +231,7 @@ namespace Assets.VehicleControllerEditor
         private void BindGearList(SerializedObject so)
         {
             _gearRatiosSlidersListView.bindingPath = nameof(_transmissionSO.GearRatiosList);
-            _gearRatiosSlidersListView.Bind(so);
-            
+            _gearRatiosSlidersListView.Bind(so);     
         }
 
         private void SubscribeToTransmissionSaveButtonClick()
@@ -291,15 +291,11 @@ namespace Assets.VehicleControllerEditor
 
         public class GearInfoVisualElement : VisualElement
         {
-            // Use Constructor when the ListView uses makeItem and returns a VisualElement to be 
-            // bound to a CharacterInfo data class.
             public GearInfoVisualElement()
             {
                 var root = new VisualElement();
                 root.style.flexDirection = FlexDirection.Row;
 
-                // The code below to style the ListView is for demo purpose. It's better to use a USS file
-                // to style a visual element. 
                 root.style.marginBottom = 3f;
                 root.style.paddingBottom = 3f;
                 root.style.paddingLeft = 3f;

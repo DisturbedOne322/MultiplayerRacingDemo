@@ -9,19 +9,20 @@ namespace Assets.VehicleController
     public class CustomVehicleControllerExtraSoundManager : MonoBehaviour
     {
         [SerializeField]
-        private CarExtraSoundsSO _extraSoundSO;
+        private CustomVehicleController _vehicleController;
+
         [SerializeField]
-        private CurrentCarStats _currentCarStats;
+        private CarExtraSoundsSO _extraSoundSO;
 
         private AudioSource _forcedInductionAudioSource;
         private AudioSource _tireSlipAudioSource;
         private AudioSource _carEffectsAudioSource;
         private AudioSource _windNoiseAudioSource;
 
-        [SerializeField]
+        [SerializeField, Header("   Optional")]
         private AudioMixerGroup _vehicleSoundAudioMixerGroup;
 
-        [SerializeField, Min(0)]
+        [SerializeField, Min(0), Space]
         private float _antiLagSoundCooldown = 1f;
         private float lastAntiLag;
 
@@ -30,15 +31,15 @@ namespace Assets.VehicleController
         [SerializeField, Min(0)]
         private float _forcedInductionMaxVolume = 0.7f;
 
-        private const float TIRE_VOLUME_INREASE_TIME = 0.75f;
+        [SerializeField, Min(0)]
+        private float _tireVolumeIncreaseTime = 0.75f;
 
-        [SerializeField]
-        private AudioClip _windNoise;
         [SerializeField, Range(0,1f)]
         private float _maxWindVolume = 0.3f;
 
         private bool _forcedInductionSoundInitialized = false;
         private bool _tireSlipSoundInitialized = false;
+        private bool _windNoiseSoundInitialized = false;
 
         private bool _flutterSoundExists = false;
         private bool _antiLagSoundExists = false;
@@ -56,46 +57,49 @@ namespace Assets.VehicleController
             InitializeTireSlipSound();
             InitializeCarEffectSound();
             InitializedWindNoise();
-            _currentCarStats.OnAntiLag += _currentCarStats_OnAntiLag;
-            _currentCarStats.OnShiftedAntiLag += _currentCarStats_OnShiftedAntiLag;
+            _vehicleController.GetCurrentCarStats().OnAntiLag += _currentCarStats_OnAntiLag;
+            _vehicleController.GetCurrentCarStats().OnShiftedAntiLag += _currentCarStats_OnShiftedAntiLag;
         }
 
         private void OnDestroy()
         {
-            if (_currentCarStats == null)
+            if (_vehicleController == null)
                 return;
-            _currentCarStats.OnAntiLag -= _currentCarStats_OnAntiLag;
-            _currentCarStats.OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;
+            _vehicleController.GetCurrentCarStats().OnAntiLag -= _currentCarStats_OnAntiLag;
+            _vehicleController.GetCurrentCarStats().OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;
         }
 
         private void _currentCarStats_OnShiftedAntiLag()
         {
             if (_antiLagMildSoundExists && Time.time > lastAntiLag + _antiLagSoundCooldown)
             {
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagMildSounds[UnityEngine.Random.Range(0, _extraSoundSO.AntiLagMildSounds.Length)], 1 / _carEffectsAudioSource.volume);
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagMildSounds
+                    [Random.Range(0, _extraSoundSO.AntiLagMildSounds.Length)], 
+                     Random.Range(0.8f, 1.2f));
                 lastAntiLag = Time.time;
             }
 
             if(_flutterSoundExists)
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound);
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound[Random.Range(0, _extraSoundSO.TurboFlutterSound.Length)]);
         }
 
         private void _currentCarStats_OnAntiLag()
         {
-            if (_flutterSoundExists)
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound);
+            if (_antiLagSoundExists && Time.time > lastAntiLag + _antiLagSoundCooldown)
+            {
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagSound[Random.Range(0, _extraSoundSO.AntiLagSound.Length)], Random.Range(0.8f,1.2f));
+                lastAntiLag = Time.time;
+            }
 
-            if (_antiLagSoundExists)
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.AntiLagSound);
+            if (_flutterSoundExists)
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.TurboFlutterSound[Random.Range(0, _extraSoundSO.TurboFlutterSound.Length)]);
         }
 
         private void InitializeForcedInductionSound()
         {
             if (_extraSoundSO.ForcedInductionSound == null)
-            {
-                Debug.LogWarning("No forced induction sound is assigned to scriptable object.");
                 return;
-            }
+
             _forcedInductionAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             _forcedInductionAudioSource.clip = _extraSoundSO.ForcedInductionSound;
             _forcedInductionAudioSource.volume = 0;
@@ -110,10 +114,8 @@ namespace Assets.VehicleController
         private void InitializeTireSlipSound()
         {
             if (_extraSoundSO.TireSlipSound == null)
-            {
-                Debug.LogWarning("No tire slip sound is assigned to scriptable object.");
                 return;
-            }
+
             _tireSlipAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             _tireSlipAudioSource.clip = _extraSoundSO.TireSlipSound;
             _tireSlipAudioSource.volume = 0;
@@ -139,13 +141,18 @@ namespace Assets.VehicleController
 
         private void InitializedWindNoise()
         {
+            if (_extraSoundSO.WindNoise == null)
+                return;
+
             _windNoiseAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
-            _windNoiseAudioSource.clip = _windNoise;
+            _windNoiseAudioSource.clip = _extraSoundSO.WindNoise;
             _windNoiseAudioSource.volume = 0;
             SetupLoopingAudioSource(_windNoiseAudioSource);
 
             if (_vehicleSoundAudioMixerGroup != null)
                 _windNoiseAudioSource.outputAudioMixerGroup = _vehicleSoundAudioMixerGroup;
+
+            _windNoiseSoundInitialized = true;
         }
 
         private void SetupLoopingAudioSource(AudioSource source)
@@ -160,19 +167,19 @@ namespace Assets.VehicleController
                 HandleForcedInductionSound();
             if (_tireSlipSoundInitialized)
                 HandleTireSlipSound();
-            if (_windNoise != null)
+            if (_windNoiseSoundInitialized)
                 HandleWindNoise();
         }
 
         private void HandleForcedInductionSound()
         {
-            _forcedInductionAudioSource.volume = _currentCarStats.ForcedInductionBoostPercent * _forcedInductionMaxVolume;
-            _forcedInductionAudioSource.pitch = _currentCarStats.ForcedInductionBoostPercent * _forcedInductionMaxPitch;
+            _forcedInductionAudioSource.volume = _vehicleController.GetCurrentCarStats().ForcedInductionBoostPercent * _forcedInductionMaxVolume;
+            _forcedInductionAudioSource.pitch = _vehicleController.GetCurrentCarStats().ForcedInductionBoostPercent * _forcedInductionMaxPitch;
         }
 
         private void HandleTireSlipSound()
         {
-            if (_currentCarStats.DriveWheelLostContact)
+            if (_vehicleController.GetCurrentCarStats().DriveWheelLostContact)
             {
                 _tireSlipAudioSource.volume = 0;
                 if (_tireSlipAudioSource.isPlaying)
@@ -181,20 +188,20 @@ namespace Assets.VehicleController
                 return;
             }
 
-            if (_currentCarStats.IsCarSlipping)
+            if (_vehicleController.GetCurrentCarStats().IsCarSlipping)
             {
                 if (!_tireSlipAudioSource.isPlaying)
                 {
                     _tireSlipAudioSource.Play();
                 }
-                _tireSlipAudioSource.volume += Time.deltaTime / (TIRE_VOLUME_INREASE_TIME);
+                _tireSlipAudioSource.volume += Time.deltaTime / (_tireVolumeIncreaseTime);
             }
             else
             {
                 if (!_tireSlipAudioSource.isPlaying)
                     return;
 
-                _tireSlipAudioSource.volume -= Time.deltaTime / (TIRE_VOLUME_INREASE_TIME / 3);
+                _tireSlipAudioSource.volume -= Time.deltaTime / (_tireVolumeIncreaseTime / 3);
 
                 if (_tireSlipAudioSource.volume < 0.01f)
                     _tireSlipAudioSource.Stop();
@@ -205,7 +212,7 @@ namespace Assets.VehicleController
 
         private void HandleWindNoise()
         {
-            float volume = Mathf.Clamp01(_currentCarStats.SpeedInMsPerS / 100);
+            float volume = Mathf.Clamp01(_vehicleController.GetCurrentCarStats().SpeedInMsPerS / 100);
             //more gradual volume increase
             volume *= volume;
             volume *= _maxWindVolume;

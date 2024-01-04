@@ -3,20 +3,20 @@ using UnityEngine.Audio;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Sound/Car Engine Sound Manager")]
-    public class CarEngineSoundManager : MonoBehaviour
+    [AddComponentMenu("CustomVehicleController/Sound/Vehicle Engine Sound Manager")]
+    public class VehicleEngineSoundManager : MonoBehaviour
     {
         [SerializeField]
-        public CarEngineSoundSO _engineSoundsSO;
-        [SerializeField]
-        private CurrentCarStats _currentCarStats;
+        private CustomVehicleController _vehicleController;
 
-        [SerializeField,Space]
+        [SerializeField]
+        public CarEngineSoundSO _engineSoundsSO;
+
+
+        [SerializeField,Space, Header(" Optional fields")]
         private AudioMixerGroup _vehicleSoundAudioMixerGroup;
 
         private AudioSource[] _engineAudioSources;
-        [SerializeField]
-        private EngineSO _engineSO;
         private float _minRPM;
 
         [SerializeField]
@@ -24,25 +24,23 @@ namespace Assets.VehicleController
 
         private bool _engineSoundInitialized = false;
 
-        private void Awake()
+        private void Start()
         {
             if (_engineSoundsSO == null)
             {
                 Debug.LogWarning("No car sound SO assigned on " + gameObject.name);
                 return;
             }
-            if(_currentCarStats == null)
+            if (_vehicleController == null)
             {
-                Debug.LogWarning("No current car stats assigned on " + gameObject.name);
+                Debug.LogWarning("No Vehicle Controller assigned on " + gameObject.name);
                 return;
             }
 
-            _minRPM = _engineSO.MinRPM;
+            _minRPM = _vehicleController.VehicleStats.EngineSO.MinRPM;
 
             InitializeEngineSound();
         }
-
-
 
         private void Update()
         {
@@ -65,15 +63,20 @@ namespace Assets.VehicleController
             int size = _engineAudioSources.Length;
             for (int i = 0; i < size; i++)
             {
-                _engineAudioSources[i] = engineAudioHolder.AddComponent<AudioSource>();
-                _engineAudioSources[i].clip = _engineSoundsSO.EngineRPMRangeArray[i];
-                _engineAudioSources[i].outputAudioMixerGroup = _vehicleSoundAudioMixerGroup;
-                _engineAudioSources[i].volume = 0;
-                _engineAudioSources[i].loop = true;
-                _engineAudioSources[i].Play();
+                CreateEngineAudioSource(i, engineAudioHolder);
             }
 
             _engineSoundInitialized = true;
+        }
+
+        private void CreateEngineAudioSource(int i, GameObject parent)
+        {
+            _engineAudioSources[i] = parent.AddComponent<AudioSource>();
+            _engineAudioSources[i].clip = _engineSoundsSO.EngineRPMRangeArray[i];
+            _engineAudioSources[i].outputAudioMixerGroup = _vehicleSoundAudioMixerGroup;
+            _engineAudioSources[i].volume = 0;
+            _engineAudioSources[i].loop = true;
+            _engineAudioSources[i].Play();
         }
 
         private void HandleEngineSound()
@@ -81,20 +84,15 @@ namespace Assets.VehicleController
             int size = _engineAudioSources.Length;
             for (int i = 0; i < size; i++)
             {
-                float rpmDifference = (i + 1) * _engineSoundsSO.RPMStep - _currentCarStats.EngineRPM + _minRPM - 5;
+                float rpmDifference = (i + 1) * _engineSoundsSO.RPMStep - _vehicleController.GetCurrentCarStats().EngineRPM + _minRPM - 5;
                 if (rpmDifference <= _engineSoundsSO.RPMStep * 2 && rpmDifference >= -_engineSoundsSO.RPMStep * 2)
                 {
-                    //if (!_engineAudioSources[i].isPlaying)
-                    //    _engineAudioSources[i].Play();
                     _engineAudioSources[i].volume = _engineSoundsSO.RPMStep / Mathf.Abs(rpmDifference);
-                    _engineAudioSources[i].pitch = (_currentCarStats.EngineRPM) / ((i + 2) * _engineSoundsSO.RPMStep) * _engineSoundPitch;
+                    _engineAudioSources[i].pitch = (_vehicleController.GetCurrentCarStats().EngineRPM) / 
+                        ((i + 2) * _engineSoundsSO.RPMStep) * _engineSoundPitch;
                 }
                 else
-                {
                     _engineAudioSources[i].volume = 0;
-                    //if (_engineAudioSources[i].isPlaying)
-                    //    _engineAudioSources[i].Stop();
-                }
             }
         }
     }

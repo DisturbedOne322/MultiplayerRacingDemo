@@ -11,6 +11,8 @@ namespace Assets.VehicleController
         private bool _handbrakeInput;
         private float _horizontalInput;
 
+        private bool _nitroBoostInput;
+
         private float _pitchInput;
         private float _yawInput;
         private float _rollInput;
@@ -25,6 +27,8 @@ namespace Assets.VehicleController
             _brakeInput = Input.GetKey(KeyCode.S) ? 1 : 0;
             _handbrakeInput = Input.GetKey(KeyCode.Space);
             _horizontalInput = Input.GetAxis("Horizontal");
+
+            _nitroBoostInput = Input.GetKey(KeyCode.LeftAlt);
 
             _pitchInput = Input.GetAxis("Vertical");
 
@@ -54,7 +58,9 @@ namespace Assets.VehicleController
 
         public float GetYawInput() => _yawInput;
 
-        public float GetRollInput() => _rollInput;  
+        public float GetRollInput() => _rollInput;
+
+        public bool GetNitroBoostInput() => _nitroBoostInput;
     }
 }
 

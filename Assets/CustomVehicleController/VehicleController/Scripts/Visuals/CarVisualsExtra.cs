@@ -269,7 +269,10 @@ namespace Assets.VehicleController
     {
         public VisualEffectAsset ContinuousSparksVFXAsset;
         public float HorizontalOffset;
+        [Min(0.1f)]
+        public float SparksSpawnAreaHeight;
         public VisualEffectAsset BurstSparksVFXAsset;
+        [Min(0)]
         public float BurstSparkCooldown = 0.5f;
         public Light CollisionLight;
         public CollisionHandler CollisionHandler;

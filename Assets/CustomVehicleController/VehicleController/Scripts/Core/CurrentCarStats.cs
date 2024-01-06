@@ -15,6 +15,8 @@ namespace Assets.VehicleController
             CurrentGear = "N";
             Accelerating = false;
             Braking = false;
+            NitroBoosting = false;
+            NitroPercentLeft = 1f;
             AccelerationForce = 0;
             SidewaysForce = 0;
             Reversing = false;
@@ -54,6 +56,8 @@ namespace Assets.VehicleController
         }
         public bool Accelerating;
         public bool Braking;
+        public bool NitroBoosting;
+        public float NitroPercentLeft;
         public float AccelerationForce;
         public float SidewaysForce;
         public bool Reversing;

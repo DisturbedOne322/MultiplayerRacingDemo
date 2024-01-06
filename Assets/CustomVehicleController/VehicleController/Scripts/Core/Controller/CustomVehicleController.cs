@@ -108,7 +108,7 @@ namespace Assets.VehicleController
 
         private void FixedUpdate()
         {
-            _partsManager.ManageCarParts(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(),
+            _partsManager.ManageCarParts(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetNitroBoostInput(),
                 _inputProvider.GetHorizontalInput(), _inputProvider.GetHandbrakeInput(), 
                 SteerAngle, SteerSpeed, TransmissionType, DrivetrainType, SuspensionSimulationPrecision);
 
@@ -172,6 +172,7 @@ namespace Assets.VehicleController
         public void InvokeFieldChanged() => OnFieldChanged?.Invoke();
 #endif
         public EngineSO EngineSO;
+        public NitrousSO NitrousSO;
         public TransmissionSO TransmissionSO;
         public TiresSO FrontTiresSO;
         public TiresSO RearTiresSO;

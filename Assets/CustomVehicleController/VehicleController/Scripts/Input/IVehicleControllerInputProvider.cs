@@ -4,6 +4,8 @@ public interface IVehicleControllerInputProvider
 
     public float GetBrakeInput();
 
+    public bool GetNitroBoostInput();
+
     public bool GetHandbrakeInput();
 
     public float GetHorizontalInput();

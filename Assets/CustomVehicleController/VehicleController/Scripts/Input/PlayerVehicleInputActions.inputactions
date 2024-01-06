@@ -1,5 +1,5 @@
 {
-    "name": "PlayerInputActions",
+    "name": "PlayerVehicleInputActions",
     "maps": [
         {
             "name": "Player",
@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "NitrousBoostInput",
+                    "type": "Button",
+                    "id": "61e59642-ae52-4f8d-b533-6d609a1de107",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -318,6 +327,28 @@
                     "action": "RollInput",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "d3d45795-f899-49b2-bd43-9bfb63483ea3",
+                    "path": "<Keyboard>/leftAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NitrousBoostInput",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18676485-207d-4c7c-8390-613c0b184ee4",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NitrousBoostInput",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

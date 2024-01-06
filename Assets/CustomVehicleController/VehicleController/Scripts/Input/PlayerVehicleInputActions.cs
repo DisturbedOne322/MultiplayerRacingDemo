@@ -107,6 +107,15 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""NitrousBoostInput"",
+                    ""type"": ""Button"",
+                    ""id"": ""61e59642-ae52-4f8d-b533-6d609a1de107"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -340,6 +349,28 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
                     ""action"": ""RollInput"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d3d45795-f899-49b2-bd43-9bfb63483ea3"",
+                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NitrousBoostInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""18676485-207d-4c7c-8390-613c0b184ee4"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NitrousBoostInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -357,6 +388,7 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
         m_Player_PitchInput = m_Player.FindAction("PitchInput", throwIfNotFound: true);
         m_Player_YawInput = m_Player.FindAction("YawInput", throwIfNotFound: true);
         m_Player_RollInput = m_Player.FindAction("RollInput", throwIfNotFound: true);
+        m_Player_NitrousBoostInput = m_Player.FindAction("NitrousBoostInput", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -427,6 +459,7 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
     private readonly InputAction m_Player_PitchInput;
     private readonly InputAction m_Player_YawInput;
     private readonly InputAction m_Player_RollInput;
+    private readonly InputAction m_Player_NitrousBoostInput;
     public struct PlayerActions
     {
         private @PlayerVehicleInputActions m_Wrapper;
@@ -440,6 +473,7 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
         public InputAction @PitchInput => m_Wrapper.m_Player_PitchInput;
         public InputAction @YawInput => m_Wrapper.m_Player_YawInput;
         public InputAction @RollInput => m_Wrapper.m_Player_RollInput;
+        public InputAction @NitrousBoostInput => m_Wrapper.m_Player_NitrousBoostInput;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -476,6 +510,9 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
             @RollInput.started += instance.OnRollInput;
             @RollInput.performed += instance.OnRollInput;
             @RollInput.canceled += instance.OnRollInput;
+            @NitrousBoostInput.started += instance.OnNitrousBoostInput;
+            @NitrousBoostInput.performed += instance.OnNitrousBoostInput;
+            @NitrousBoostInput.canceled += instance.OnNitrousBoostInput;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -507,6 +544,9 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
             @RollInput.started -= instance.OnRollInput;
             @RollInput.performed -= instance.OnRollInput;
             @RollInput.canceled -= instance.OnRollInput;
+            @NitrousBoostInput.started -= instance.OnNitrousBoostInput;
+            @NitrousBoostInput.performed -= instance.OnNitrousBoostInput;
+            @NitrousBoostInput.canceled -= instance.OnNitrousBoostInput;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -535,5 +575,6 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
         void OnPitchInput(InputAction.CallbackContext context);
         void OnYawInput(InputAction.CallbackContext context);
         void OnRollInput(InputAction.CallbackContext context);
+        void OnNitrousBoostInput(InputAction.CallbackContext context);
     }
 }

@@ -7,6 +7,7 @@ namespace Assets.VehicleController
         private VehicleStats _stats;
 
         private ForcedInduction _forcedInduction;
+        private NitrousBoost _nitrousBoost;
 
         private IShifter _shifter;
         private ITransmission _transmission;
@@ -23,12 +24,15 @@ namespace Assets.VehicleController
             _transmission = transmission;
 
             _forcedInduction = new(_stats, _currentCarStats, _transmission);
+            _nitrousBoost = new(_stats, _currentCarStats);
         }
 
-        public void Accelerate(WheelController[] driveWheelsArray, float gasInput, float breakInput, float rpm)
+        public void Accelerate(WheelController[] driveWheelsArray, float gasInput, float breakInput, bool nitroBoostInput, float rpm)
         {
             float input = _transmission.DetermineGasInput(gasInput, breakInput);
-            float boost = _forcedInduction.GetForcedInductionBoost(_transmission.InShiftingCooldown() ? 0:  Mathf.Abs(input));
+            float forcedInductionBoost = _forcedInduction.GetForcedInductionBoost(_transmission.InShiftingCooldown() ? 0 : Mathf.Abs(input));
+            float nitroBoost = _nitrousBoost.GetNitroBoost(nitroBoostInput);
+            float boost = nitroBoost + forcedInductionBoost;
 
             _totalTorque = CalculateAccelerationForce(input, rpm, boost);
 

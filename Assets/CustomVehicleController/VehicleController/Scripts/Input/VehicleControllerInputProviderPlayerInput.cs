@@ -9,6 +9,7 @@ namespace Assets.VehicleController
         #region Control field
         private float _gasInput;
         private float _brakeInput;
+        private bool _nitroBoostInput;
         private bool _handbrakeInput;
         private float _horizontalInput;
         private float _pitchInput;
@@ -34,6 +35,8 @@ namespace Assets.VehicleController
         public float OnGasInput(InputValue value) => _gasInput = value.Get<float>();
 
         public float OnBrakeInput(InputValue value) => _brakeInput = value.Get<float>();
+
+        public bool OnNitrousBoostInput(InputValue value) => _nitroBoostInput = value.Get<float>() == 1;
 
         public bool OnHandbrakeInput(InputValue value) => _handbrakeInput = value.Get<float>() == 1;
 
@@ -62,5 +65,7 @@ namespace Assets.VehicleController
         public float GetYawInput() => _yawInput;
 
         public float GetRollInput() => _rollInput;
+
+        public bool GetNitroBoostInput() => _nitroBoostInput;
     }
 }

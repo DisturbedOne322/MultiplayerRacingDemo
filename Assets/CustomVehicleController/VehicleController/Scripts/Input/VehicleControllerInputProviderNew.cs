@@ -30,5 +30,7 @@ namespace Assets.VehicleController
         public float GetYawInput() => _playerInput.Player.YawInput.ReadValue<float>();
 
         public float GetRollInput() => _playerInput.Player.RollInput.ReadValue<float>();
+
+        public bool GetNitroBoostInput() => _playerInput.Player.NitrousBoostInput.IsPressed(); 
     }
 }

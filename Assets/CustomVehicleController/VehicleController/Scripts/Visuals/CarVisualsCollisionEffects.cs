@@ -10,9 +10,6 @@ namespace Assets.VehicleController
 
         private Light _leftCollisionLight;
         private Light _rightCollisionLight;
-        private const float SM_DAMP_TIME = 0.5f;
-        private Vector3 _leftLightSmDampVelocity;
-        private Vector3 _rightLightSmDampVelocity;
 
         private VisualEffect _burstSparks;
 
@@ -76,79 +73,79 @@ namespace Assets.VehicleController
             }
 
             _parameters.CollisionHandler.OnLeftSideCollisionStay += _collisionHandler_OnLeftSideCollisionStay;
-            _parameters.CollisionHandler.OnLeftSideCollisionExit += _collisionHandler_OnLeftSideCollisionExit;
-
+            _parameters.CollisionHandler.OnLeftSideCollisionExit += CollisionHandler_OnLeftSideCollisionExit;
             _parameters.CollisionHandler.OnRightSideCollisionStay += _collisionHandler_OnRightSideCollisionStay;
-            _parameters.CollisionHandler.OnRightSideCollisionExit += _collisionHandler_OnRightSideCollisionExit;
-
-            _parameters.CollisionHandler.OnCollision += _collisionHandler_OnCollision;
+            _parameters.CollisionHandler.OnRightSideCollisionExit += CollisionHandler_OnRightSideCollisionExit;
+            _parameters.CollisionHandler.OnCollisionImpact += _collisionHandler_OnCollision;
         }
 
-        private void _collisionHandler_OnCollision(Vector3 pos, int collAmount, float collSpeed)
+        private void CollisionHandler_OnRightSideCollisionExit()
+        {
+
+            _rightSideSparks.Stop();
+            _rightCollisionLight.enabled = false;
+        }
+
+        private void CollisionHandler_OnLeftSideCollisionExit()
+        {
+            _leftSideSparks.Stop();
+            _leftCollisionLight.enabled = false;
+        }
+
+        private void _collisionHandler_OnCollision(Vector3 pos, float collSpeed)
         {
             if (Time.time < _lastCollisionTime + _parameters.BurstSparkCooldown)
                 return;
 
             _burstSparks.SetFloat("spawnAmount", collSpeed / 5f);
             _burstSparks.SetFloat("lifetimeMax", collSpeed / 120f + 0.1f);
-            _burstSparks.SetFloat("spawnArea", 1 - 1f / collAmount);
-            _burstSparks.SetFloat("scaleMultiplier", 1 - 1 / (collAmount * 4));
+            _burstSparks.SetFloat("spawnArea", Mathf.Clamp01(collSpeed / 120));
+            _burstSparks.SetFloat("scaleMultiplier", Mathf.Clamp01(collSpeed / 120));
             _burstSparks.SetVector3("position", pos);
             _burstSparks.Play();
 
             _lastCollisionTime = Time.time;
         }
 
-        private void _collisionHandler_OnLeftSideCollisionExit()
-        {
-            _leftSideSparks.Stop();
-            _leftCollisionLight.enabled = false;
-        }
-
-        private void _collisionHandler_OnLeftSideCollisionStay(Vector3 pos)
+        private void _collisionHandler_OnLeftSideCollisionStay(Vector3 pos, float collMag)
         {
             _leftSideSparks.Play();
             _leftSideSparks.SetVector3("position", pos);
             _leftSideSparks.SetFloat("horizontalOffset", _parameters.HorizontalOffset);
+            _leftSideSparks.SetFloat("spawnAmount", Mathf.Clamp(collMag, 0, 100));
+            _leftSideSparks.SetFloat("spawnArea", _parameters.SparksSpawnAreaHeight);
 
             if (Time.time + 0.1f > _lastCollisionTime)
             {
                 _leftCollisionLight.transform.position = pos;
             }
             _leftCollisionLight.enabled = true;
-            _leftCollisionLight.transform.position = Vector3.SmoothDamp(_leftCollisionLight.transform.position, 
-                pos, ref _leftLightSmDampVelocity, SM_DAMP_TIME);
+            _leftCollisionLight.transform.position = pos;
         }
 
-        private void _collisionHandler_OnRightSideCollisionExit()
-        {
-            _rightSideSparks.Stop();
-            _rightCollisionLight.enabled = false;
-        }
-
-        private void _collisionHandler_OnRightSideCollisionStay(Vector3 pos)
+        private void _collisionHandler_OnRightSideCollisionStay(Vector3 pos, float collMag)
         {
             _rightSideSparks.Play();
             _rightSideSparks.SetVector3("position", pos);
             _rightSideSparks.SetFloat("horizontalOffset", _parameters.HorizontalOffset);
+            _rightSideSparks.SetFloat("spawnAmount", Mathf.Clamp(collMag, 0, 100));
+            _rightSideSparks.SetFloat("spawnArea", _parameters.SparksSpawnAreaHeight);
+
             if (Time.time + 0.1f > _lastCollisionTime)
             {
                 _rightCollisionLight.transform.position = pos;
             }
             _rightCollisionLight.enabled = true;
-            _rightCollisionLight.transform.position = Vector3.SmoothDamp(_rightCollisionLight.transform.position, 
-                pos, ref _rightLightSmDampVelocity, SM_DAMP_TIME);
+            _rightCollisionLight.transform.position = pos;
         }
 
         public void OnDestroy()
         {
             _parameters.CollisionHandler.OnLeftSideCollisionStay -= _collisionHandler_OnLeftSideCollisionStay;
-            _parameters.CollisionHandler.OnLeftSideCollisionExit -= _collisionHandler_OnLeftSideCollisionExit;
-
+            _parameters.CollisionHandler.OnLeftSideCollisionExit -= CollisionHandler_OnLeftSideCollisionExit;
             _parameters.CollisionHandler.OnRightSideCollisionStay -= _collisionHandler_OnRightSideCollisionStay;
-            _parameters.CollisionHandler.OnRightSideCollisionExit -= _collisionHandler_OnRightSideCollisionExit;
-
-            _parameters.CollisionHandler.OnCollision -= _collisionHandler_OnCollision;
+            _parameters.CollisionHandler.OnRightSideCollisionExit -= CollisionHandler_OnRightSideCollisionExit;
+            _parameters.CollisionHandler.OnCollisionImpact -= _collisionHandler_OnCollision;
         }
     }
 

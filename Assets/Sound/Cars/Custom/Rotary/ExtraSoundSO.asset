@@ -12,15 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be98c7080699eb4880c5a33356bfa74, type: 3}
   m_Name: ExtraSoundSO
   m_EditorClassIdentifier: 
-  ForcedInductionSound: {fileID: 8300000, guid: a17d33fe06d0cee4193314f64122a242,
-    type: 3}
-  TurboFlutterSound:
-  - {fileID: 8300000, guid: 94b5ab375fe97d64882b00ad5168d86d, type: 3}
-  AntiLagSound:
-  - {fileID: 8300000, guid: 389e49e5707c5da4ebb58596335e8327, type: 3}
-  AntiLagMildSounds:
-  - {fileID: 8300000, guid: 58c0e7b03412e40458b2ebefa343e3a0, type: 3}
-  - {fileID: 8300000, guid: 86cc3d303e7f89447a69a6d72e5cf6d3, type: 3}
-  - {fileID: 8300000, guid: 016b3e678a8142b4a84faea2b08191d1, type: 3}
   TireSlipSound: {fileID: 8300000, guid: 665115327fe1e5a4f82e6f43aba8da3c, type: 3}
   WindNoise: {fileID: 8300000, guid: 9cb5db9c5deaeb244a89d7e440eee07f, type: 3}
+  CollisionImpact: {fileID: 8300000, guid: d5f8e332196bb0d499a62253ece1fc9b, type: 3}
+  CollisionContinuous: {fileID: 8300000, guid: 5f4441c6b5cae4f43819c9d0e34d0bc3, type: 3}

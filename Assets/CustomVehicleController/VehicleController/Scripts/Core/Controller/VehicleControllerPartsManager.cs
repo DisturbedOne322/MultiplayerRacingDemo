@@ -39,7 +39,7 @@ namespace Assets.VehicleController
             _centerOfGeometry = centerOfGeometry;
         }
 
-        public void ManageCarParts(float gasInput, float breakInput, float horizontalInput,
+        public void ManageCarParts(float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
         bool handbrakeInput, float steerAngle, float steerSpeed, PartTypes.TransmissionType transmissionType, 
         PartTypes.DrivetrainType drivetrainType, int suspensionSimulationPrecision)
         {
@@ -48,7 +48,7 @@ namespace Assets.VehicleController
             _body.AddDownforce();
             _body.AddCorneringForce();
 
-            _engine.Accelerate(_driveWheelsArray, gasInput, breakInput, _currentCarStats.EngineRPM);
+            _engine.Accelerate(_driveWheelsArray, gasInput, breakInput, nitroBoostInput, _currentCarStats.EngineRPM);
 
             _breaks.Break(gasInput, breakInput, handbrakeInput);
             _handling.SteerWheels(horizontalInput, steerAngle, steerSpeed);

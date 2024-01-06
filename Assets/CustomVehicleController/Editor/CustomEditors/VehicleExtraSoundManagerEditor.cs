@@ -1,10 +1,5 @@
 using Assets.VehicleController;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.VFX;
 
 namespace Assets.VehicleControllerEditor
 {
@@ -16,6 +11,9 @@ namespace Assets.VehicleControllerEditor
         private SerializedProperty _extraSoundSO;
         private CarExtraSoundsSO _extraSound;
 
+        private SerializedProperty _forcedInductionSoundSO;
+        private CarForcedInductionSoundSO _forcedInductionSound;
+
         private SerializedProperty _vehicleSoundAudioMixerGroup;
 
         private SerializedProperty _tireVolumeIncreaseTime;
@@ -26,6 +24,9 @@ namespace Assets.VehicleControllerEditor
         private SerializedProperty _forcedInductionMaxVolume;
 
         private SerializedProperty _maxWindVolume;
+        private SerializedProperty _speedForMaxWindVolume;
+
+        private SerializedProperty _collisionHandler;
 
         private void OnEnable()
         {
@@ -33,6 +34,9 @@ namespace Assets.VehicleControllerEditor
 
             _extraSoundSO = serializedObject.FindProperty("_extraSoundSO");
             _extraSound = _extraSoundSO.objectReferenceValue as CarExtraSoundsSO;
+
+            _forcedInductionSoundSO = serializedObject.FindProperty("_forcedInductionSoundSO");
+            _forcedInductionSound = _forcedInductionSoundSO.objectReferenceValue as CarForcedInductionSoundSO;
 
             _vehicleSoundAudioMixerGroup = serializedObject.FindProperty("_vehicleSoundAudioMixerGroup");
 
@@ -42,32 +46,48 @@ namespace Assets.VehicleControllerEditor
             _forcedInductionMaxVolume = serializedObject.FindProperty("_forcedInductionMaxVolume");
 
             _maxWindVolume = serializedObject.FindProperty("_maxWindVolume");
+            _speedForMaxWindVolume = serializedObject.FindProperty("_speedForMaxWindVolume");
+
+            _collisionHandler = serializedObject.FindProperty("_collisionHandler");
         }
 
         public override void OnInspectorGUI()
         {
             EditorGUILayout.PropertyField(_vehicleController);
+            EditorGUILayout.PropertyField(_forcedInductionSoundSO);
             EditorGUILayout.PropertyField(_extraSoundSO);
             EditorGUILayout.PropertyField(_vehicleSoundAudioMixerGroup);
 
-            if(_extraSound != null)
+            if(_forcedInductionSound != null)
             {
-                if(_extraSound.AntiLagMildSounds.Length != 0 || _extraSound.AntiLagSound.Length != 0)
+                if (_forcedInductionSound.AntiLagMildSounds.Length != 0 || _forcedInductionSound.AntiLagSound.Length != 0)
                     EditorGUILayout.PropertyField(_antiLagSoundCooldown);
 
-                if(_extraSound.ForcedInductionSound.length != 0)
+                if (_forcedInductionSound.ForcedInductionSound.length != 0)
                 {
                     EditorGUILayout.PropertyField(_forcedInductionMaxPitch);
                     EditorGUILayout.PropertyField(_forcedInductionMaxVolume);
                 }
+            }
 
+            if(_extraSound != null)
+            {
                 if(_extraSound.TireSlipSound != null)
                     EditorGUILayout.PropertyField(_tireVolumeIncreaseTime);
 
                 if(_extraSound.WindNoise != null)
+                {
                     EditorGUILayout.PropertyField(_maxWindVolume);
+                    EditorGUILayout.PropertyField(_speedForMaxWindVolume);
+                }
+
+                if (_extraSound.CollisionImpact != null || _extraSound.CollisionContinuous != null)
+                    EditorGUILayout.PropertyField(_collisionHandler);
             }
+
+            _forcedInductionSound = _forcedInductionSoundSO.objectReferenceValue as CarForcedInductionSoundSO;
             _extraSound = _extraSoundSO.objectReferenceValue as CarExtraSoundsSO;
+
             serializedObject.ApplyModifiedProperties();
         }
     }

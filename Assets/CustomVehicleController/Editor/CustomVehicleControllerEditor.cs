@@ -35,6 +35,7 @@ namespace Assets.VehicleControllerEditor
         #region Parts Editors
         private ControllerTransmissionSettingsEditor _transmissionSettingsEditor;
         private ControllerEngineSettingsEditor _engineSettingsEditor;
+        private ControllerNitrousSettingsEditor _nitrousSettingsEditor;
         private ControllerForcedInductionSettingsEditor _fiSettingEditor;
         private ControllerSuspensionSettingsEditor _suspensionSettingsEditor;
         private ControllerBodySettingsEditor _bodySettingsEditor;
@@ -75,16 +76,17 @@ namespace Assets.VehicleControllerEditor
 
             _saveChangedToggle = root.Q<Toggle>(SAVE_CHANGES_TOGGLE_NAME);
 
-            _transmissionSettingsEditor = new ControllerTransmissionSettingsEditor(root, this);
-            _fiSettingEditor = new ControllerForcedInductionSettingsEditor(root, this);
-            _engineSettingsEditor = new ControllerEngineSettingsEditor(root, this, _fiSettingEditor);
-            _suspensionSettingsEditor = new ControllerSuspensionSettingsEditor(root, this);
-            _bodySettingsEditor = new ControllerBodySettingsEditor(root, this);
-            _tiresSettingsEditor = new ControllerTiresSettingsEditor(root, this);
-            _brakesSettingsEditor = new ControllerBrakesSettingsEditor(root, this);
-            _steeringSettingsEditor = new ControllerSteeringSettingsEditor(root, this);
-            _initializerEditor = new ControllerInitializerEditor(root, this);
-            _extraVisualsSettingsEditor = new ControllerExtraVisualsSettingsEditor(root, this);
+            _transmissionSettingsEditor = new (root, this);
+            _fiSettingEditor = new (root, this);
+            _engineSettingsEditor = new (root, this, _fiSettingEditor);
+            _nitrousSettingsEditor = new (root, this);
+            _suspensionSettingsEditor = new (root, this);
+            _bodySettingsEditor = new (root, this);
+            _tiresSettingsEditor = new (root, this);
+            _brakesSettingsEditor = new (root, this);
+            _steeringSettingsEditor = new (root, this);
+            _initializerEditor = new (root, this);
+            _extraVisualsSettingsEditor = new (root, this);
 
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
 
@@ -271,6 +273,7 @@ namespace Assets.VehicleControllerEditor
         private void SetVehicleControllerToSettingEditors(SerializedObject so)
         {
             _engineSettingsEditor.SetVehicleController(so);
+            _nitrousSettingsEditor.SetVehicleController(so);
             _transmissionSettingsEditor.SetVehicleController(so);
             _suspensionSettingsEditor.SetVehicleController(so);
             _bodySettingsEditor.SetVehicleController(so);

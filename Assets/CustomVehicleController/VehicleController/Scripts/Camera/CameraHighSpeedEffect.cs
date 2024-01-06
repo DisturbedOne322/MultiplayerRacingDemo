@@ -19,7 +19,7 @@ namespace Assets.VehicleController
 
         [SerializeField]
         private Volume _volume;
-        private DepthOfField _depthOfField;
+        private ChromaticAberration _chromaticAberration;
         private Vignette _vignette;
 
         [SerializeField]
@@ -44,6 +44,12 @@ namespace Assets.VehicleController
         [SerializeField]
         private float MAX_SIDEWAYS_FORCE = 40;
 
+        [SerializeField]
+        private float _nitroBoostFOV_Max = 20f;
+        private float _nitroFOV = 0;
+        private float _nitroBoostSmDampVelocity;
+        private float _nitroSmDampTime = 0.5f;
+
 
         private const float DEFAULT_VIG_INTENSITY = 0.15f;
         private const float MAX_VIG_INTENSITY = 0.3f;
@@ -56,7 +62,7 @@ namespace Assets.VehicleController
         private void Awake()
         {
             _multiChannelPerlin = _virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            _volume.profile.TryGet(out _depthOfField);
+            _volume.profile.TryGet(out _chromaticAberration);
             _volume.profile.TryGet(out _vignette);
         }
 
@@ -72,7 +78,6 @@ namespace Assets.VehicleController
 
             HandleCameraShakeEffect(speedPercent);
             HandleFOV(speedPercent, acceleration);
-            HandleCameraBlur();
             HandleVignette(speedPercent);
             HandleAnimeSpeedEffect();
         }
@@ -88,13 +93,15 @@ namespace Assets.VehicleController
         {
             float speedFOV = speedPercent * MAX_FOV_INCREASE_FOR_SPEED;
             float accelFOV = Mathf.Clamp(accel / MAX_ACCELERATION_FORCE, -1, 1) * MAX_FOV_INCREASE_FOR_ACCEL;
-            _virtualCamera.m_Lens.FieldOfView = Mathf.SmoothDamp(_virtualCamera.m_Lens.FieldOfView,
-                DefaultFOV + speedFOV + accelFOV, ref _smDampVelocityFOV, SmDampSpeed);
-        }
 
-        private void HandleCameraBlur()
-        {
-            _depthOfField.gaussianStart.value = MAX_SPEED_IN_MS - _currentCarStats.SpeedInMsPerS;
+            float target = 0;
+            if (_currentCarStats.Accelerating && _currentCarStats.NitroBoosting)
+                target = _nitroBoostFOV_Max;
+            _chromaticAberration.intensity.value = _nitroFOV / _nitroBoostFOV_Max;
+
+            _nitroFOV = Mathf.SmoothDamp(_nitroFOV, target, ref _nitroBoostSmDampVelocity, _nitroSmDampTime);
+            _virtualCamera.m_Lens.FieldOfView = Mathf.SmoothDamp(_virtualCamera.m_Lens.FieldOfView,
+                DefaultFOV + speedFOV + accelFOV + _nitroFOV, ref _smDampVelocityFOV, SmDampSpeed);
         }
 
         private void HandleVignette(float speedPercent)

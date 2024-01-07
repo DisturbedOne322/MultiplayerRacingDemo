@@ -31,7 +31,7 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
                     ""name"": ""HandbrakeInput"",
                     ""type"": ""Value"",
                     ""id"": ""d504abf3-a63b-46e9-a693-c73c336ed7a0"",
-                    ""expectedControlType"": ""Integer"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -133,7 +133,7 @@ public partial class @PlayerVehicleInputActions: IInputActionCollection2, IDispo
                 {
                     ""name"": """",
                     ""id"": ""7959fa8c-a01a-45ae-b7a1-56c0098e32fe"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

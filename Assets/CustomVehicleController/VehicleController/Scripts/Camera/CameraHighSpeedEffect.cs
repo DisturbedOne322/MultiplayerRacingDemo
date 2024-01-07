@@ -50,9 +50,12 @@ namespace Assets.VehicleController
         private float _nitroBoostSmDampVelocity;
         private float _nitroSmDampTime = 0.5f;
 
+        private float _nitroEffectStrength = 0;
+
 
         private const float DEFAULT_VIG_INTENSITY = 0.15f;
         private const float MAX_VIG_INTENSITY = 0.3f;
+        private const float NITRO_VIG_INTENSITY_ADD = 0.06f;
 
         private float _smDampVelocityFOV;
         private float _smDampVelocityVignette;
@@ -80,6 +83,15 @@ namespace Assets.VehicleController
             HandleFOV(speedPercent, acceleration);
             HandleVignette(speedPercent);
             HandleAnimeSpeedEffect();
+
+            if (_currentCarStats.Accelerating && _currentCarStats.NitroBoosting)
+                _nitroEffectStrength += Time.deltaTime / 0.3f;
+            else
+                _nitroEffectStrength -= Time.deltaTime * 4f;
+
+            _nitroEffectStrength = Mathf.Clamp01(_nitroEffectStrength);
+
+            _chromaticAberration.intensity.value = _nitroEffectStrength;
         }
 
         private void HandleCameraShakeEffect(float speedPercent)
@@ -97,7 +109,6 @@ namespace Assets.VehicleController
             float target = 0;
             if (_currentCarStats.Accelerating && _currentCarStats.NitroBoosting)
                 target = _nitroBoostFOV_Max;
-            _chromaticAberration.intensity.value = _nitroFOV / _nitroBoostFOV_Max;
 
             _nitroFOV = Mathf.SmoothDamp(_nitroFOV, target, ref _nitroBoostSmDampVelocity, _nitroSmDampTime);
             _virtualCamera.m_Lens.FieldOfView = Mathf.SmoothDamp(_virtualCamera.m_Lens.FieldOfView,
@@ -106,13 +117,15 @@ namespace Assets.VehicleController
 
         private void HandleVignette(float speedPercent)
         {
+            float nitroVig = NITRO_VIG_INTENSITY_ADD * _nitroEffectStrength;
             _vignette.intensity.value = Mathf.SmoothDamp(_vignette.intensity.value,
-                DEFAULT_VIG_INTENSITY + (MAX_VIG_INTENSITY - DEFAULT_VIG_INTENSITY) * speedPercent, ref _smDampVelocityVignette, SmDampSpeed);
+                DEFAULT_VIG_INTENSITY + (MAX_VIG_INTENSITY + nitroVig - DEFAULT_VIG_INTENSITY) * speedPercent, ref _smDampVelocityVignette, SmDampSpeed);
         }
 
         private void HandleAnimeSpeedEffect()
         {
-            _animeSpeedEffect.SetFloat(SPAWN_RATE_FIELD_NAME, _currentCarStats.SpeedInMsPerS);
+            float nitroSpawnRate = 100 * _nitroEffectStrength;
+            _animeSpeedEffect.SetFloat(SPAWN_RATE_FIELD_NAME, _currentCarStats.SpeedInMsPerS / 2 + nitroSpawnRate);
         }
     }
 }

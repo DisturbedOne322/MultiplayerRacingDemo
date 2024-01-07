@@ -62,6 +62,12 @@ namespace Assets.VehicleController
         private CarVisualsAntiLag _antiLagEffect;
 
         [SerializeField]
+        private bool _enableNitroEffect;
+        [SerializeField]
+        private NitrousParameters _nitroParameters;
+        private CarVisualsNitrous _nitroEffect;
+
+        [SerializeField]
         private bool _enableCollisionEffects;
         [SerializeField]
         private CollisionEffectParameters _collisionEffectsParameters;
@@ -91,6 +97,8 @@ namespace Assets.VehicleController
             if (_enableTireTrails)
                 DisplaySkidMarksEffects();
 
+            if(_enableNitroEffect)
+                _nitroEffect.HandleNitroEffect();
 
             if (_enableBodyAeroEffect)
                 _bodyWindEffect.HandleSpeedEffect(_currentCarStats.SpeedInMsPerS, _rigidbody.velocity);
@@ -112,6 +120,9 @@ namespace Assets.VehicleController
 
             if (_enableAntiLagEffect)
                 _antiLagEffect = new(this, _currentCarStats, _antiLagParameters);
+
+            if (_enableNitroEffect)
+                _nitroEffect = new(_nitroParameters, _currentCarStats);
 
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect = new(_brakeLightsParameters);
@@ -262,6 +273,16 @@ namespace Assets.VehicleController
     {
         public TrailRenderer TrailRenderer;
         public float VerticalOffset;
+    }
+
+    [Serializable]
+    public class NitrousParameters
+    {
+        public VisualEffectAsset VFXAsset;
+        public Transform[] ExhaustsPositionArray;
+        public AnimationCurve SizeOverLifeCurve;
+        [GradientUsageAttribute(true)]
+        public Gradient Gradient;
     }
 
     [Serializable]

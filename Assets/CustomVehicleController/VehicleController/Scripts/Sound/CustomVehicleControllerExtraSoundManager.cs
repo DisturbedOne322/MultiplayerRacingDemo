@@ -59,6 +59,9 @@ namespace Assets.VehicleController
 
         private GameObject _effectAudioSourceHolder;
 
+        private bool _rightCollisionStay = false;
+        private bool _leftCollisionStay = false;
+
         private void Awake()
         {
             _effectAudioSourceHolder = new GameObject("Car Sound Effects");
@@ -80,11 +83,11 @@ namespace Assets.VehicleController
 
             if (_collisionEffectInitialized)
             {
-                _collisionHandler.OnLeftSideCollisionStay -= _collisionHandler_OnCollisionContinuous;
-                _collisionHandler.OnRightSideCollisionStay -= _collisionHandler_OnCollisionContinuous;
-                _collisionHandler.OnLeftSideCollisionExit -= _collisionHandler_OnCollisionContinoursExit;
-                _collisionHandler.OnRightSideCollisionExit -= _collisionHandler_OnCollisionContinoursExit;
                 _collisionHandler.OnCollisionImpact -= _collisionHandler_OnCollisionImpact;
+                _collisionHandler.OnRightSideCollisionStay -= _collisionHandler_OnSideCollisionStay;
+                _collisionHandler.OnRightSideCollisionExit -= _collisionHandler_OnRightSideCollisionExit;
+                _collisionHandler.OnLeftSideCollisionStay -= _collisionHandler_OnSideCollisionStay;
+                _collisionHandler.OnLeftSideCollisionExit -= _collisionHandler_OnLeftSideCollisionExit;
             }
 
             if (!_flutterSoundExists && !_antiLagSoundExists && !_antiLagMildSoundExists)
@@ -193,27 +196,20 @@ namespace Assets.VehicleController
             _collisionAudioSource.Stop();
 
             _collisionHandler.OnCollisionImpact += _collisionHandler_OnCollisionImpact;
-            _collisionHandler.OnLeftSideCollisionStay += _collisionHandler_OnCollisionContinuous;
-            _collisionHandler.OnRightSideCollisionStay += _collisionHandler_OnCollisionContinuous; 
-            _collisionHandler.OnLeftSideCollisionExit += _collisionHandler_OnCollisionContinoursExit;
-            _collisionHandler.OnRightSideCollisionExit += _collisionHandler_OnCollisionContinoursExit;
+            _collisionHandler.OnRightSideCollisionStay += _collisionHandler_OnSideCollisionStay; 
+            _collisionHandler.OnRightSideCollisionExit += _collisionHandler_OnRightSideCollisionExit;
+            _collisionHandler.OnLeftSideCollisionStay += _collisionHandler_OnSideCollisionStay;
+            _collisionHandler.OnLeftSideCollisionExit += _collisionHandler_OnLeftSideCollisionExit;
 
             _collisionEffectInitialized = true;
         }
 
-        private void _collisionHandler_OnCollisionContinuous(Vector3 pos, float magnitude)
+        private void _collisionHandler_OnLeftSideCollisionExit()
         {
-            if (!_collisionContinuousSoundExists)
+            _leftCollisionStay = false;
+            if (_rightCollisionStay)
                 return;
 
-            _collisionAudioSource.volume = Mathf.Abs(magnitude / MAX_VOLUME_COLLISION_VELOCITY);
-
-            if (!_collisionAudioSource.isPlaying)
-                _collisionAudioSource.Play();
-        }
-
-        private void _collisionHandler_OnCollisionContinoursExit()
-        {
             if (!_collisionContinuousSoundExists)
                 return;
 
@@ -221,12 +217,42 @@ namespace Assets.VehicleController
                 _collisionAudioSource.Stop();
         }
 
+        private void _collisionHandler_OnRightSideCollisionExit()
+        {
+            _rightCollisionStay = false;
+            if (_leftCollisionStay)
+                return;
+
+
+            if (!_collisionContinuousSoundExists)
+                return;
+
+            if (_collisionAudioSource.isPlaying)
+                _collisionAudioSource.Stop();
+        }
+
+        private void _collisionHandler_OnSideCollisionStay(Vector3 pos, float magnitude)
+        {
+            if (!_collisionContinuousSoundExists)
+                return;
+
+            // dont care which side
+            _leftCollisionStay = _rightCollisionStay = true;
+
+            _collisionAudioSource.volume = Mathf.Abs(magnitude / MAX_VOLUME_COLLISION_VELOCITY);
+            if (!_collisionAudioSource.isPlaying)
+                _collisionAudioSource.Play();
+        }
+
         private void _collisionHandler_OnCollisionImpact(Vector3 arg, float collMagnitude)
         {
             RandomizeAntiLagPitchAndVolume();
 
             if (_collisionImpactSoundExists)
-                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.CollisionImpact, Mathf.Clamp01(collMagnitude / MAX_VOLUME_COLLISION_VELOCITY));
+                AudioSource.PlayClipAtPoint(_extraSoundSO.CollisionImpact, arg, Mathf.Clamp01(collMagnitude / MAX_VOLUME_COLLISION_VELOCITY));
+
+           //// if (_collisionImpactSoundExists)
+             //   _carEffectsAudioSource.PlayOneShot(_extraSoundSO.CollisionImpact, Mathf.Clamp01(collMagnitude / MAX_VOLUME_COLLISION_VELOCITY));
         }
 
         private void InitializedWindNoise()

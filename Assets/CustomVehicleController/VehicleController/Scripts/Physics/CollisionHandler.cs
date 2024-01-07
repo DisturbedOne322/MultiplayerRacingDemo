@@ -8,10 +8,11 @@ namespace Assets.VehicleController
     {
         public event Action<Vector3, float> OnCollisionImpact;
 
-        public event Action<Vector3, float> OnRightSideCollisionStay;
-        public event Action OnRightSideCollisionExit;
         public event Action<Vector3, float> OnLeftSideCollisionStay;
         public event Action OnLeftSideCollisionExit;
+
+        public event Action<Vector3, float> OnRightSideCollisionStay;
+        public event Action OnRightSideCollisionExit;
 
         [SerializeField]
         private float _minCollisionMagnitude;
@@ -20,7 +21,7 @@ namespace Assets.VehicleController
         private CustomVehicleController _vehicleController;
 
         public BoxCollider _boxCollider;
-        public Collider[] _colliders;
+        private Collider[] _colliders;
 
         private Vector3 _colliderSize;
 
@@ -32,42 +33,42 @@ namespace Assets.VehicleController
 
         private void Update()
         {
-            int rightColls = 0;
             int leftColls = 0;
+            int rightColls = 0;
+
             for (int i = 0; i < Physics.OverlapBoxNonAlloc(_boxCollider.bounds.center, _colliderSize / 2, _colliders, transform.rotation); i++)
             {
-                float magnitude = Mathf.Abs(_vehicleController.GetCurrentCarStats().SpeedInMsPerS * 2);
-                if (magnitude < _minCollisionMagnitude)
-                {
-                    OnLeftSideCollisionExit?.Invoke();
-                    OnRightSideCollisionExit?.Invoke();
-                    break;
-                }
-
-
                 if (_colliders[i].transform == _boxCollider.transform)
                     continue;
 
+                float magnitude = Mathf.Abs(_vehicleController.GetCurrentCarStats().SpeedInMsPerS * 2);
+                if (magnitude < _minCollisionMagnitude)
+                {
+                    continue;
+                }
+
                 Vector3 closest = _colliders[i].ClosestPoint(_boxCollider.bounds.center);
                 Vector3 direction = closest - _boxCollider.bounds.center;
+
                 bool right = Vector3.Dot(transform.right, direction) > 0;
-                if(right)
+
+                if (right)
                 {
-                    OnRightSideCollisionStay?.Invoke(closest, magnitude);
-                    rightColls++;
+                    OnRightSideCollisionStay?.Invoke(_colliders[i].ClosestPoint(_boxCollider.bounds.center), magnitude);
+                    rightColls++;   
                 }
                 else
                 {
-                    OnLeftSideCollisionStay?.Invoke(closest, magnitude);
+                    OnLeftSideCollisionStay?.Invoke(_colliders[i].ClosestPoint(_boxCollider.bounds.center), magnitude);
                     leftColls++;
                 }
             }
 
-            if(rightColls == 0)
-                OnRightSideCollisionExit?.Invoke();
-            
             if(leftColls == 0)
                 OnLeftSideCollisionExit?.Invoke();
+
+            if(rightColls == 0) 
+                OnRightSideCollisionExit?.Invoke();
         }
 
         private void OnCollisionEnter(Collision collision)

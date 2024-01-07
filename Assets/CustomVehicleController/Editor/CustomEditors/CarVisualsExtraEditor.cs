@@ -35,6 +35,12 @@ namespace Assets.VehicleControllerEditor
         private SerializedProperty _antiLagMinCount;
         private SerializedProperty _antiLagMaxCount;
         #endregion
+
+        #region nitro
+        private SerializedProperty _enableNitroEffect;
+        private SerializedProperty _nitroParameters;
+        #endregion
+
         #region coll
         private SerializedProperty _enableCollisionEffects;
         private SerializedProperty _collisionEffectsParameters;
@@ -48,6 +54,7 @@ namespace Assets.VehicleControllerEditor
             FindBodyAero();
             FindWingAero();
             FindAntiLagProperties();
+            FindNitro();
             FindColl();
         }
 
@@ -79,6 +86,12 @@ namespace Assets.VehicleControllerEditor
         {
             _enableBodyAeroEffect = serializedObject.FindProperty("_enableBodyAeroEffect");
             _bodyEffectParameters = serializedObject.FindProperty("_bodyEffectParameters");
+        }
+
+        private void FindNitro()
+        {
+            _enableNitroEffect = serializedObject.FindProperty("_enableNitroEffect");
+            _nitroParameters = serializedObject.FindProperty("_nitroParameters"); 
         }
 
         private void FindAntiLagProperties()
@@ -113,6 +126,7 @@ namespace Assets.VehicleControllerEditor
             HandleTireTrails();
             HandleBrakeLights();
             HandleAntiLag();
+            HandleNitro();
             HandleBodyAero();
             HandleWingAero();
             HandleCollisions();
@@ -196,6 +210,17 @@ namespace Assets.VehicleControllerEditor
             if (_antiLagMaxCount.intValue < _antiLagMinCount.intValue)
             {
                 _antiLagMaxCount.intValue = _antiLagMinCount.intValue;
+            }
+        }
+
+        private void HandleNitro()
+        {
+            EditorGUILayout.PropertyField(_enableNitroEffect);
+
+            if (_enableNitroEffect.boolValue)
+            {
+                EditorGUILayout.PropertyField(_nitroParameters);
+                EditorGUILayout.Space();
             }
         }
 

@@ -28,7 +28,7 @@ namespace Assets.VehicleController
             _handbrakeInput = Input.GetKey(KeyCode.Space);
             _horizontalInput = Input.GetAxis("Horizontal");
 
-            _nitroBoostInput = Input.GetKey(KeyCode.LeftAlt);
+            _nitroBoostInput = Input.GetKey(KeyCode.N);
 
             _pitchInput = Input.GetAxis("Vertical");
 

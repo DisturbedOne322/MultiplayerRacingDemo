@@ -9,7 +9,7 @@ namespace Assets.VehicleController
         private float _lastUseTime;
 
         private float _effectStrength = 0;
-        private const float EFFECT_STRENGTH_GAIN_SPEED = 0.25f; 
+        private const float EFFECT_STRENGTH_GAIN_SPEED = 0.5f; 
 
         private CurrentCarStats _currentCarStats;
 
@@ -41,7 +41,9 @@ namespace Assets.VehicleController
 
         private float HandleContinuousBoost(bool enabled)
         {
-            if(enabled && !_playerAlreadyBoosting)
+            if (_currentCarStats.Reversing || !_currentCarStats.Accelerating)
+                enabled = false;
+            else if (enabled && !_playerAlreadyBoosting)
             {
                 if (_currentCarStats.NitroPercentLeft < _stats.NitrousSO.MinAmountPercentToUse)
                     enabled = false;

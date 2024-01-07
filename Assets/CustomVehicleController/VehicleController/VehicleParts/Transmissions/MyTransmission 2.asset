@@ -20,6 +20,6 @@ MonoBehaviour:
   - 1.1716045
   - 0.89437884
   FinalDriveRatio: 2
-  ShiftCooldown: 0.1
+  ShiftCooldown: 0.2
   UpShiftRPMPercent: 0.99
   DownShiftRPMPercent: 0.84

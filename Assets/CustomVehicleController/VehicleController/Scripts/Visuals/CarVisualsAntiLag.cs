@@ -77,6 +77,9 @@ namespace Assets.VehicleController
 
         private void _currentCarStats_OnShiftedAntiLag()
         {
+            if (_currentCarStats.NitroBoosting)
+                return;
+
             int size = _antiLagParameters.ExhaustsPositionArray.Length;
             for (int i = 0; i < size; i++)
             {
@@ -86,6 +89,9 @@ namespace Assets.VehicleController
 
         private void _currentCarStats_OnAntiLag()
         {
+            if (_currentCarStats.NitroBoosting)
+                return;
+
             int size = _antiLagParameters.ExhaustsPositionArray.Length;
             for (int i = 0; i < size; i++)
             {

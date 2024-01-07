@@ -99,8 +99,8 @@ namespace Assets.VehicleController
             _currentCarStats.CurrentEngineTorque = _engine.GetCurrentTorque();
             _currentCarStats.ForcedInductionBoostPercent = _engine.GetForcedInductionBoostPercent();
 
-            _currentCarStats.Accelerating = gasInput > 0;
-            _currentCarStats.Braking = _transmission.DetermineBreakInput(gasInput, brakeInput) > 0;
+            _currentCarStats.Accelerating = gasInput != 0;
+            _currentCarStats.Braking = _transmission.DetermineBreakInput(gasInput, brakeInput) != 0;
             _currentCarStats.HandbrakePulled = handbrakeInput;
 
             _currentCarStats.FlipperOver = Vector3.Dot(Vector3.up, _transform.up) < 0f;

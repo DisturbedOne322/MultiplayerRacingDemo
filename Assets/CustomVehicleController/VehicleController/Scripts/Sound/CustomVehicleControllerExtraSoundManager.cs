@@ -249,10 +249,7 @@ namespace Assets.VehicleController
             RandomizeAntiLagPitchAndVolume();
 
             if (_collisionImpactSoundExists)
-                AudioSource.PlayClipAtPoint(_extraSoundSO.CollisionImpact, arg, Mathf.Clamp01(collMagnitude / MAX_VOLUME_COLLISION_VELOCITY));
-
-           //// if (_collisionImpactSoundExists)
-             //   _carEffectsAudioSource.PlayOneShot(_extraSoundSO.CollisionImpact, Mathf.Clamp01(collMagnitude / MAX_VOLUME_COLLISION_VELOCITY));
+                _carEffectsAudioSource.PlayOneShot(_extraSoundSO.CollisionImpact, Mathf.Clamp01(collMagnitude / MAX_VOLUME_COLLISION_VELOCITY));
         }
 
         private void InitializedWindNoise()

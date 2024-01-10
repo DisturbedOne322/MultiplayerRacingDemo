@@ -18,7 +18,6 @@ namespace Assets.VehicleController
         private const float MAX_SENSITIVITY_AFTER_AERIAL_TIME = 2f;
 
         private float _handbrakeEffect = 0;
-        private const float HANDBRAKE_EFFECT_SPEED = 1;
 
         public void Initialize(Rigidbody rb, VehicleStats stats, CurrentCarStats currentCarStats, Transform transform, Transform centerOfMass)
         {
@@ -38,25 +37,35 @@ namespace Assets.VehicleController
 
         public void AddCorneringForce()
         {
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                Vector3 fwd = _transform.forward;
+                _transform.rotation = Quaternion.identity;
+                _transform.forward = fwd;
+                _flipOverRecoverTimer = 0;
+            }
             if (_currentCarStats.InAir)
                 return;
 
             float slipAngle = Vector3.SignedAngle(_transform.forward, _rb.velocity, Vector3.up);
 
-            //in case of reversing
-            if (slipAngle > 90)
-                slipAngle -= 180;
-            else if (slipAngle < -90)
-                slipAngle += 180;
+            ////in case of reversing
+            if (slipAngle >= 90)
+                slipAngle = -slipAngle + 180;
+            else if (slipAngle <= -90)
+                slipAngle = -slipAngle - 180;
 
-            _handbrakeEffect += _currentCarStats.HandbrakePulled? Time.deltaTime * HANDBRAKE_EFFECT_SPEED : -Time.deltaTime * HANDBRAKE_EFFECT_SPEED;
-            _handbrakeEffect = Mathf.Clamp(_handbrakeEffect, 0, _stats.BrakesSO.HandbrakeTractionPercent);
-            
+            _handbrakeEffect = _currentCarStats.HandbrakePulled ? _stats.BrakesSO.HandbrakeTractionPercent : 1;
+            //lower effect at higher speed
+            _handbrakeEffect += _currentCarStats.SpeedPercent * (1 - _handbrakeEffect);
+
             //car self centering effect
-            _rb.AddRelativeTorque(slipAngle * _currentCarStats.SpeedInMsPerS * _stats.BodySO.CorneringResistanceStrength / (_rb.angularVelocity.magnitude + 1) * (1 - _handbrakeEffect) * _transform.up, ForceMode.Force);
+            _rb.AddTorque(slipAngle * _currentCarStats.SpeedInMsPerS * _stats.BodySO.CorneringResistanceCurve.Evaluate(_currentCarStats.SpeedPercent) *
+                              _stats.BodySO.CorneringResistanceStrength * (_rb.angularVelocity.magnitude + 1) * 
+                              _handbrakeEffect * _transform.up, ForceMode.Force);
             //car control becoming stiffer and higher speed effect
-            _rb.angularDrag = 1 + _stats.BodySO.CorneringResistanceCurve.Evaluate(_currentCarStats.SpeedPercent) *
-                              _stats.BodySO.CorneringResistanceStrength * (1 - _handbrakeEffect);
+            _rb.angularDrag = _stats.BodySO.CorneringResistanceCurve.Evaluate(_currentCarStats.SpeedPercent) *
+                              _stats.BodySO.CorneringResistanceStrength * _handbrakeEffect;
         }
 
         public void AutomaticFlipOverRecover(float flipOverRecoverTimerTotal)

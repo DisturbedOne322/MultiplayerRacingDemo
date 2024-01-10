@@ -11,11 +11,12 @@ namespace Assets.VehicleController
         private VehicleControllerPartsManager _partsManager;
 
         public VehicleStats VehicleStats;
+        private CarVisualsEssentials _carVisualsEssentials;
 
         #region Handling Settings
         [Header("   Handling settings")]
-        public PartTypes.DrivetrainType DrivetrainType;
-        public PartTypes.TransmissionType TransmissionType;
+        public DrivetrainType DrivetrainType;
+        public TransmissionType TransmissionType;
 
         [Space, Tooltip("Maximum steering angle in degrees")]
         public float SteerAngle = 25;
@@ -91,6 +92,9 @@ namespace Assets.VehicleController
             else
                 CurrentCarStats.Reset();
 
+            _carVisualsEssentials = GetComponent<CarVisualsEssentials>();
+            _carVisualsEssentials.Initialize(_rigidbody, CurrentCarStats);
+
             VehicleControllerInitializer initializer = new();
             (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_wheelControllersArray,
                 _steerWheelControllersArray, _rigidbody, transform, VehicleStats, _centerOfMass,
@@ -104,8 +108,9 @@ namespace Assets.VehicleController
             _partsManager.AutomaticFlipOverRecover(AutomaticFlipOverRecoverEnabled, AutomaticFlipOverRecoverDelay);
             _partsManager.ManageTransmissionUpShift(_inputProvider.GetGearUpInput());
             _partsManager.ManageTransmissionDownShift(_inputProvider.GetGearDownInput());
-        }
 
+            _carVisualsEssentials.HandleWheelVisuals(_inputProvider.GetHorizontalInput(), _steerWheelControllersArray[0].SteerAngle, SteerAngle);
+        }
         private void FixedUpdate()
         {
             _partsManager.ManageCarParts(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetNitroBoostInput(),

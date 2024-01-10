@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 
 namespace Assets.VehicleController
 {
@@ -80,8 +81,8 @@ namespace Assets.VehicleController
                 else
                 {
 #if UNITY_EDITOR
-                    Debug.Log("Wheel Controller couldn't automatically define wheel's radius as mesh renderer was not found " +
-                        "and you haven't set the radius value either. Radius has been set to default value (0.25).");
+                    Debug.Log("Wheel Controller couldn't automatically define wheel's radius as mesh renderer was not found. " +
+                        "\n Radius has been set to default value (0.25). Set the radius to correct value manually in edit mode.");
 #endif
                     _wheelRadius = 0.25f;
                 }
@@ -89,7 +90,10 @@ namespace Assets.VehicleController
             else
             {
 #if UNITY_EDITOR
-                Debug.Log("You have set the wheel radius on wheel " + gameObject.name + " manually, so it won't calculated from mesh renderer automatically.");
+                if (_wheelMeshTransform.TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
+                {
+                    Debug.Log("You have set the wheel radius on wheel " + gameObject.name + " manually, so it won't calculated from mesh renderer automatically.");
+                }
 #endif
             }
             _rb = rb;
@@ -126,7 +130,6 @@ namespace Assets.VehicleController
 
             float slipMultiplier = (_tireController.ForwardSlip / 10) + 1;
             float force = Torque / slipMultiplier;
-
             _rb.AddForceAtPosition(force * transform.forward, pos);
         }
         private void ApplySteering(Vector3 pos, float speed, float speedPercent)
@@ -142,10 +145,11 @@ namespace Assets.VehicleController
 
         private void CalculateWheelRPM(float speed)
         {
+            _speedRpm = speed / _wheelRadius;
+
             if (_hasContactWithGround)
             {
                 // this rpm is used to shift gears
-                _speedRpm = speed / _wheelRadius;
                 if(Torque == 0)
                 {
                     _visualRpm = speed / _wheelRadius;
@@ -168,9 +172,7 @@ namespace Assets.VehicleController
                 
                 return;
             }
-
             _slipWheelRPM = 0;
-
             if (BrakeForce == 0)
             {
                 if (Torque <= 0)

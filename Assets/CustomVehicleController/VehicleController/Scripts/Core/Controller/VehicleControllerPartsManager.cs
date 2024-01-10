@@ -40,8 +40,8 @@ namespace Assets.VehicleController
         }
 
         public void ManageCarParts(float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
-        bool handbrakeInput, float steerAngle, float steerSpeed, PartTypes.TransmissionType transmissionType, 
-        PartTypes.DrivetrainType drivetrainType, int suspensionSimulationPrecision)
+        bool handbrakeInput, float steerAngle, float steerSpeed, TransmissionType transmissionType, 
+        DrivetrainType drivetrainType, int suspensionSimulationPrecision)
         {
             UpdateDriveWheels(drivetrainType);
 
@@ -56,14 +56,14 @@ namespace Assets.VehicleController
             ManageWheels(suspensionSimulationPrecision);
         }
 
-        private void UpdateDriveWheels(PartTypes.DrivetrainType drivetrainType)
+        private void UpdateDriveWheels(DrivetrainType drivetrainType)
         {
             switch(drivetrainType)
             {
-                case PartTypes.DrivetrainType.RWD:
+                case DrivetrainType.RWD:
                     _driveWheelsArray = _rearWheelControllersArray;
                     break;
-                case PartTypes.DrivetrainType.FWD:
+                case DrivetrainType.FWD:
                     _driveWheelsArray = _forwardWheelControllersArray;
                     break;
                 default:

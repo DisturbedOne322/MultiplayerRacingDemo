@@ -11,8 +11,8 @@ namespace Assets.VehicleController
         private VehicleStats _stats;
 
         private float _minSpringLen;
-        private float _maxSpringLen;
-        private float _springLen;
+        public float _maxSpringLen;
+        public float _springLen;
         private float _lastSpringLen;
 
         private float _springVelocity;
@@ -28,6 +28,12 @@ namespace Assets.VehicleController
         private const float SM_DAMP_TIME = 0.25f;
         private Vector3 _smDampVelocity;
 
+        private float _distanceFromSuspensionTopPointToWheelTopPoint;
+
+        [SerializeField]
+        private AntiRollBar _antiRollBar;
+        public float _antiroll;
+
 #if UNITY_EDITOR
         private SuspensionSO _frontSuspensionSO;
         private SuspensionSO _rearSuspensionSO;
@@ -40,6 +46,7 @@ namespace Assets.VehicleController
             _wheelRadius = wheelRadius;
 
             _wheelInitialPosition = wheelVisual.transform.localPosition;
+            _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (wheelVisual.position.y + _wheelRadius);
             UpdateSpringStats();
             _wheelPosition = _restPosition;
 
@@ -74,7 +81,7 @@ namespace Assets.VehicleController
         {
             float restDistance = _isFrontSusp ? _stats.FrontSuspensionSO.SpringRestDistance : _stats.RearSuspensionSO.SpringRestDistance;
 
-            float springTravelDistance = restDistance * 0.5f;
+            float springTravelDistance = restDistance * 0.25f;
 
             _minSpringLen = restDistance - springTravelDistance;
             _maxSpringLen = restDistance + springTravelDistance;
@@ -85,9 +92,9 @@ namespace Assets.VehicleController
 
         public (Vector3, Vector3, bool) CalculateSpringForceAndHitPoint(int suspensionSimulationPrecision)
         {
-
             (bool hit, Vector3 averageHitPoint, Vector3 normal, float len) = FindAverageWheelContactPointAndHighestPoint(suspensionSimulationPrecision);
-            if(hit)
+
+            if (hit)
             {
                 _lastSpringLen = _springLen;
                 _springLen = Mathf.Clamp(len - _wheelRadius, _minSpringLen, _maxSpringLen);
@@ -159,12 +166,14 @@ namespace Assets.VehicleController
             float springForce = stiffness * (restDistance - _springLen);
             float damperForce = damper * _springVelocity;
 
-            return (springForce + damperForce) * normal;
+            _antiroll = _antiRollBar.GetAntiRollForce(_springLen, _maxSpringLen, this);
+
+            return (springForce + damperForce + _antiroll) * normal;
         }
 
         private void UpdateWheelPosition(float distance)
         {
-            float targetY = _wheelInitialPosition.y - (distance - _wheelRadius * 2);
+            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionTopPointToWheelTopPoint - (distance - _wheelRadius * 2);
 
             _wheelPosition = new(_wheelInitialPosition.x,
                                  targetY, 

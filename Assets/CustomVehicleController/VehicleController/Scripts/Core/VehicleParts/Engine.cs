@@ -35,7 +35,6 @@ namespace Assets.VehicleController
             float boost = nitroBoost + forcedInductionBoost;
 
             _totalTorque = CalculateAccelerationForce(input, rpm, boost);
-
             SetTorque(_totalTorque, driveWheelsArray);
         }
 

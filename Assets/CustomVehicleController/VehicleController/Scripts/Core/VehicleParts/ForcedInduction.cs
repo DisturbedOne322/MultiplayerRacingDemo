@@ -23,7 +23,7 @@ namespace Assets.VehicleController
             if (_stats.EngineSO.ForcedInductionSO == null)
                 return;
 
-            if (_stats.EngineSO.ForcedInductionSO.ForcedInductionType != PartTypes.ForcedInductionType.Turbocharger)
+            if (_stats.EngineSO.ForcedInductionSO.ForcedInductionType != ForcedInductionType.Turbocharger)
                 return;
             
             if (_boostPercent == 1)
@@ -39,11 +39,11 @@ namespace Assets.VehicleController
 
             switch (_stats.EngineSO.ForcedInductionSO.ForcedInductionType)
             {
-                case PartTypes.ForcedInductionType.Centrifugal:
+                case ForcedInductionType.Centrifugal:
                     return GetCentrifugalBoost();
-                case PartTypes.ForcedInductionType.Supercharger:
+                case ForcedInductionType.Supercharger:
                     return GetSuperchargerBoost();
-                case PartTypes.ForcedInductionType.Turbocharger:
+                case ForcedInductionType.Turbocharger:
                     return GetTurbochargerBoost(gasInput);
                 default:
                     return 0;

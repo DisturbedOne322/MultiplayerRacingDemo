@@ -39,7 +39,7 @@ namespace Assets.VehicleControllerEditor
 
         private EnumField _drivetrainTypeEnum;
         private const string DRIVETRAIN_TYPE_ENUM_NAME = "DrivetrainTypeEnum";
-        private PartTypes.DrivetrainType _drivetrainTypePlayMode;
+        private DrivetrainType _drivetrainTypePlayMode;
 
         private const string BODY_FOLDER_NAME = "VehicleBodies";
         public ControllerBodySettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
@@ -105,7 +105,7 @@ namespace Assets.VehicleControllerEditor
 
         public void CopyStats(SerializedObject serializedObject)
         {
-            _drivetrainTypePlayMode = (PartTypes.DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
+            _drivetrainTypePlayMode = (DrivetrainType)serializedObject.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
         }
 
         private void FindBodyFields()
@@ -127,10 +127,10 @@ namespace Assets.VehicleControllerEditor
             _bodyNameField = root.Q<TextField>(BODY_NAME_FIELD);
 
             _drivetrainTypeEnum = root.Q<EnumField>(DRIVETRAIN_TYPE_ENUM_NAME);
-            _drivetrainTypeEnum.RegisterValueChangedCallback(val => { UpdateDrivetrainType((PartTypes.DrivetrainType)_drivetrainTypeEnum.value); });
+            _drivetrainTypeEnum.RegisterValueChangedCallback(val => { UpdateDrivetrainType((DrivetrainType)_drivetrainTypeEnum.value); });
         }
 
-        private void UpdateDrivetrainType(PartTypes.DrivetrainType type)
+        private void UpdateDrivetrainType(DrivetrainType type)
         {
             SerializedObject serializedObject = _mainEditor.GetSerializedController();
 
@@ -255,7 +255,7 @@ namespace Assets.VehicleControllerEditor
                 return;
             }
 
-            _drivetrainTypeEnum.value = (PartTypes.DrivetrainType)so.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
+            _drivetrainTypeEnum.value = (DrivetrainType)so.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
             _bodyObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue;
         }
     }

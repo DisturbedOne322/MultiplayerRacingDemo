@@ -94,12 +94,12 @@ namespace Assets.VehicleController
             {
                 switch (ForcedInductionSO.ForcedInductionType)
                 {
-                    case PartTypes.ForcedInductionType.Centrifugal:
+                    case ForcedInductionType.Centrifugal:
                         boost = ForcedInductionSO.MaxTorqueBoostAmount * (maxTorqueRPM / maxEngineRPM);
                         break;
                     //for simplicity turbo will be considered giving maximum boost
-                    case PartTypes.ForcedInductionType.Turbocharger:
-                    case PartTypes.ForcedInductionType.Supercharger:
+                    case ForcedInductionType.Turbocharger:
+                    case ForcedInductionType.Supercharger:
                         boost = ForcedInductionSO.MaxTorqueBoostAmount;
                         break;
                     default:

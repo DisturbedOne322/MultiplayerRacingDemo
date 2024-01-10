@@ -10,7 +10,7 @@ namespace Assets.VehicleController
         public void ShiftDownManually();
         public void Initialize(VehicleStats stats, CurrentCarStats currentCarStats, IShifter shifter);
         public float EvaluateRPM(float gasInput, WheelController[] wheelControllers);
-        public void HandleGearChanges(PartTypes.TransmissionType transmissionType, WheelController[] wheelControllers);
+        public void HandleGearChanges(TransmissionType transmissionType, WheelController[] wheelControllers);
         public bool InShiftingCooldown();
         public bool Redlining();
         public void ShiftGear(int i);

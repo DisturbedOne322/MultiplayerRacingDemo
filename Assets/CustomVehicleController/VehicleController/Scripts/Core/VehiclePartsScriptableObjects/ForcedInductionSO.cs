@@ -5,7 +5,7 @@ namespace Assets.VehicleController
     [CreateAssetMenu(fileName = "ForcedInductionSO", menuName = "CustomVehicleController/ForcedInduction")]
     public class ForcedInductionSO : ScriptableObject
     {
-        public PartTypes.ForcedInductionType ForcedInductionType;
+        public ForcedInductionType ForcedInductionType;
         [Min(0)]
         public float MaxTorqueBoostAmount;
         [Range(0, 1f)]

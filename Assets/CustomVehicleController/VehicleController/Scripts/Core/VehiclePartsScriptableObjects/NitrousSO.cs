@@ -17,9 +17,4 @@ namespace Assets.VehicleController
         public float MinAmountPercentToUse;
         public NitroBoostType BoostType;
     }
-    public enum NitroBoostType
-    {
-        Continuous,
-        OneShot,
-    }
 }

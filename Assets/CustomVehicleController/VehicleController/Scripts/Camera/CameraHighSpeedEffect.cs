@@ -36,16 +36,16 @@ namespace Assets.VehicleController
         [SerializeField]
         private float MAX_ACCELERATION_FORCE = 10;
         [SerializeField]
-        private float MAX_FOV_INCREASE_FOR_ACCEL = 10;
+        private float MAX_FOV_INCREASE_FOR_ACCEL = 5;
         [SerializeField]
-        private float MAX_FOV_INCREASE_FOR_SPEED = 10;
+        private float MAX_FOV_INCREASE_FOR_SPEED = 5;
         [SerializeField]
         private float MAX_SPEED_IN_MS = 80;
         [SerializeField]
         private float MAX_SIDEWAYS_FORCE = 40;
 
         [SerializeField]
-        private float _nitroBoostFOV_Max = 20f;
+        private float _nitroBoostFOV_Max = 40f;
         private float _nitroFOV = 0;
         private float _nitroBoostSmDampVelocity;
         private float _nitroSmDampTime = 0.5f;
@@ -106,11 +106,11 @@ namespace Assets.VehicleController
             float speedFOV = speedPercent * MAX_FOV_INCREASE_FOR_SPEED;
             float accelFOV = Mathf.Clamp(accel / MAX_ACCELERATION_FORCE, -1, 1) * MAX_FOV_INCREASE_FOR_ACCEL;
 
-            float target = 0;
+            float _nitroFOV = 0;
             if (_currentCarStats.Accelerating && _currentCarStats.NitroBoosting)
-                target = _nitroBoostFOV_Max;
+                _nitroFOV = _nitroBoostFOV_Max;
 
-            _nitroFOV = Mathf.SmoothDamp(_nitroFOV, target, ref _nitroBoostSmDampVelocity, _nitroSmDampTime);
+            //_nitroFOV = Mathf.SmoothDamp(_nitroFOV, target, ref _nitroBoostSmDampVelocity, _nitroSmDampTime);
             _virtualCamera.m_Lens.FieldOfView = Mathf.SmoothDamp(_virtualCamera.m_Lens.FieldOfView,
                 DefaultFOV + speedFOV + accelFOV + _nitroFOV, ref _smDampVelocityFOV, SmDampSpeed);
         }

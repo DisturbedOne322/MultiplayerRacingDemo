@@ -7,7 +7,7 @@ namespace Assets.VehicleController
     {
         public event Action OnShifted;
 
-        private PartTypes.TransmissionType _transmissionType;
+        private TransmissionType _transmissionType;
 
         private CurrentCarStats _currentCarStats;
         private VehicleStats _stats;
@@ -90,7 +90,7 @@ namespace Assets.VehicleController
             UpdateRPMValues();
         }
 #endif
-        public void HandleGearChanges(PartTypes.TransmissionType transmissionType, WheelController[] wheelControllers)
+        public void HandleGearChanges(TransmissionType transmissionType, WheelController[] wheelControllers)
         {
             _transmissionType = transmissionType;
 
@@ -109,7 +109,7 @@ namespace Assets.VehicleController
 
             _redlining = RPMfromSpeed == _maxRPM;
 
-            if (transmissionType != PartTypes.TransmissionType.Automatic)
+            if (transmissionType != TransmissionType.Automatic)
                 return;
 
             if (_currentCarStats.InAir)
@@ -120,15 +120,16 @@ namespace Assets.VehicleController
 
         public float EvaluateRPM(float gasInput, WheelController[] wheelControllers)
         {
-            float visualRPM = 0;
+            float highestRPM = 0;
             int size = wheelControllers.Length;
 
             for (int i = 0; i < size; i++)
-                visualRPM += wheelControllers[i].VisualRPM;
+            {
+                if(Mathf.Abs(wheelControllers[i].VisualRPM) > highestRPM)
+                    highestRPM = Mathf.Abs(wheelControllers[i].VisualRPM);
+            }
 
-            visualRPM /= size;
-
-            float imaginaryEngineRPM = CalculateRealRPM(Mathf.Abs(visualRPM) * _stats.TransmissionSO.FinalDriveRatio * 60 / 6.28f);
+            float imaginaryEngineRPM = CalculateRealRPM(Mathf.Abs(highestRPM) * _stats.TransmissionSO.FinalDriveRatio * 60 / 6.28f);
 
             _currentEngineRPM = Mathf.SmoothDamp(_currentEngineRPM, imaginaryEngineRPM, ref smDampVelocity, SM_DAMP_SPEED);
 
@@ -232,7 +233,7 @@ namespace Assets.VehicleController
 
         public float DetermineGasInput(float gasInput, float breakInput)
         {
-            if(_transmissionType == PartTypes.TransmissionType.Automatic)
+            if(_transmissionType == TransmissionType.Automatic)
                 return _currentCarStats.Reversing ? -breakInput : gasInput;
 
             return _shifter.InReverseGear() ? -gasInput : gasInput;
@@ -240,7 +241,7 @@ namespace Assets.VehicleController
 
         public float DetermineBreakInput(float gasInput, float breakInput)
         {
-            if (_transmissionType == PartTypes.TransmissionType.Automatic)
+            if (_transmissionType == TransmissionType.Automatic)
                 return _currentCarStats.Reversing ? gasInput : breakInput;
 
             return breakInput;

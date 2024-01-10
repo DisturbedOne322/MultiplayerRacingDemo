@@ -12,30 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82044c98410c19146b7592afd1d240e9, type: 3}
   m_Name: MyBody 1
   m_EditorClassIdentifier: 
-  Mass: 1000
+  Mass: 1500
   ForwardDrag: 0.05
-  Downforce: 10
-  CorneringResistanceStrength: 15
+  Downforce: 50
+  CorneringResistanceStrength: 30
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0.037719727
-      inSlope: -0.088305265
-      outSlope: -0.088305265
+      time: 0.0000014137477
+      value: -0.00032281782
+      inSlope: 0.074252725
+      outSlope: 0.074252725
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.07465796
+      outWeight: 0.067583084
     - serializedVersion: 3
-      time: 1.0007324
-      value: 1.0014935
-      inSlope: 0.6633068
-      outSlope: 0.6633068
+      time: 1.0045776
+      value: 1.2311535
+      inSlope: 4.1181607
+      outSlope: 4.1181607
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.04058883
+      inWeight: 0.038794573
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

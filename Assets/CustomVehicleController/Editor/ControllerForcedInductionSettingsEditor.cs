@@ -80,7 +80,7 @@ namespace Assets.VehicleControllerEditor
         private void FindFIFields()
         {
             _foTypeEnum = root.Q<EnumField>(FI_TYPE_ENUM);
-            _foTypeEnum.RegisterValueChangedCallback(evt => { DisplayForcedInductionTypeField((PartTypes.ForcedInductionType)_foTypeEnum.value); });
+            _foTypeEnum.RegisterValueChangedCallback(evt => { DisplayForcedInductionTypeField((ForcedInductionType)_foTypeEnum.value); });
 
             _maxBoostField = root.Q<FloatField>(FI_MAX_BOOST_FIELD_NAME);
             _maxBoostField.RegisterValueChangedCallback(evt => { _maxBoostField.value = Mathf.Max(0, _maxBoostField.value); });
@@ -95,22 +95,22 @@ namespace Assets.VehicleControllerEditor
             _turboLagHolder = root.Q<VisualElement>(FI_TURBO_LAG_HOLDER_NAME);
         }
 
-        private void DisplayForcedInductionTypeField(PartTypes.ForcedInductionType type)
+        private void DisplayForcedInductionTypeField(ForcedInductionType type)
         {
             switch(type)
             {
-                case PartTypes.ForcedInductionType.None:
+                case ForcedInductionType.None:
                     _maxBoostField.style.display = DisplayStyle.None;
                     _turboLagHolder.style.display = DisplayStyle.None;
                     _turboSpinSpeedField.style.display = DisplayStyle.None;
                     break;
-                case PartTypes.ForcedInductionType.Supercharger:
-                case PartTypes.ForcedInductionType.Centrifugal:
+                case ForcedInductionType.Supercharger:
+                case ForcedInductionType.Centrifugal:
                     _maxBoostField.style.display = DisplayStyle.Flex;
                     _turboLagHolder.style.display = DisplayStyle.None;
                     _turboSpinSpeedField.style.display = DisplayStyle.None;
                     break;
-                case PartTypes.ForcedInductionType.Turbocharger:
+                case ForcedInductionType.Turbocharger:
                     _maxBoostField.style.display = DisplayStyle.Flex;
                     _turboLagHolder.style.display = DisplayStyle.Flex;
                     _turboSpinSpeedField.style.display = DisplayStyle.Flex;
@@ -189,7 +189,7 @@ namespace Assets.VehicleControllerEditor
         private ForcedInductionSO CreateDefaultFI()
         {
             ForcedInductionSO defaultFISO = ScriptableObject.CreateInstance<ForcedInductionSO>();
-            defaultFISO.ForcedInductionType = PartTypes.ForcedInductionType.None;
+            defaultFISO.ForcedInductionType = ForcedInductionType.None;
             defaultFISO.MaxTorqueBoostAmount = 50;
             defaultFISO.TurboRPMPercentDelay = 0.35f;   
             defaultFISO.TurboSpinTime = 2;

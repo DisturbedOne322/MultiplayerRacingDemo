@@ -1,7 +1,6 @@
 namespace Assets.VehicleController
 {
-    public struct PartTypes
-    {
+
         public enum DrivetrainType
         {
             RWD = 0,
@@ -22,5 +21,10 @@ namespace Assets.VehicleController
             Supercharger = 2,
             Centrifugal = 3
         }
-    }
+
+        public enum NitroBoostType
+        {
+            Continuous,
+            OneShot,
+        }
 }

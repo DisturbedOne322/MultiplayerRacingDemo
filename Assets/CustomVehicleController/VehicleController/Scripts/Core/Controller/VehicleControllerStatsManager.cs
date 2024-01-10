@@ -86,7 +86,7 @@ namespace Assets.VehicleController
                 _gearsArray[i - 1] = i.ToString();
         }
 
-        public void ManageStats(float gasInput, float brakeInput, bool handbrakeInput, float sideSlipThreshold, float fwdSlipThreshold, PartTypes.DrivetrainType drivetrainType)
+        public void ManageStats(float gasInput, float brakeInput, bool handbrakeInput, float sideSlipThreshold, float fwdSlipThreshold, DrivetrainType drivetrainType)
         {
             UpdateDriveWheels(drivetrainType);
             float speedMS = Vector3.Dot(_rb.velocity, _transform.forward);
@@ -120,14 +120,14 @@ namespace Assets.VehicleController
             UpdateCurrentGear();
         }
 
-        private void UpdateDriveWheels(PartTypes.DrivetrainType drivetrainType)
+        private void UpdateDriveWheels(DrivetrainType drivetrainType)
         {
             switch (drivetrainType)
             {
-                case PartTypes.DrivetrainType.FWD:
+                case DrivetrainType.FWD:
                     _driveWheelsArray = _frontWheelsArray;
                     break;
-                case PartTypes.DrivetrainType.RWD:
+                case DrivetrainType.RWD:
                     _driveWheelsArray = _rearWheelsArray;
                     break;
                 default:
@@ -146,15 +146,11 @@ namespace Assets.VehicleController
 
         private void CalculateDriftTime(float sideSlipThreshold)
         {
-            for(int i = 0;  i < _wheelsAmount; i++)
+            if (Mathf.Abs(Vector3.Dot(_rb.velocity.normalized, _transform.right)) > sideSlipThreshold)
             {
-                if (_wheelControllersArray[i].SidewaysSlip > sideSlipThreshold)
-                {
-                    _lastDriftTime = Time.time;
-                    break;
-                }            
-            }
-            
+                _lastDriftTime = Time.time;
+            }            
+                   
             _currentCarStats.DriftTime = Time.time < _lastDriftTime + 1 ? _currentCarStats.DriftTime + Time.deltaTime : 0;
         }
 

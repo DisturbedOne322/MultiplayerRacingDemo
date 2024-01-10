@@ -33,7 +33,7 @@ public class NitroSoundEffec : MonoBehaviour
 
             if (boostingTime > 0.4f)
             {
-                _reverbZone.reverbPreset = AudioReverbPreset.Psychotic;
+                _reverbZone.reverbPreset = AudioReverbPreset.City;
                 if (!_sourceCont.isPlaying)
                     _sourceCont.Play();
             }

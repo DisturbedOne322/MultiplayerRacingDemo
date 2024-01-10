@@ -13,7 +13,7 @@ namespace Assets.VehicleController
         private Transform[] _steerWheelTransforms;
 
         [SerializeField]
-        private PartTypes.DrivetrainType _drivetrainType;
+        private DrivetrainType _drivetrainType;
 
         [SerializeField]
         private Transform _centerOfGeometry;
@@ -108,7 +108,7 @@ namespace Assets.VehicleController
 
                 Undo.SetTransformParent(_steerWheelTransforms[i], steerWheelParent.transform, $"{i} Steer Parenting");
                 _steerWheelTransforms[i].transform.localPosition = new (0, 0, 0);
-                _steerWheelTransforms[i].transform.localRotation = Quaternion.identity;
+                //_steerWheelTransforms[i].transform.localRotation = Quaternion.identity;
 
                 _steerParentTransforms[i] = steerWheelParent.transform;
             }
@@ -127,7 +127,7 @@ namespace Assets.VehicleController
                 }
                 else
                 {
-                    Debug.LogError($"Wheel {_wheelTransforms[i].name} has no mesh renderer, " +
+                    Debug.LogWarning($"Wheel {_wheelTransforms[i].name} has no mesh renderer, " +
                         $"but you need to move the game object with wheel controller script up " +
                         $"to simulate suspension top point");
                 }

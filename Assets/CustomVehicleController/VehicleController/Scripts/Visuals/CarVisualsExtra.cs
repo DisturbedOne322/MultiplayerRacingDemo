@@ -122,7 +122,7 @@ namespace Assets.VehicleController
                 _antiLagEffect = new(this, _currentCarStats, _antiLagParameters);
 
             if (_enableNitroEffect)
-                _nitroEffect = new(_nitroParameters, _currentCarStats);
+                _nitroEffect = new(_nitroParameters, _currentCarStats, _rigidbody);
 
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect = new(_brakeLightsParameters);

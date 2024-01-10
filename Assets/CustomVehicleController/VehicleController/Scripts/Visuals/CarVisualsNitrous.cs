@@ -9,6 +9,7 @@ namespace Assets.VehicleController
     {
         private CurrentCarStats _currentCarStats;
         private NitrousParameters _parameters;
+        private Rigidbody _rigidbody;
 
         private VisualEffect[] _nitroVFXArray;
 
@@ -16,10 +17,11 @@ namespace Assets.VehicleController
         private const float SPAWN_AMOUNT_MAX = 30;
         private float _boostingTime = 0;
 
-        public CarVisualsNitrous(NitrousParameters nitrousParameters, CurrentCarStats currentCarStats)
+        public CarVisualsNitrous(NitrousParameters nitrousParameters, CurrentCarStats currentCarStats, Rigidbody rb)
         {
             _parameters = nitrousParameters;
             _currentCarStats = currentCarStats;
+            _rigidbody = rb;
 
             InitializeVFX();
         }
@@ -54,6 +56,11 @@ namespace Assets.VehicleController
             else
                 _boostingTime = 0;
 
+            Vector3 velocityNormalized;
+            if (_currentCarStats.SpeedInMsPerS < 1)
+                velocityNormalized = Vector3.zero;
+            else
+                velocityNormalized = _rigidbody.velocity.normalized;
 
             for (int i = 0; i < _nitroVFXArray.Length; i++)
             {
@@ -64,6 +71,7 @@ namespace Assets.VehicleController
                     _nitroVFXArray[i].SetGradient("color", _parameters.Gradient);
                     _nitroVFXArray[i].SetAnimationCurve("sizeCurve", _parameters.SizeOverLifeCurve);
                     _nitroVFXArray[i].SetFloat("spawnRate", _boostingTime < 0.5f ? Random.Range(0, SPAWN_AMOUNT_MAX / 4) : SPAWN_AMOUNT_MAX);
+                    _nitroVFXArray[i].SetVector3("velocity", velocityNormalized);
                 }
             }
         }

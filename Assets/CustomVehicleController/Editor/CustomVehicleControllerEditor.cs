@@ -109,7 +109,6 @@ namespace Assets.VehicleControllerEditor
             if (!_lockWindowToggle.value)
                 BindController(TryGetVehicleController());
 
-
             _serializedController.Update();
             SetVehicleControllerToSettingEditors(_serializedController);
         }

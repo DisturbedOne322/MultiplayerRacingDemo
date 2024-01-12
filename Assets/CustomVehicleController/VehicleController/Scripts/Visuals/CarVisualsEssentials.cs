@@ -79,7 +79,7 @@ namespace Assets.VehicleController
                 if(_currentCarStats.SpeedInMsPerS > 0.1f)
                     angle = Vector3.SignedAngle(transform.forward, _rigidBody.velocity, Vector3.up);
 
-                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, angle, ref _smDempVelocity, _smDampTime * 3);            
+                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, angle, ref _smDempVelocity, _smDampTime);            
             }
             else
                 _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, currentWheelAngle, ref _smDempVelocity, _smDampTime);

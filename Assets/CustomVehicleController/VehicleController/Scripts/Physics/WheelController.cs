@@ -52,13 +52,10 @@ namespace Assets.VehicleController
         {
             get { return _tireController.ForwardSlip; }
         }
-        private bool _hasContactWithGround;
         public bool HasContactWithGround
         {
-            get { return _hasContactWithGround; }
+            get { return _springController.HitInfo.Hit; }
         }
-        private Vector3 _hitPosition;
-        private Vector3 _springForce;
         #endregion
 
         #region Visuals
@@ -116,29 +113,22 @@ namespace Assets.VehicleController
         public void ControlWheel(float speed, float speedPercent, float acceleration, float distanceToGround, int suspensionSimulationPrecision)
         {
             transform.localRotation = Quaternion.Euler(new Vector3(0, steerAngle, 0));
-            (_springForce, _hitPosition, _hasContactWithGround) = _springController.CalculateSpringForceAndHitPoint(suspensionSimulationPrecision);
 
             _tireController.CalculateForwardSlip(Torque, _tireController.CalculateTireLoad(acceleration, distanceToGround), Mathf.Abs(speed));
             CalculateWheelRPM(speed);
 
-
-            if (!_hasContactWithGround)
+            if (!HasContactWithGround)
             {
                 UpdateWheelAirPosition();
                 return;
             }
-
-            ApplyBraking(_hitPosition);
-            ApplySuspension(_springForce, _hitPosition);
-            ApplySteering(_hitPosition, speed, speedPercent);
-            ApplyTorque(_hitPosition);
+            ApplyBraking(_wheelMeshTransform.position);
+            ApplySteering(_wheelMeshTransform.position, speed, speedPercent);
+            ApplyTorque(_wheelMeshTransform.position);
 
             UpdateWheelPosition(_springController.CurrentSpringLength);
         }
-        private void ApplySuspension(Vector3 springForce, Vector3 pos)
-        {
-            _rb.AddForceAtPosition(springForce, pos);
-        }
+
         private void ApplyTorque(Vector3 pos)
         {
             if (Torque == 0)
@@ -163,7 +153,7 @@ namespace Assets.VehicleController
         {
             _speedRpm = speed / _wheelRadius;
 
-            if (_hasContactWithGround)
+            if (HasContactWithGround)
             {
                 // this rpm is used to shift gears
                 if(Torque == 0)
@@ -206,9 +196,6 @@ namespace Assets.VehicleController
             _wheelPosition = new(_wheelInitialPosition.x,
                                  targetY,
                                  _wheelInitialPosition.z);
-
-            Debug.Log(_springController.CurrentSpringLength);
-
         }
 
         private void UpdateWheelAirPosition()
@@ -218,20 +205,19 @@ namespace Assets.VehicleController
                 _wheelInitialPosition - new Vector3(0, _springController.MaximumSpringLength - _distanceFromSuspensionTopPointToWheelTopPoint - _wheelRadius, 0),
                 Vector3.Dot(transform.up, Vector3.up) / 2 + 0.5f);
 
-            Debug.Log(_springController.SpringRestLength);
-
             _wheelPosition = Vector3.SmoothDamp(_wheelPosition, target, ref _smDampVelocity, SM_DAMP_TIME);
         }
 
         public void SetWheelMeshTransform(Transform transform) => _wheelMeshTransform = transform;
 
-        public Vector3 GetHitPosition() => _hitPosition;
-
         //for the editor, it uses it to define if the controller has been initialized
         public Transform GetWheelTransform() => _wheelMeshTransform;
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos() => Gizmos.DrawWireSphere(_wheelMeshTransform.position, _wheelRadius);
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireSphere(_wheelMeshTransform.position, _wheelRadius);
+        }
 #endif
     }
 }

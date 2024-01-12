@@ -1,3 +1,5 @@
+using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 
@@ -30,16 +32,17 @@ namespace Assets.VehicleController
         {
             get => _springRestLength;
         }
+        private HitInformation _hitInfo;
+        public HitInformation HitInfo
+        {
+            get => _hitInfo;
+        }
 
         private float _lastSpringLength;
 
         private float _springVelocity;
 
         private bool _isFrontSusp;
-
-        [SerializeField]
-        private AntiRollBar _antiRollBar;
-        public float _antiroll;
 
 #if UNITY_EDITOR
         private SuspensionSO _frontSuspensionSO;
@@ -51,6 +54,7 @@ namespace Assets.VehicleController
             _stats = stats;
             _isFrontSusp = front;
             _wheelRadius = wheelRadius;
+            _hitInfo = new ();
             UpdateSpringStats();
 #if UNITY_EDITOR
             _stats.OnFieldChanged += OnFieldChanged;
@@ -89,31 +93,31 @@ namespace Assets.VehicleController
             _maxSpringLength = _springRestLength + springTravelDistance; 
         }
 
-        public (Vector3, Vector3, bool) CalculateSpringForceAndHitPoint(int suspensionSimulationPrecision)
+        public void CalculateSpringForceAndHitPoint(int suspensionSimulationPrecision)
         {
-            (bool hit, Vector3 averageHitPoint, Vector3 normal, float len) = FindAverageWheelContactPointAndHighestPoint(suspensionSimulationPrecision);
+            FindAverageWheelContactPointAndHighestPoint(suspensionSimulationPrecision);
 
-            if (hit)
+            if (_hitInfo.Hit)
             {
                 _lastSpringLength = _currentSpringLength;
-                _currentSpringLength = Mathf.Clamp(len - _wheelRadius, _minSpringLength, _maxSpringLength);
+                _currentSpringLength = Mathf.Clamp(_hitInfo.Distance - _wheelRadius, _minSpringLength, _maxSpringLength);
 
                 _springVelocity = (_lastSpringLength - _currentSpringLength) / Time.fixedDeltaTime;
-
-                return (GetSuspForce(normal), averageHitPoint, true);
-            }
-            
-            return (Vector3.zero, transform.position, false);
+            }          
         }
 
-        private (bool, Vector3, Vector3, float) FindAverageWheelContactPointAndHighestPoint(int suspensionSimulationPrecision)
+        private void FindAverageWheelContactPointAndHighestPoint(int suspensionSimulationPrecision)
         {
             if (suspensionSimulationPrecision <= 1)
             {
                 if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, _maxSpringLength + _wheelRadius))
-                    return (true, hit.point, hit.normal, hit.distance);
+                {
+                    _hitInfo.SetHitInfo(true, hit.point, hit.normal, hit.distance);
+                    return;
+                }
 
-                return (false, Vector3.zero, Vector3.zero, 0);
+                _hitInfo.SetHitInfo(false, Vector3.zero, Vector3.zero, 0);
+                return;
             }
 
 
@@ -144,17 +148,20 @@ namespace Assets.VehicleController
             }
 
             if (hits == 0)
-                return (false, Vector3.zero, Vector3.zero, 0);
+            {
+                _hitInfo.SetHitInfo(false, Vector3.zero, Vector3.zero, 0);
+                return;
+            }
 
 
             averageHitPoint /= hits;
             averageDistance /= hits;
             normalAverage /= hits;
 
-            return (true, averageHitPoint, normalAverage, averageDistance);
+            _hitInfo.SetHitInfo(true, averageHitPoint, normalAverage, averageDistance);
         }
 
-        private Vector3 GetSuspForce(Vector3 normal)
+        public float GetSuspForce()
         {
             float stiffness = _isFrontSusp? _stats.FrontSuspensionSO.SpringStiffness: _stats.RearSuspensionSO.SpringStiffness;
             float restDistance = _isFrontSusp ? _stats.FrontSuspensionSO.SpringRestDistance: _stats.RearSuspensionSO.SpringRestDistance;
@@ -163,9 +170,23 @@ namespace Assets.VehicleController
             float springForce = stiffness * (restDistance - _currentSpringLength);
             float damperForce = damper * _springVelocity;
 
-            _antiroll = _antiRollBar.GetAntiRollForce(_currentSpringLength, _maxSpringLength, this);
+            return (springForce + damperForce);
+        }
 
-            return (springForce + damperForce + _antiroll) * normal;
+        public class HitInformation
+        {
+            public bool Hit = false;
+            public Vector3 Position = Vector3.zero;
+            public Vector3 HitNormal = Vector3.zero;
+            public float Distance = 0;
+
+            public void SetHitInfo(bool hit, Vector3 pos, Vector3 normal, float dist)
+            {
+                Hit = hit;
+                Position = pos;
+                HitNormal = normal;
+                Distance = dist;
+            }
         }
     }
 }

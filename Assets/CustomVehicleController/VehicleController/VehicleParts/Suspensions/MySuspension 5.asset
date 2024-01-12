@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MySuspension 5
   m_EditorClassIdentifier: 
   SpringRestDistance: 0.22
-  SpringStiffness: 300000
+  SpringStiffness: 200000
   SpringDampingStiffness: 5000

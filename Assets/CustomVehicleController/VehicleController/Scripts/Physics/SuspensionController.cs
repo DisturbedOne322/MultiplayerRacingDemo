@@ -10,25 +10,32 @@ namespace Assets.VehicleController
 
         private VehicleStats _stats;
 
-        private float _minSpringLen;
-        public float _maxSpringLen;
-        public float _springLen;
-        private float _lastSpringLen;
+        private float _minSpringLength;
+        public float MinimumSpringLength
+        {
+            get => _minSpringLength;
+        }
+        private float _maxSpringLength;
+        public float MaximumSpringLength
+        {
+            get => _maxSpringLength;
+        }
+        private float _currentSpringLength;
+        public float CurrentSpringLength
+        {
+            get => _currentSpringLength;
+        }
+        private float _springRestLength;
+        public float SpringRestLength
+        {
+            get => _springRestLength;
+        }
+
+        private float _lastSpringLength;
 
         private float _springVelocity;
 
-        private Vector3 _restPosition;
-
-        private Vector3 _wheelInitialPosition;
-
-        private Vector3 _wheelPosition;
-
         private bool _isFrontSusp;
-
-        private const float SM_DAMP_TIME = 0.25f;
-        private Vector3 _smDampVelocity;
-
-        private float _distanceFromSuspensionTopPointToWheelTopPoint;
 
         [SerializeField]
         private AntiRollBar _antiRollBar;
@@ -44,12 +51,7 @@ namespace Assets.VehicleController
             _stats = stats;
             _isFrontSusp = front;
             _wheelRadius = wheelRadius;
-
-            _wheelInitialPosition = wheelVisual.transform.localPosition;
-            _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (wheelVisual.position.y + _wheelRadius);
             UpdateSpringStats();
-            _wheelPosition = _restPosition;
-
 #if UNITY_EDITOR
             _stats.OnFieldChanged += OnFieldChanged;
             _frontSuspensionSO = _stats.FrontSuspensionSO;
@@ -79,15 +81,12 @@ namespace Assets.VehicleController
 
         private void UpdateSpringStats()
         {
-            float restDistance = _isFrontSusp ? _stats.FrontSuspensionSO.SpringRestDistance : _stats.RearSuspensionSO.SpringRestDistance;
+            _springRestLength = _isFrontSusp ? _stats.FrontSuspensionSO.SpringRestDistance : _stats.RearSuspensionSO.SpringRestDistance;
 
-            float springTravelDistance = restDistance * 0.25f;
+            float springTravelDistance = _springRestLength * 0.33f;
 
-            _minSpringLen = restDistance - springTravelDistance;
-            _maxSpringLen = restDistance + springTravelDistance;
-
-            _restPosition = _wheelInitialPosition;
-            _restPosition.y -= springTravelDistance;
+            _minSpringLength = _springRestLength - springTravelDistance;
+            _maxSpringLength = _springRestLength + springTravelDistance; 
         }
 
         public (Vector3, Vector3, bool) CalculateSpringForceAndHitPoint(int suspensionSimulationPrecision)
@@ -96,17 +95,14 @@ namespace Assets.VehicleController
 
             if (hit)
             {
-                _lastSpringLen = _springLen;
-                _springLen = Mathf.Clamp(len - _wheelRadius, _minSpringLen, _maxSpringLen);
+                _lastSpringLength = _currentSpringLength;
+                _currentSpringLength = Mathf.Clamp(len - _wheelRadius, _minSpringLength, _maxSpringLength);
 
-                _springVelocity = (_lastSpringLen - _springLen) / Time.fixedDeltaTime;
-
-                UpdateWheelPosition(len);
+                _springVelocity = (_lastSpringLength - _currentSpringLength) / Time.fixedDeltaTime;
 
                 return (GetSuspForce(normal), averageHitPoint, true);
             }
             
-            UpdateWheelAirPosition();
             return (Vector3.zero, transform.position, false);
         }
 
@@ -114,7 +110,7 @@ namespace Assets.VehicleController
         {
             if (suspensionSimulationPrecision <= 1)
             {
-                if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, _maxSpringLen + _wheelRadius))
+                if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, _maxSpringLength + _wheelRadius))
                     return (true, hit.point, hit.normal, hit.distance);
 
                 return (false, Vector3.zero, Vector3.zero, 0);
@@ -135,13 +131,14 @@ namespace Assets.VehicleController
 
                 Ray ray = new Ray(transform.position + transform.forward * offsetZ, -transform.up);
 
-                if (Physics.Raycast(ray, out RaycastHit hit, _maxSpringLen + _wheelRadius))
+                if (Physics.Raycast(ray, out RaycastHit hit, _maxSpringLength + _wheelRadius))
                 {
+#if UNITY_EDITOR
                     Debug.DrawLine(transform.position + transform.forward * offsetZ, hit.point);
+#endif
                     averageHitPoint += hit.point;
                     averageDistance += hit.distance;
                     normalAverage += hit.normal;
-
                     hits++;
                 }
             }
@@ -163,30 +160,13 @@ namespace Assets.VehicleController
             float restDistance = _isFrontSusp ? _stats.FrontSuspensionSO.SpringRestDistance: _stats.RearSuspensionSO.SpringRestDistance;
             float damper = _isFrontSusp ? _stats.FrontSuspensionSO.SpringDampingStiffness : _stats.RearSuspensionSO.SpringDampingStiffness;
 
-            float springForce = stiffness * (restDistance - _springLen);
+            float springForce = stiffness * (restDistance - _currentSpringLength);
             float damperForce = damper * _springVelocity;
 
-            _antiroll = _antiRollBar.GetAntiRollForce(_springLen, _maxSpringLen, this);
+            _antiroll = _antiRollBar.GetAntiRollForce(_currentSpringLength, _maxSpringLength, this);
 
             return (springForce + damperForce + _antiroll) * normal;
         }
-
-        private void UpdateWheelPosition(float distance)
-        {
-            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionTopPointToWheelTopPoint - (distance - _wheelRadius * 2);
-
-            _wheelPosition = new(_wheelInitialPosition.x,
-                                 targetY, 
-                                 _wheelInitialPosition.z);
-        }
-
-        private void UpdateWheelAirPosition()
-        {
-            Vector3 target = Vector3.Lerp(_wheelInitialPosition, _restPosition, Vector3.Dot(transform.up, Vector3.up) / 2 + 0.5f);
-            _wheelPosition = Vector3.SmoothDamp(_wheelPosition, target, ref _smDampVelocity, SM_DAMP_TIME);
-        }
-
-        public Vector3 GetWheelPosition() => _wheelPosition;
     }
 }
 

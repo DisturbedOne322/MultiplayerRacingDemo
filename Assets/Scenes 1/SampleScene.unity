@@ -154,10 +154,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd60d6ca3d919194aa2e89a8b2ca6747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _suspensionArray:
-  - {fileID: 1417227007}
-  - {fileID: 112283392}
-  AntiRoll: 50000
+  _leftSuspension: {fileID: 1417227007}
+  _rightSuspension: {fileID: 112283392}
+  AntiRollStrength: 50000
   _leftTravel: 1
   _rightTravel: 1
 --- !u!4 &1695653
@@ -324,8 +323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c117d0dcb9fd1f047b6a60aa9ad18b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSpringLen: 0
-  _springLen: 0
   _antiRollBar: {fileID: 642054510}
   _antiroll: 0
 --- !u!114 &54832124
@@ -444,8 +441,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c117d0dcb9fd1f047b6a60aa9ad18b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSpringLen: 0
-  _springLen: 0
   _antiRollBar: {fileID: 1695652}
   _antiroll: 0
 --- !u!4 &112283393
@@ -1215,8 +1210,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517841067}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09618528, y: -0.00000000428165, z: 4.137501e-10, w: 0.9953635}
-  m_LocalPosition: {x: 0, y: 3.15, z: -3.93}
+  m_LocalRotation: {x: 0.09618035, y: -0.000000017653704, z: 0.0000000017058478, w: 0.99536395}
+  m_LocalPosition: {x: 0, y: 11.52, z: 7462.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1622,10 +1617,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd60d6ca3d919194aa2e89a8b2ca6747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _suspensionArray:
-  - {fileID: 2037188904}
-  - {fileID: 54832123}
-  AntiRoll: 50000
+  _leftSuspension: {fileID: 2037188904}
+  _rightSuspension: {fileID: 54832123}
+  AntiRollStrength: 50000
   _leftTravel: 1
   _rightTravel: 1
 --- !u!1 &721333772
@@ -2113,8 +2107,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081317591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09618528, y: -0.00000000428165, z: 4.137501e-10, w: 0.9953635}
-  m_LocalPosition: {x: 0, y: 3.15, z: -3.93}
+  m_LocalRotation: {x: 0.09618035, y: -0.000000017653704, z: 0.0000000017058478, w: 0.99536395}
+  m_LocalPosition: {x: 0, y: 11.52, z: 7462.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3357,8 +3351,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c117d0dcb9fd1f047b6a60aa9ad18b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSpringLen: 0
-  _springLen: 0
   _antiRollBar: {fileID: 1695652}
   _antiroll: 0
 --- !u!114 &1417227008
@@ -4496,8 +4488,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c117d0dcb9fd1f047b6a60aa9ad18b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSpringLen: 0
-  _springLen: 0
   _antiRollBar: {fileID: 642054510}
   _antiroll: 0
 --- !u!114 &2037188905
@@ -4958,7 +4948,7 @@ Transform:
   m_GameObject: {fileID: 311576484562101898}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.63, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 7466.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5185,7 +5175,7 @@ MonoBehaviour:
     RearTiresSO: {fileID: 11400000, guid: 74070100d2f461947bc8b7919f451bd3, type: 2}
     FrontSuspensionSO: {fileID: 11400000, guid: 055458320c0fe4c4791b3da1b29670bc,
       type: 2}
-    RearSuspensionSO: {fileID: 11400000, guid: e58c80dac05e61a478bcfb449bb74a4c, type: 2}
+    RearSuspensionSO: {fileID: 11400000, guid: 055458320c0fe4c4791b3da1b29670bc, type: 2}
     BrakesSO: {fileID: 11400000, guid: 64d9a289927543d40b3264a26bdfa404, type: 2}
     BodySO: {fileID: 11400000, guid: 3db7fb85ec7a7c3458b60064742f08ea, type: 2}
   DrivetrainType: 0
@@ -5196,8 +5186,8 @@ MonoBehaviour:
   _centerOfGeometry: {fileID: 1098147250}
   ForwardSlippingThreshold: 0.1
   SidewaysSlippingThreshold: 0.3
-  AerialControlsEnabled: 1
-  AerialControlsSensitivity: 5000
+  AerialControlsEnabled: 0
+  AerialControlsSensitivity: 3000
   AutomaticFlipOverRecoverEnabled: 0
   AutomaticFlipOverRecoverDelay: 0.1
   _rigidbody: {fileID: 2562711910941428478}
@@ -5223,7 +5213,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdf4fc1061be60c4dae1ad27be7274d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rigidBody: {fileID: 2562711910941428478}
   _wheelMeshes:
   - {fileID: 1136208433993577649}
   - {fileID: 8091703249924999460}

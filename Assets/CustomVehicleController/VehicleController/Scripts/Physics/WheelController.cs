@@ -64,10 +64,16 @@ namespace Assets.VehicleController
         #region Visuals
         [SerializeField, Tooltip("Transform component of the wheel this this component represents.")]
         private Transform _wheelMeshTransform;
+        private Vector3 _wheelPosition;
         public Vector3 WheelPosition
         {
-            get { return _springController.GetWheelPosition(); }
+            get { return _wheelPosition; }
         }
+        private Vector3 _wheelInitialPosition;
+        private float _distanceFromSuspensionTopPointToWheelTopPoint;
+        private const float SM_DAMP_TIME = 0.25f;
+        private Vector3 _smDampVelocity;
+
         #endregion
 
         public void Initialize(VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
@@ -101,6 +107,10 @@ namespace Assets.VehicleController
             _springController.Initialize(vehicleStats, front, _wheelRadius, _wheelMeshTransform);
             _tireController = GetComponent<TireController>();
             _tireController.Initialize(vehicleStats, front, axelLen, wheelBaseLen, _rb);
+
+            _wheelInitialPosition = _wheelMeshTransform.transform.localPosition;
+            _wheelPosition = _wheelInitialPosition;
+            _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
         }
 
         public void ControlWheel(float speed, float speedPercent, float acceleration, float distanceToGround, int suspensionSimulationPrecision)
@@ -111,13 +121,19 @@ namespace Assets.VehicleController
             _tireController.CalculateForwardSlip(Torque, _tireController.CalculateTireLoad(acceleration, distanceToGround), Mathf.Abs(speed));
             CalculateWheelRPM(speed);
 
+
             if (!_hasContactWithGround)
+            {
+                UpdateWheelAirPosition();
                 return;
+            }
 
             ApplyBraking(_hitPosition);
             ApplySuspension(_springForce, _hitPosition);
             ApplySteering(_hitPosition, speed, speedPercent);
             ApplyTorque(_hitPosition);
+
+            UpdateWheelPosition(_springController.CurrentSpringLength);
         }
         private void ApplySuspension(Vector3 springForce, Vector3 pos)
         {
@@ -184,6 +200,29 @@ namespace Assets.VehicleController
                 _visualRpm -= _visualRpm * Time.fixedDeltaTime * 10;
         }
 
+        private void UpdateWheelPosition(float distance)
+        {
+            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionTopPointToWheelTopPoint - (distance - _wheelRadius);
+            _wheelPosition = new(_wheelInitialPosition.x,
+                                 targetY,
+                                 _wheelInitialPosition.z);
+
+            Debug.Log(_springController.CurrentSpringLength);
+
+        }
+
+        private void UpdateWheelAirPosition()
+        {
+            Vector3 target = Vector3.Lerp(
+                _wheelInitialPosition - new Vector3(0, _springController.MinimumSpringLength - _distanceFromSuspensionTopPointToWheelTopPoint - _wheelRadius, 0), 
+                _wheelInitialPosition - new Vector3(0, _springController.MaximumSpringLength - _distanceFromSuspensionTopPointToWheelTopPoint - _wheelRadius, 0),
+                Vector3.Dot(transform.up, Vector3.up) / 2 + 0.5f);
+
+            Debug.Log(_springController.SpringRestLength);
+
+            _wheelPosition = Vector3.SmoothDamp(_wheelPosition, target, ref _smDampVelocity, SM_DAMP_TIME);
+        }
+
         public void SetWheelMeshTransform(Transform transform) => _wheelMeshTransform = transform;
 
         public Vector3 GetHitPosition() => _hitPosition;
@@ -191,9 +230,8 @@ namespace Assets.VehicleController
         //for the editor, it uses it to define if the controller has been initialized
         public Transform GetWheelTransform() => _wheelMeshTransform;
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawWireSphere(_wheelMeshTransform.position, _wheelRadius);
-        }
+#if UNITY_EDITOR
+        private void OnDrawGizmos() => Gizmos.DrawWireSphere(_wheelMeshTransform.position, _wheelRadius);
+#endif
     }
 }

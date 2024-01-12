@@ -138,7 +138,7 @@ namespace Assets.VehicleController
 
         private void CalculateDriftAngle()
         {
-            if (_currentCarStats.SpeedInMsPerS > 1)
+            if (_currentCarStats.SpeedInMsPerS > 0.1f)
                 _currentCarStats.DriftAngle = Vector3.Angle(_transform.forward, _rb.velocity);
             else
                 _currentCarStats.DriftAngle = 0;

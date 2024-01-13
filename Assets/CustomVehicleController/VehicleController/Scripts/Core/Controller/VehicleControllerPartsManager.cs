@@ -12,19 +12,19 @@ namespace Assets.VehicleController
 
         private CurrentCarStats _currentCarStats;
 
-        private WheelController[] _wheelControllersArray;
-        private WheelController[] _forwardWheelControllersArray;
-        private WheelController[] _rearWheelControllersArray;
+        private VehicleAxle[] _axleArray;
+        private VehicleAxle[] _frontAxleArray;
+        private VehicleAxle[] _rearAxleArray;
 
-        private WheelController[] _driveWheelsArray;
+        private VehicleAxle[] _driveAxleArray;
 
         private Transform _centerOfGeometry;
         private Transform _transform;
 
         public VehicleControllerPartsManager(IBody body, IEngine engine, ITransmission transmission, IBrakes brakes,
             IHandling handling, CurrentCarStats currentCarStats, Transform transform,
-            WheelController[] wheelControllers, WheelController[] frontWheels
-            , WheelController[] rearWheels, Transform centerOfGeometry)
+            VehicleAxle[] axleArray, VehicleAxle[] frontAxleArray
+            , VehicleAxle[] rearAxleArray, Transform centerOfGeometry)
         {
             _body = body;
             _engine = engine;
@@ -33,9 +33,9 @@ namespace Assets.VehicleController
             _handling = handling;
             _currentCarStats = currentCarStats;
             _transform = transform;
-            _wheelControllersArray = wheelControllers;
-            _forwardWheelControllersArray = frontWheels;
-            _rearWheelControllersArray = rearWheels;
+            _axleArray = axleArray;
+            _frontAxleArray = frontAxleArray;
+            _rearAxleArray = rearAxleArray;
             _centerOfGeometry = centerOfGeometry;
         }
 
@@ -48,12 +48,12 @@ namespace Assets.VehicleController
             _body.AddDownforce();
             _body.AddCorneringForce();
 
-            _engine.Accelerate(_driveWheelsArray, gasInput, breakInput, nitroBoostInput, _currentCarStats.EngineRPM);
+            _engine.Accelerate(_driveAxleArray, gasInput, breakInput, nitroBoostInput, _currentCarStats.EngineRPM);
 
             _breaks.Break(gasInput, breakInput, handbrakeInput);
             _handling.SteerWheels(horizontalInput, steerAngle, steerSpeed);
-            _transmission.HandleGearChanges(transmissionType, _driveWheelsArray);
-            ManageWheels(suspensionSimulationPrecision);
+            _transmission.HandleGearChanges(transmissionType, _driveAxleArray);
+            ManageWheelsPhysics(suspensionSimulationPrecision);
         }
 
         private void UpdateDriveWheels(DrivetrainType drivetrainType)
@@ -61,13 +61,13 @@ namespace Assets.VehicleController
             switch(drivetrainType)
             {
                 case DrivetrainType.RWD:
-                    _driveWheelsArray = _rearWheelControllersArray;
+                    _driveAxleArray = _rearAxleArray;
                     break;
                 case DrivetrainType.FWD:
-                    _driveWheelsArray = _forwardWheelControllersArray;
+                    _driveAxleArray = _frontAxleArray;
                     break;
                 default:
-                    _driveWheelsArray = _wheelControllersArray; 
+                    _driveAxleArray = _axleArray; 
                     break;
             }
         }
@@ -84,13 +84,13 @@ namespace Assets.VehicleController
                 _transmission.ShiftDownManually();
         }
 
-        public void ManageWheels(int suspensionSimulationPrecision)
+        public void ManageWheelsPhysics(int suspensionSimulationPrecision)
         {
             float dist = GetDistanceToGroundFromCoG();
-            int size = _wheelControllersArray.Length;
+            int size = _axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                _wheelControllersArray[i].ControlWheel(_currentCarStats.SpeedInMsPerS, _currentCarStats.SpeedPercent, _currentCarStats.AccelerationForce, dist, suspensionSimulationPrecision);
+                _axleArray[i].HandleVehicleAxle(_currentCarStats.SpeedInMsPerS, _currentCarStats.SpeedPercent, _currentCarStats.AccelerationForce, dist, suspensionSimulationPrecision);
             }
         }
         private float GetDistanceToGroundFromCoG()

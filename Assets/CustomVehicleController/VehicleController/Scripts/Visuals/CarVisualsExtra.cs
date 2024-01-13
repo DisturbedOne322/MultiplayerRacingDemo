@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -17,10 +18,9 @@ namespace Assets.VehicleController
 
         #region Wheel Meshes
         [SerializeField]
-        private Transform[] _wheelMeshes;
-        [SerializeField]
-        public WheelController[] _wheelControllerArray;
-        private int _wheelMeshesSize;
+        public VehicleAxle[] _axleArray;
+        private WheelController[] _wheelControllerArray;
+        private Transform[] _wheelMeshesArray;
         #endregion
 
         #region Extra Effects
@@ -80,12 +80,15 @@ namespace Assets.VehicleController
 
         private void Awake()
         {
-            _wheelMeshesSize = _wheelMeshes.Length;
-            _lastStopEmitTimeArray = new float[_wheelMeshesSize];
-            _shouldEmitArray = new bool[_wheelMeshesSize];
+            _lastStopEmitTimeArray = new float[_axleArray.Length * 2];
+            _shouldEmitArray = new bool[_axleArray.Length * 2];
+
+            _wheelControllerArray = VehicleAxle.ExtractVehicleWheelControllerArray(_axleArray);
+            _wheelMeshesArray = VehicleAxle.ExtractVehicleWheelVisualTransformArray(_axleArray);
 
             TryInstantiateExtraEffects();
         }
+
 
         private void Update()
         {
@@ -113,10 +116,10 @@ namespace Assets.VehicleController
         private void TryInstantiateExtraEffects()
         {
             if(_enableTireSmoke)
-                _tireSmoke = new (_wheelMeshes, _wheelControllerArray, transform, _tireSmokeParameters);
+                _tireSmoke = new (_wheelMeshesArray, _wheelControllerArray, transform, _tireSmokeParameters);
 
             if (_enableTireTrails)
-                _tireTrails = new(_wheelMeshes, _wheelControllerArray, _tireTrailParameters);
+                _tireTrails = new(_wheelMeshesArray, _wheelControllerArray, _tireTrailParameters);
 
             if (_enableAntiLagEffect)
                 _antiLagEffect = new(this, _currentCarStats, _antiLagParameters);
@@ -139,7 +142,7 @@ namespace Assets.VehicleController
 
         private void ShouldEmitWheelEffects()
         {
-            for (int i = 0; i < _wheelMeshesSize; i++)
+            for (int i = 0; i < _axleArray.Length * 2; i++)
             {
                 if (_currentCarStats.WheelSlipArray[i])
                 {
@@ -155,32 +158,33 @@ namespace Assets.VehicleController
 
         private void DisplaySmokeEffects()
         {
-            for (int i = 0; i < _wheelMeshesSize; i++)
+            Vector3 velocityNormalized = _rigidbody.velocity.normalized;
+            for (int i = 0; i < _wheelMeshesArray.Length; i++)
             {
                 if (!_wheelControllerArray[i].HasContactWithGround)
                 {
                     _tireSmoke.HandleSmokeEffects(false, i,
-                        _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
+                        velocityNormalized, _currentCarStats.SpeedInMsPerS);
                     continue;
                 }
 
                 if (_shouldEmitArray[i])
                 {
                     _tireSmoke.HandleSmokeEffects(true, i,
-                        _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
+                        velocityNormalized, _currentCarStats.SpeedInMsPerS);
                 }
                 else
                 {
                     bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
                     _tireSmoke.HandleSmokeEffects(display, i,
-                        _rigidbody.velocity.normalized, _currentCarStats.SpeedInMsPerS);
+                        velocityNormalized, _currentCarStats.SpeedInMsPerS);
                 }
             }
         }
 
         private void DisplaySkidMarksEffects()
         {
-            for (int i = 0; i < _wheelMeshesSize; i++)
+            for (int i = 0; i < _wheelMeshesArray.Length; i++)
             {
                 if (!_wheelControllerArray[i].HasContactWithGround)
                 {
@@ -208,8 +212,7 @@ namespace Assets.VehicleController
                 Debug.LogError("CarVisualsEssentials is not assigned");
                 return;
             }
-            _wheelMeshes = _carVisualsEssentials.GetWheelMeshes();
-            _wheelControllerArray = _carVisualsEssentials.GetWheelControllerArray();
+            _axleArray= _carVisualsEssentials.GetAxleArray();
 
             _currentCarStats = _carVisualsEssentials.GetCurrentCarStats();
             _rigidbody = _carVisualsEssentials.GetRigidbody();

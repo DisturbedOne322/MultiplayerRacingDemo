@@ -10,6 +10,7 @@ namespace Assets.VehicleController
 
         [SerializeField]
         private CustomVehicleController _vehicleController;
+        private CurrentCarStats _currentCarStats;
 
         [SerializeField]
         private CarExtraSoundsSO _extraSoundSO;
@@ -73,7 +74,6 @@ namespace Assets.VehicleController
             InitializeCarEffectSound();
             InitializeCollisionSound();
             InitializedWindNoise();
-
         }
 
         private void OnDestroy()
@@ -93,8 +93,11 @@ namespace Assets.VehicleController
             if (!_flutterSoundExists && !_antiLagSoundExists && !_antiLagMildSoundExists)
                 return;
 
-            _vehicleController.GetCurrentCarStats().OnAntiLag -= _currentCarStats_OnAntiLag;
-            _vehicleController.GetCurrentCarStats().OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;           
+            if (_currentCarStats == null)
+                return;
+
+            _currentCarStats.OnAntiLag -= _currentCarStats_OnAntiLag;
+            _currentCarStats.OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;           
         }
 
         private void _currentCarStats_OnShiftedAntiLag()
@@ -169,8 +172,13 @@ namespace Assets.VehicleController
             if (!_flutterSoundExists && !_antiLagSoundExists && !_antiLagMildSoundExists)
                 return;
 
-            _vehicleController.GetCurrentCarStats().OnAntiLag += _currentCarStats_OnAntiLag;
-            _vehicleController.GetCurrentCarStats().OnShiftedAntiLag += _currentCarStats_OnShiftedAntiLag;
+            _currentCarStats = _vehicleController.GetCurrentCarStats();
+
+            if (_currentCarStats == null)
+                return;
+
+            _currentCarStats.OnAntiLag += _currentCarStats_OnAntiLag;
+            _currentCarStats.OnShiftedAntiLag += _currentCarStats_OnShiftedAntiLag;
         }
 
         private void InitializeCollisionSound()

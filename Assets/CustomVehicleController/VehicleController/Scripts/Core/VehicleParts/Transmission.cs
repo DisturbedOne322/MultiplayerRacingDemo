@@ -90,17 +90,21 @@ namespace Assets.VehicleController
             UpdateRPMValues();
         }
 #endif
-        public void HandleGearChanges(TransmissionType transmissionType, WheelController[] wheelControllers)
+        public void HandleGearChanges(TransmissionType transmissionType, VehicleAxle[] axleArray)
         {
             _transmissionType = transmissionType;
 
             float wheelRPM = 0;
 
-            int size = wheelControllers.Length;
+            int size = axleArray.Length;
             for (int i = 0; i < size; i++)
-                wheelRPM += wheelControllers[i].WheelRPM;
+            {
+                wheelRPM += axleArray[i].LeftHalfShaft.WheelController.WheelRPM;
+                wheelRPM += axleArray[i].RightHalfShaft.WheelController.WheelRPM;
+            }
+                
 
-            wheelRPM /= size;
+            wheelRPM /= size * 2;
 
             float temp = Mathf.Abs(wheelRPM) * _stats.TransmissionSO.FinalDriveRatio * 60 / 6.28f;
 
@@ -118,15 +122,18 @@ namespace Assets.VehicleController
             SwitchGearsAutomatically(RPMfromSpeed, imaginaryRPM, gearDown);
         }
 
-        public float EvaluateRPM(float gasInput, WheelController[] wheelControllers)
+        public float EvaluateRPM(float gasInput, VehicleAxle[] driveAxleArray)
         {
             float highestRPM = 0;
-            int size = wheelControllers.Length;
+            int size = driveAxleArray.Length;
 
             for (int i = 0; i < size; i++)
             {
-                if(Mathf.Abs(wheelControllers[i].VisualRPM) > highestRPM)
-                    highestRPM = Mathf.Abs(wheelControllers[i].VisualRPM);
+                if(Mathf.Abs(driveAxleArray[i].LeftHalfShaft.WheelController.VisualRPM) > highestRPM)
+                    highestRPM = Mathf.Abs(driveAxleArray[i].LeftHalfShaft.WheelController.VisualRPM);
+
+                if (Mathf.Abs(driveAxleArray[i].RightHalfShaft.WheelController.VisualRPM) > highestRPM)
+                    highestRPM = Mathf.Abs(driveAxleArray[i].RightHalfShaft.WheelController.VisualRPM);
             }
 
             float imaginaryEngineRPM = CalculateRealRPM(Mathf.Abs(highestRPM) * _stats.TransmissionSO.FinalDriveRatio * 60 / 6.28f);

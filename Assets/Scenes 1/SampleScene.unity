@@ -134,7 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1695653}
-  - component: {fileID: 1695652}
+  - component: {fileID: 1695654}
   m_Layer: 0
   m_Name: RearAxle
   m_TagString: Untagged
@@ -142,22 +142,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1695652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd60d6ca3d919194aa2e89a8b2ca6747, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rb: {fileID: 2562711910941428478}
-  _leftSuspension: {fileID: 1417227007}
-  _rightSuspension: {fileID: 112283392}
-  AntiRollStrength: 50000
 --- !u!4 &1695653
 Transform:
   m_ObjectHideFlags: 0
@@ -175,6 +159,29 @@ Transform:
   - {fileID: 112283393}
   m_Father: {fileID: 1556580896}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1695654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 791efa7f213721240b2c8920a219ef5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _leftHalfShaft:
+    _wheelController: {fileID: 1417227008}
+    _wheelVisualTransform: {fileID: 78385730861513123}
+    _steerParentTransform: {fileID: 0}
+    _suspension: {fileID: 1417227007}
+  _rightHalfShaft:
+    _wheelController: {fileID: 112283390}
+    _wheelVisualTransform: {fileID: 6990355761795261249}
+    _steerParentTransform: {fileID: 0}
+    _suspension: {fileID: 112283392}
+  AntiRollStrength: 50000
 --- !u!1 &22292512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1205,7 +1212,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517841067}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09618035, y: 0.00000001765371, z: -0.0000000017058484, w: 0.99536395}
+  m_LocalRotation: {x: 0.09618035, y: -0.000000017653704, z: 0.0000000017058478, w: 0.99536395}
   m_LocalPosition: {x: 0, y: 11.52, z: 7462.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1575,7 +1582,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 642054509}
-  - component: {fileID: 642054510}
+  - component: {fileID: 642054511}
   m_Layer: 0
   m_Name: FrontAxle
   m_TagString: Untagged
@@ -1600,7 +1607,7 @@ Transform:
   - {fileID: 54832121}
   m_Father: {fileID: 1556580896}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &642054510
+--- !u!114 &642054511
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1609,12 +1616,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 642054508}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd60d6ca3d919194aa2e89a8b2ca6747, type: 3}
+  m_Script: {fileID: 11500000, guid: 791efa7f213721240b2c8920a219ef5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rb: {fileID: 2562711910941428478}
-  _leftSuspension: {fileID: 2037188904}
-  _rightSuspension: {fileID: 54832123}
+  _leftHalfShaft:
+    _wheelController: {fileID: 2037188905}
+    _wheelVisualTransform: {fileID: 1136208433993577649}
+    _steerParentTransform: {fileID: 2120561131}
+    _suspension: {fileID: 2037188904}
+  _rightHalfShaft:
+    _wheelController: {fileID: 54832124}
+    _wheelVisualTransform: {fileID: 8091703249924999460}
+    _steerParentTransform: {fileID: 1231071299}
+    _suspension: {fileID: 54832123}
   AntiRollStrength: 50000
 --- !u!1 &721333772
 GameObject:
@@ -2101,7 +2115,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081317591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09618035, y: 0.00000001765371, z: -0.0000000017058484, w: 0.99536395}
+  m_LocalRotation: {x: 0.09618035, y: -0.000000017653704, z: 0.0000000017058478, w: 0.99536395}
   m_LocalPosition: {x: 0, y: 11.52, z: 7462.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2564,7 +2578,7 @@ MonoBehaviour:
   m_RollDamping: 0
   m_AngularDamping: 0
   m_Heading:
-    m_Definition: 2
+    m_Definition: 1
     m_VelocityFilterStrength: 0
     m_Bias: 0
   m_RecenterToTargetHeading:
@@ -5183,14 +5197,11 @@ MonoBehaviour:
   _rigidbody: {fileID: 2562711910941428478}
   SuspensionSimulationPrecision: 5
   CurrentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
-  _wheelControllersArray:
-  - {fileID: 2037188905}
-  - {fileID: 54832124}
-  - {fileID: 1417227008}
-  - {fileID: 112283390}
-  _steerWheelControllersArray:
-  - {fileID: 2037188905}
-  - {fileID: 54832124}
+  _vehicleAxles:
+  - {fileID: 642054511}
+  - {fileID: 1695654}
+  _steerAxles:
+  - {fileID: 642054511}
 --- !u!114 &2562711910941428480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5203,19 +5214,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdf4fc1061be60c4dae1ad27be7274d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wheelMeshes:
-  - {fileID: 1136208433993577649}
-  - {fileID: 8091703249924999460}
-  - {fileID: 78385730861513123}
-  - {fileID: 6990355761795261249}
-  _steerWheelTransformArray:
-  - {fileID: 2120561131}
-  - {fileID: 1231071299}
-  _wheelControllerArray:
-  - {fileID: 2037188905}
-  - {fileID: 54832124}
-  - {fileID: 1417227008}
-  - {fileID: 112283390}
+  _axleArray:
+  - {fileID: 642054511}
+  - {fileID: 1695654}
+  _steerAxleArray:
+  - {fileID: 642054511}
 --- !u!65 &2562711910941428483
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5252,16 +5255,9 @@ MonoBehaviour:
   _carVisualsEssentials: {fileID: 2562711910941428480}
   _currentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
   _rigidbody: {fileID: 2562711910941428478}
-  _wheelMeshes:
-  - {fileID: 1136208433993577649}
-  - {fileID: 8091703249924999460}
-  - {fileID: 78385730861513123}
-  - {fileID: 6990355761795261249}
-  _wheelControllerArray:
-  - {fileID: 2037188905}
-  - {fileID: 54832124}
-  - {fileID: 1417227008}
-  - {fileID: 112283390}
+  _axleArray:
+  - {fileID: 642054511}
+  - {fileID: 1695654}
   _enableTireSmoke: 1
   _tireSmokeParameters:
     VisualEffect:
@@ -5331,8 +5327,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.3919875
       - serializedVersion: 3
-        time: 0.10314617
-        value: 0.14169055
+        time: 0.099720575
+        value: 0.15145236
         inSlope: -0.16503403
         outSlope: -0.16503403
         tangentMode: 0
@@ -5353,8 +5349,8 @@ MonoBehaviour:
       m_RotationOrder: 4
     Gradient:
       serializedVersion: 2
-      key0: {r: 10.281623, g: 10.680627, b: 0, a: 0}
-      key1: {r: 31.999996, g: 0.34560385, b: 0, a: 1}
+      key0: {r: 0, g: 6.395227, b: 14.259475, a: 0}
+      key1: {r: 0.122209705, g: 0, b: 42.722507, a: 1}
       key2: {r: 11.984315, g: 0, b: 0, a: 0.78431374}
       key3: {r: 0, g: 0, b: 0, a: 0.39215687}
       key4: {r: 0, g: 0, b: 0, a: 0}

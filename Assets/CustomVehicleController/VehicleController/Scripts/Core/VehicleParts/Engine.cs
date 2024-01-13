@@ -27,7 +27,7 @@ namespace Assets.VehicleController
             _nitrousBoost = new(_stats, _currentCarStats);
         }
 
-        public void Accelerate(WheelController[] driveWheelsArray, float gasInput, float breakInput, bool nitroBoostInput, float rpm)
+        public void Accelerate(VehicleAxle[] driveAxleArray, float gasInput, float breakInput, bool nitroBoostInput, float rpm)
         {
             float input = _transmission.DetermineGasInput(gasInput, breakInput);
             float forcedInductionBoost = _forcedInduction.GetForcedInductionBoost(_transmission.InShiftingCooldown() ? 0 : Mathf.Abs(input));
@@ -35,7 +35,7 @@ namespace Assets.VehicleController
             float boost = nitroBoost + forcedInductionBoost;
 
             _totalTorque = CalculateAccelerationForce(input, rpm, boost);
-            SetTorque(_totalTorque, driveWheelsArray);
+            SetTorque(_totalTorque, driveAxleArray);
         }
 
         public float CalculateAccelerationForce(float input, float rpm, float boost)
@@ -61,13 +61,13 @@ namespace Assets.VehicleController
                 _stats.TransmissionSO.FinalDriveRatio;
         }
 
-        private void SetTorque(float torque, WheelController[] driveWheelsArray)
+        private void SetTorque(float torque, VehicleAxle[] driveAxleArray)
         {
-            int size = driveWheelsArray.Length;
-            float torqueToApply = torque / size;
+            int size = driveAxleArray.Length;
+            float torqueToApply = torque / (size * 2);
             for (int i = 0; i < size; i++)
             {
-                driveWheelsArray[i].Torque = torqueToApply / driveWheelsArray[i].Radius;
+                driveAxleArray[i].ApplyTorque(torqueToApply / driveAxleArray[i].LeftHalfShaft.WheelController.Radius);
             }
         }
 

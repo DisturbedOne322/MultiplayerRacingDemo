@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.VehicleController
@@ -10,11 +11,12 @@ namespace Assets.VehicleController
         private Rigidbody _rb;
         private Transform _transform;
         private CurrentCarStats _currentCarStats;
-        private WheelController[] _wheelControllersArray;
-        private WheelController[] _frontWheelsArray;
-        private WheelController[] _rearWheelsArray;
+        private VehicleAxle[] _axleArray;
+        private WheelController[] _wheelControllerArray;
+        private VehicleAxle[] _frontAxleArray;
+        private VehicleAxle[] _rearAxleArray;
 
-        private WheelController[] _driveWheelsArray;
+        private VehicleAxle[] _driveAxleArray;
 
         private ITransmission _transmission;
         private IShifter _shifter;
@@ -23,7 +25,8 @@ namespace Assets.VehicleController
         private float _maxRPM;
 
         private VehicleStats _stats;
-        private int _wheelsAmount;
+        private int _axleAmount;
+        private int _wheelAmount;
 
         private const string REVERSE_GEAR_NAME = "R";
         private const string NEUTRAL_GEAR_NAME = "N";
@@ -34,23 +37,26 @@ namespace Assets.VehicleController
         private EngineSO _engineSO;
 #endif
 
-        public VehicleControllerStatsManager(WheelController[] wheelControllers, WheelController[] frontWheels, WheelController[] rearWheels,
+        public VehicleControllerStatsManager(VehicleAxle[] axleArray, VehicleAxle[] frontAxleArray, VehicleAxle[] rearAxleArray,
             CurrentCarStats currentCarStats, Rigidbody rb, Transform transform, IEngine engine, ITransmission transmission,
             IShifter shifter, VehicleStats stats)
         {
             _currentCarStats = currentCarStats;
-            _wheelControllersArray = wheelControllers;
-            _frontWheelsArray = frontWheels;
-            _rearWheelsArray = rearWheels;
+            _axleArray = axleArray;
+            _frontAxleArray = frontAxleArray;
+            _rearAxleArray = rearAxleArray;
             _rb = rb;
             this._transform = transform;
+
+            _wheelControllerArray = VehicleAxle.ExtractVehicleWheelControllerArray(_axleArray);
 
             _engine = engine;
             _transmission = transmission;
             _shifter = shifter;
 
-            _wheelsAmount = wheelControllers.Length;
-            _currentCarStats.WheelSlipArray = new bool[_wheelsAmount];
+            _axleAmount = axleArray.Length;
+            _wheelAmount = _axleAmount * 2;
+            _currentCarStats.WheelSlipArray = new bool[_axleAmount * 2];
 
             _stats = stats;
             _maxRPM = _stats.EngineSO.MaxRPM;
@@ -93,7 +99,7 @@ namespace Assets.VehicleController
 
             _currentCarStats.SpeedInMsPerS = speedMS;
             _currentCarStats.SpeedPercent = Mathf.Clamp01(Mathf.Abs(_currentCarStats.SpeedInKMperH) / _stats.EngineSO.MaxSpeed);
-            _currentCarStats.EngineRPM = _transmission.EvaluateRPM(gasInput, _driveWheelsArray);
+            _currentCarStats.EngineRPM = _transmission.EvaluateRPM(gasInput, _driveAxleArray);
             _currentCarStats.EngineRPMPercent = _currentCarStats.EngineRPM / _maxRPM;
 
             _currentCarStats.CurrentEngineTorque = _engine.GetCurrentTorque();
@@ -125,13 +131,13 @@ namespace Assets.VehicleController
             switch (drivetrainType)
             {
                 case DrivetrainType.FWD:
-                    _driveWheelsArray = _frontWheelsArray;
+                    _driveAxleArray = _frontAxleArray;
                     break;
                 case DrivetrainType.RWD:
-                    _driveWheelsArray = _rearWheelsArray;
+                    _driveAxleArray = _rearAxleArray;
                     break;
                 default:
-                    _driveWheelsArray = _wheelControllersArray;
+                    _driveAxleArray = _axleArray;
                     break;
             }
         }
@@ -179,17 +185,17 @@ namespace Assets.VehicleController
         private void HasCarLostTraction(float sideSlipThres, float fwdSlipThres)
         {
             bool slip = false;
-            for (int i = 0; i < _wheelsAmount; i++)
+
+            for (int i = 0; i < _wheelAmount; i++)
             {
-                if (_wheelControllersArray[i].SidewaysSlip > sideSlipThres
-                    || _wheelControllersArray[i].ForwardSlip > fwdSlipThres)
+                if (!_wheelControllerArray[i].IsExceedingSlipThreshold(fwdSlipThres, sideSlipThres))
                 {
-                    slip = true;
-                    _currentCarStats.WheelSlipArray[i] = true;
+                    _currentCarStats.WheelSlipArray[i] = false;
                 }
                 else
                 {
-                    _currentCarStats.WheelSlipArray[i] = false;
+                    slip = true;
+                    _currentCarStats.WheelSlipArray[i] = true;
                 }
             }
             _currentCarStats.IsCarSlipping = slip;
@@ -198,26 +204,29 @@ namespace Assets.VehicleController
         private void IsCarInAir()
         {
             int wheelsInAir = 0;
-            for (int i = 0; i < _wheelsAmount; i++)
+            for (int i = 0; i < _wheelAmount; i++)
             {
-                if (!_wheelControllersArray[i].HasContactWithGround)
+                if (!_wheelControllerArray[i].HasContactWithGround)
                     wheelsInAir++;
             }
-            _currentCarStats.InAir = wheelsInAir == _wheelsAmount;
+            _currentCarStats.InAir = wheelsInAir == _wheelAmount;
             _currentCarStats.AirTime = _currentCarStats.InAir ? _currentCarStats.AirTime + Time.deltaTime : 0;
         }
 
         private void HaveDriveWheelNoGroundContact()
         {
             int wheelsInAir = 0;
-            int size = _driveWheelsArray.Length;
+            int size = _driveAxleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                if (!_driveWheelsArray[i].HasContactWithGround)
+                if (!_driveAxleArray[i].LeftHalfShaft.WheelController.HasContactWithGround)
+                    wheelsInAir++;
+
+                if (!_driveAxleArray[i].RightHalfShaft.WheelController.HasContactWithGround)
                     wheelsInAir++;
             }
 
-            _currentCarStats.DriveWheelLostContact = wheelsInAir == size;
+            _currentCarStats.DriveWheelLostContact = wheelsInAir == size * 2;
         }
     }
 

@@ -138,8 +138,7 @@ namespace Assets.VehicleControllerEditor
         {
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_currentCarStats"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_rigidbody"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("_wheelMeshes"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("_wheelControllerArray"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("_axleArray"));
         }
 
         private void HandleSmoke()

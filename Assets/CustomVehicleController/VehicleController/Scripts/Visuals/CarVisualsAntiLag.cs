@@ -31,6 +31,9 @@ namespace Assets.VehicleController
                 InstantiateAntiLagPS();
             }
 
+            if (_currentCarStats == null)
+                return;
+
             _currentCarStats.OnAntiLag += _currentCarStats_OnAntiLag;
             _currentCarStats.OnShiftedAntiLag += _currentCarStats_OnShiftedAntiLag;
         }
@@ -101,6 +104,10 @@ namespace Assets.VehicleController
 
         public void OnDestroy()
         {
+
+            if (_currentCarStats == null)
+                return;
+
             _currentCarStats.OnAntiLag -= _currentCarStats_OnAntiLag;
             _currentCarStats.OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;
         }

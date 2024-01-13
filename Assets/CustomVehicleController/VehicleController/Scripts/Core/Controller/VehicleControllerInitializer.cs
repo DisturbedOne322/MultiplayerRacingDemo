@@ -13,14 +13,20 @@ namespace Assets.VehicleController
         private IShifter _shifter;
         private IClutch _clutch;
 
-        public (float, float, float) FindWheelBaseLenAndAxelLengthes(WheelController[] wheelControllers)
+        public (float, float, float) FindWheelBaseLenAndAxelLengthes(VehicleAxle[] axleArray)
         {
-            float maxZ = wheelControllers[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().InverseTransformPoint(wheelControllers[0].transform.position).z;
-            float minZ = wheelControllers[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().InverseTransformPoint(wheelControllers[0].transform.position).z;
-            int size = wheelControllers.Length;
+            float maxZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+                InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
+
+            float minZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+                InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
+
+            int size = axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                float zPos = wheelControllers[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().InverseTransformPoint(wheelControllers[i].transform.position).z;
+                float zPos = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+                    InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z;
+
                 if (zPos > maxZ)
                 {
                     maxZ = zPos;
@@ -35,38 +41,28 @@ namespace Assets.VehicleController
             return (maxZ + minZ, minZ, maxZ);
         }
 
-        private List<WheelController> FindRearWheels(WheelController[] wheelControllersArray, Transform centerOfGeometry)
+        private (List<VehicleAxle>, List<VehicleAxle>) FindFrontAndRearAxles(VehicleAxle[] axleArray, Transform centerOfGeometry)
         {
-            List<WheelController> rearWheels = new List<WheelController>();
+            List<VehicleAxle> rearAxles = new List<VehicleAxle>();
+            List<VehicleAxle> frontAxles = new List<VehicleAxle>();
 
-            int size = wheelControllersArray.Length;
+
+            int size = axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                bool front = wheelControllersArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
-                    InverseTransformPoint(wheelControllersArray[i].transform.position).z >= centerOfGeometry.localPosition.z;
+                bool front = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+                    InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z >= centerOfGeometry.localPosition.z;
+
                 if (!front)
-                    rearWheels.Add(wheelControllersArray[i]);
+                    rearAxles.Add(axleArray[i]);
+                else
+                    frontAxles.Add(axleArray[i]);
             }
-            return rearWheels;
-        }
-
-        private List<WheelController> FindFrontWheels(WheelController[] wheelControllersArray, Transform centerOfGeometry)
-        {
-            List<WheelController> frontWheels = new List<WheelController>();
-
-            int size = wheelControllersArray.Length;
-            for (int i = 0; i < size; i++)
-            {
-                bool front = wheelControllersArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
-                    InverseTransformPoint(wheelControllersArray[i].transform.position).z >= centerOfGeometry.localPosition.z;
-                if (front)
-                    frontWheels.Add(wheelControllersArray[i]);
-            }
-            return frontWheels;
+            return (frontAxles, rearAxles);
         }
 
         public (VehicleControllerStatsManager, VehicleControllerPartsManager) InitializeVehicleControllers(
-            WheelController[] wheelControllersArray, WheelController[] steerWheelControllersArray,
+            VehicleAxle[] axleArray, VehicleAxle[] steerAxleArray,
             Rigidbody rb, Transform transform, VehicleStats stats, Transform centerOfMass, Transform centerOfGeometry, 
             CurrentCarStats currentCarStats)
         {
@@ -78,43 +74,44 @@ namespace Assets.VehicleController
             _shifter = new Shifter();
             _clutch = new Clutch();
 
-            WheelController[] frontWheels = FindFrontWheels(wheelControllersArray, centerOfGeometry).ToArray();
-            WheelController[] rearWheels = FindRearWheels(wheelControllersArray, centerOfGeometry).ToArray();
+            (List<VehicleAxle> frontAxlesList , List<VehicleAxle> rearAxlesList) = FindFrontAndRearAxles(axleArray, centerOfGeometry);
+            VehicleAxle[] frontAxles = frontAxlesList.ToArray();
+            VehicleAxle[] rearAxles = rearAxlesList.ToArray();
 
             _body.Initialize(rb, stats, currentCarStats, transform, centerOfMass);
             _shifter.Initialize(_clutch, stats);
             _transmission.Initialize(stats, currentCarStats, _shifter);
             _engine.Initialize(currentCarStats, stats, _shifter, _transmission);
-            _breaks.Initialize(stats, wheelControllersArray, rearWheels,
+            _breaks.Initialize(stats, axleArray, rearAxles,
                 currentCarStats, rb, _transmission);
-            _handling.Initialize(steerWheelControllersArray);
+            _handling.Initialize(steerAxleArray);
 
             rb.centerOfMass = centerOfMass.transform.localPosition;
-            (float wheelBase, float frontAxel, float rearAxel) = FindWheelBaseLenAndAxelLengthes(wheelControllersArray);
+            (float wheelBase, float frontAxel, float rearAxel) = FindWheelBaseLenAndAxelLengthes(axleArray);
 
-            InitializeControllers(wheelControllersArray, stats, rb, transform,
+            InitializeControllers(axleArray, stats, rb, transform,
                 wheelBase, frontAxel, rearAxel);
 
-            VehicleControllerStatsManager statsManager = new(wheelControllersArray, frontWheels, rearWheels,
+            VehicleControllerStatsManager statsManager = new(axleArray, frontAxles, rearAxles,
                 currentCarStats, rb, transform, _engine, _transmission, _shifter, stats);
             VehicleControllerPartsManager partsManager = new(_body, _engine, _transmission, _breaks, _handling,
-                currentCarStats, transform, wheelControllersArray, frontWheels, rearWheels, centerOfGeometry);
+                currentCarStats, transform, axleArray, frontAxles, rearAxles, centerOfGeometry);
 
             return (statsManager, partsManager);
         }
 
-        public void InitializeControllers(WheelController[] wheelControllersArray,
+        public void InitializeControllers(VehicleAxle[] axleArray,
                     VehicleStats vehicleStats, Rigidbody _rb, Transform transform,
                     float wheelBase, float frontAxelLen, float rearAxelLen)
         {
 
-            int size = wheelControllersArray.Length;
+            int size = axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                bool front = Vector3.Dot(transform.forward, wheelControllersArray[i].transform.position - transform.position) > 0;
+                bool front = Vector3.Dot(transform.forward, axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position - transform.position) > 0;
                 float axelLen = front ? frontAxelLen : rearAxelLen;
 
-                wheelControllersArray[i].Initialize(vehicleStats, _rb, wheelBase, axelLen, front);
+                axleArray[i].InitializeAxle(vehicleStats, _rb, wheelBase, axelLen, front);
             }
         }
 

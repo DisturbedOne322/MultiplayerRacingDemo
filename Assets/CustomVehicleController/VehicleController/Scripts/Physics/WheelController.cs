@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 namespace Assets.VehicleController
 {
@@ -73,7 +72,7 @@ namespace Assets.VehicleController
 
         #endregion
 
-        public void Initialize(VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
+        public void Initialize(SuspensionController suspensionController, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
             if (_wheelRadius == 0)
             {
@@ -100,8 +99,8 @@ namespace Assets.VehicleController
 #endif
             }
             _rb = rb;
-            _springController = GetComponent<SuspensionController>();
-            _springController.Initialize(vehicleStats, front, _wheelRadius, _wheelMeshTransform);
+            _springController = suspensionController;
+
             _tireController = GetComponent<TireController>();
             _tireController.Initialize(vehicleStats, front, axelLen, wheelBaseLen, _rb);
 
@@ -110,7 +109,7 @@ namespace Assets.VehicleController
             _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
         }
 
-        public void ControlWheel(float speed, float speedPercent, float acceleration, float distanceToGround, int suspensionSimulationPrecision)
+        public void ControlWheel(float speed, float speedPercent, float acceleration, float distanceToGround)
         {
             transform.localRotation = Quaternion.Euler(new Vector3(0, steerAngle, 0));
 
@@ -147,6 +146,16 @@ namespace Assets.VehicleController
             if (BrakeForce == 0)
                 return;
             _rb.AddForceAtPosition(BrakeForce * transform.forward, pos);
+        }
+
+        public void ApplyHandbrake(bool engaged, float effectStrength, float tractionPercent)
+        {
+            _tireController.ApplyHandbrake(engaged, effectStrength, tractionPercent);
+        }
+
+        public void DecreaseFriction(bool locked, float effectStrength)
+        {
+            _tireController.DecreaseFriction(locked, effectStrength);
         }
 
         private void CalculateWheelRPM(float speed)
@@ -209,6 +218,18 @@ namespace Assets.VehicleController
         }
 
         public void SetWheelMeshTransform(Transform transform) => _wheelMeshTransform = transform;
+
+        public bool IsExceedingSlipThreshold(float forwardSlip, float sidewaysSlip)
+        {
+            if (!HasContactWithGround)
+                return false;
+
+
+            if (SidewaysSlip > sidewaysSlip || ForwardSlip > forwardSlip)
+                return true;
+
+            return false;
+        }
 
         //for the editor, it uses it to define if the controller has been initialized
         public Transform GetWheelTransform() => _wheelMeshTransform;

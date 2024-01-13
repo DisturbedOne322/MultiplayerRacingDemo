@@ -72,12 +72,10 @@ namespace Assets.VehicleController
         private IVehicleControllerInputProvider _inputProvider;
 
         #region Wheel Controllers
-        [Header("All wheels")]
         [SerializeField]
-        public WheelController[] _wheelControllersArray;
-        [Header("Steer wheels")]
+        private VehicleAxle[] _vehicleAxles;
         [SerializeField]
-        private WheelController[] _steerWheelControllersArray;
+        private VehicleAxle[] _steerAxles;
         #endregion
 
         private void Awake()
@@ -96,8 +94,8 @@ namespace Assets.VehicleController
             _carVisualsEssentials.Initialize(_rigidbody, CurrentCarStats);
 
             VehicleControllerInitializer initializer = new();
-            (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_wheelControllersArray,
-                _steerWheelControllersArray, _rigidbody, transform, VehicleStats, _centerOfMass,
+            (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_vehicleAxles,
+                _steerAxles, _rigidbody, transform, VehicleStats, _centerOfMass,
                 _centerOfGeometry, CurrentCarStats);
         }
 
@@ -109,7 +107,7 @@ namespace Assets.VehicleController
             _partsManager.ManageTransmissionUpShift(_inputProvider.GetGearUpInput());
             _partsManager.ManageTransmissionDownShift(_inputProvider.GetGearDownInput());
 
-            _carVisualsEssentials.HandleWheelVisuals(_inputProvider.GetHorizontalInput(), _steerWheelControllersArray[0].SteerAngle, SteerAngle);
+            _carVisualsEssentials.HandleWheelVisuals(_inputProvider.GetHorizontalInput(), _steerAxles[0].LeftHalfShaft.WheelController.SteerAngle, SteerAngle);
         }
         private void FixedUpdate()
         {

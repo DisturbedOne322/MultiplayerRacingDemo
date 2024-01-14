@@ -281,7 +281,6 @@ GameObject:
   m_Component:
   - component: {fileID: 54832121}
   - component: {fileID: 54832123}
-  - component: {fileID: 54832122}
   - component: {fileID: 54832124}
   m_Layer: 0
   m_Name: WheelFRController
@@ -305,18 +304,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 642054509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &54832122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 54832120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bae7cb80dd8074997d765d48cffbe6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &54832123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,7 +385,6 @@ GameObject:
   m_Component:
   - component: {fileID: 112283393}
   - component: {fileID: 112283392}
-  - component: {fileID: 112283391}
   - component: {fileID: 112283390}
   m_Layer: 0
   m_Name: WheelRRController
@@ -421,18 +407,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _wheelRadius: 0
   _wheelMeshTransform: {fileID: 6990355761795261249}
---- !u!114 &112283391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 112283389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bae7cb80dd8074997d765d48cffbe6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &112283392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1212,7 +1186,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517841067}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09618035, y: -0.000000017653704, z: 0.0000000017058478, w: 0.99536395}
+  m_LocalRotation: {x: 0.09618035, y: 0.00000001765371, z: -0.0000000017058484, w: 0.99536395}
   m_LocalPosition: {x: 0, y: 11.52, z: 7462.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2115,7 +2089,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081317591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09618035, y: -0.000000017653704, z: 0.0000000017058478, w: 0.99536395}
+  m_LocalRotation: {x: 0.09618035, y: 0.00000001765371, z: -0.0000000017058484, w: 0.99536395}
   m_LocalPosition: {x: 0, y: 11.52, z: 7462.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3311,7 +3285,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1417227005}
   - component: {fileID: 1417227007}
-  - component: {fileID: 1417227006}
   - component: {fileID: 1417227008}
   m_Layer: 0
   m_Name: WheelRLController
@@ -3335,18 +3308,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1695653}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1417227006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1417227004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bae7cb80dd8074997d765d48cffbe6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1417227007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4446,7 +4407,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2037188902}
   - component: {fileID: 2037188904}
-  - component: {fileID: 2037188903}
   - component: {fileID: 2037188905}
   m_Layer: 0
   m_Name: WheelFLController
@@ -4470,18 +4430,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 642054509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2037188903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2037188901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bae7cb80dd8074997d765d48cffbe6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2037188904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5189,7 +5137,7 @@ MonoBehaviour:
   _centerOfMass: {fileID: 1741229325}
   _centerOfGeometry: {fileID: 1098147250}
   ForwardSlippingThreshold: 0.1
-  SidewaysSlippingThreshold: 0.3
+  SidewaysSlippingThreshold: 0.5
   AerialControlsEnabled: 0
   AerialControlsSensitivity: 3000
   AutomaticFlipOverRecoverEnabled: 0

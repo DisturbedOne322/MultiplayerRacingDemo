@@ -19,7 +19,6 @@ namespace Assets.VehicleController
         private float _steerWheelsAngle = 0;
 
         private float _smDempVelocity;
-        private float _smDampTime = 0.2f;
 
         private bool[] _isOrientationCorrectArray;
 
@@ -55,10 +54,10 @@ namespace Assets.VehicleController
             return angle < 90 && angle > -90;
         }
 
-        public void HandleWheelVisuals(float input, float currentWheelAngle, float maxSteerAngle)
+        public void HandleWheelVisuals(float input, float currentWheelAngle, float maxSteerAngle, float steerSpeed)
         {
             SpinWheels();
-            SteerWheels(input, currentWheelAngle, maxSteerAngle);
+            SteerWheels(input, currentWheelAngle, maxSteerAngle, steerSpeed);
             UpdateWheelPosition();
         }
 
@@ -87,7 +86,7 @@ namespace Assets.VehicleController
         }
 
 
-        private void SteerWheels(float input, float currentWheelAngle, float maxSteerAngle)
+        private void SteerWheels(float input, float currentWheelAngle, float maxSteerAngle, float steerSpeed)
         {
             if (input == 0)
             {
@@ -96,10 +95,10 @@ namespace Assets.VehicleController
                 if(_currentCarStats.SpeedInMsPerS > 0.01f)
                     angle = Vector3.SignedAngle(transform.forward, _rigidBody.velocity, Vector3.up);
 
-                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, angle, ref _smDempVelocity, _smDampTime);            
+                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, angle, ref _smDempVelocity, steerSpeed);            
             }
             else
-                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, currentWheelAngle, ref _smDempVelocity, _smDampTime);
+                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, currentWheelAngle, ref _smDempVelocity, steerSpeed);
 
             for (int i = 0; i < _steerAxleArray.Length; i++)
             {

@@ -3,8 +3,10 @@ using UnityEngine;
 namespace Assets.VehicleController
 {
     [AddComponentMenu("CustomVehicleController/Physics/Tire Controller")]
-    public class TireController : MonoBehaviour
+    public class TireController
     {
+        private Transform _transform;
+
         private float _handbrakeGripMultiplier = 1;
         private float _lockedGripMultiplier = 1;
 
@@ -44,9 +46,10 @@ namespace Assets.VehicleController
         private float _minLoad;
         private float _maxLoad;
 
-        public void Initialize(VehicleStats stats, bool front, float axelLen,
+        public TireController(Transform transform, VehicleStats stats, bool front, float axelLen,
             float wheelBaseLen, Rigidbody rb)
-        {
+        {     
+            _transform = transform;
             _isFrontTire = front;
             _stats = stats;
             _staticTireLoad = (axelLen / wheelBaseLen) * stats.BodySO.Mass * 9.81f;
@@ -108,8 +111,8 @@ namespace Assets.VehicleController
 
         public Vector3 CalculateSidewaysForce(float speed, float speedPercent)
         {
-            Vector3 steeringDir = transform.right;
-            Vector3 tireWorldVel = _rb.GetPointVelocity(transform.position);
+            Vector3 steeringDir = _transform.right;
+            Vector3 tireWorldVel = _rb.GetPointVelocity(_transform.position);
 
             float steeringVel = Vector3.Dot(steeringDir, tireWorldVel);
             _sidewaysDot = Vector3.Dot(_rb.velocity.normalized, steeringDir);

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
-    [RequireComponent(typeof(SuspensionController)), RequireComponent(typeof(TireController)), AddComponentMenu("CustomVehicleController/Physics/Wheel Controller")]
+    [RequireComponent(typeof(SuspensionController)), AddComponentMenu("CustomVehicleController/Physics/Wheel Controller")]
     public class WheelController : MonoBehaviour
     {
         private Rigidbody _rb;
@@ -58,12 +58,12 @@ namespace Assets.VehicleController
         #endregion
 
         #region Visuals
-        [SerializeField, Tooltip("Transform component of the wheel this this component represents.")]
+        [SerializeField]
         private Transform _wheelMeshTransform;
         private Vector3 _wheelPosition;
         public Vector3 WheelPosition
         {
-            get { return _wheelPosition; }
+            get => _wheelPosition;
         }
         private Vector3 _wheelInitialPosition;
         private float _distanceFromSuspensionTopPointToWheelTopPoint;
@@ -72,8 +72,15 @@ namespace Assets.VehicleController
 
         #endregion
 
-        public void Initialize(SuspensionController suspensionController, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
+        public void Initialize(SuspensionController suspensionController, Transform wheelMeshTransform, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
+            _rb = rb;
+            _springController = suspensionController;
+            _wheelMeshTransform = wheelMeshTransform;
+            _tireController = new(transform, vehicleStats, front, axelLen, wheelBaseLen, _rb);
+            _wheelInitialPosition = _wheelMeshTransform.transform.localPosition;
+            _wheelPosition = _wheelInitialPosition;
+
             if (_wheelRadius == 0)
             {
                 if (_wheelMeshTransform.TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
@@ -98,14 +105,6 @@ namespace Assets.VehicleController
                 }
 #endif
             }
-            _rb = rb;
-            _springController = suspensionController;
-
-            _tireController = GetComponent<TireController>();
-            _tireController.Initialize(vehicleStats, front, axelLen, wheelBaseLen, _rb);
-
-            _wheelInitialPosition = _wheelMeshTransform.transform.localPosition;
-            _wheelPosition = _wheelInitialPosition;
             _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
         }
 

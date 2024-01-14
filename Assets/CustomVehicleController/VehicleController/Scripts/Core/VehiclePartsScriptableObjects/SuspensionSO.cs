@@ -12,6 +12,8 @@ namespace Assets.VehicleController
         public float SpringStiffness;
         [Min(0)]
         public float SpringDampingStiffness;
+        [Min(0)]
+        public float AntiRollForce;
 
 #if UNITY_EDITOR
         public event Action OnSuspensionStatsChanged;

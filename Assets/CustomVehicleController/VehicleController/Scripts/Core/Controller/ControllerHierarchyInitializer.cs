@@ -7,22 +7,19 @@ namespace Assets.VehicleController
     [RequireComponent(typeof(CustomVehicleController))]
     public class ControllerHierarchyInitializer
     {
-        [SerializeField]
         private Transform[] _wheelTransforms;
-        [SerializeField]
         private Transform[] _steerWheelTransforms;
 
-        [SerializeField]
         private DrivetrainType _drivetrainType;
 
-        [SerializeField]
         private Transform _centerOfGeometry;
-        [SerializeField]
         private Transform _centerOfMass;
 
         private Transform[] _steerParentTransforms;
         private WheelController[] _wheelControllers;
         private WheelController[] _steerWheelControllers;
+
+        private VehicleAxle[] _vehicleAxleArray;
 
         private Rigidbody _rigidbody;
 
@@ -57,6 +54,8 @@ namespace Assets.VehicleController
             TryMoveUpControllers();
             CreateSteerWheelsHierarcy(wheelsMeshesParent.transform);
 
+            CreateAxles();
+
             SetTransforms(mesh, controller.transform);
 
             InjectCustomVehicleFields(serializedController);
@@ -68,6 +67,36 @@ namespace Assets.VehicleController
         {
             CreateCoG(controller.transform, mesh);
             CreateCoM(controller.transform, mesh);
+        }
+
+        private void CreateAxles()
+        {
+            _vehicleAxleArray = new VehicleAxle[_wheelTransforms.Length / 2];
+        
+            GameObject frontAxle = new GameObject("FrontAxle");
+            Undo.RegisterCreatedObjectUndo(frontAxle, "Controller Front Axle Created");
+            _vehicleAxleArray[0] = frontAxle.AddComponent<VehicleAxle>();
+
+            Undo.SetTransformParent(frontAxle.transform, _wheelControllers[0].transform.parent, "Front Axle Set Parent");
+
+            Undo.SetTransformParent(_wheelControllers[0].transform, frontAxle.transform, "Front Left Wheel Set Parent");
+
+            _vehicleAxleArray[0].SetLeftHalfShaft(_wheelControllers[0], _wheelTransforms[0], _steerParentTransforms[0]);
+
+            Undo.SetTransformParent(_wheelControllers[1].transform, frontAxle.transform, "Front Right Wheel Set Parent");
+            _vehicleAxleArray[0].SetRightHalfShaft(_wheelControllers[1], _wheelTransforms[1], _steerParentTransforms[1]);
+
+            GameObject rearAxle = new GameObject("RearAxle");
+            Undo.RegisterCreatedObjectUndo(rearAxle, "Controller Rear Axle Created");
+            _vehicleAxleArray[1] = rearAxle.AddComponent<VehicleAxle>();
+
+            Undo.SetTransformParent(rearAxle.transform, _wheelControllers[2].transform.parent, "Rear Axle Set Parent");
+
+            Undo.SetTransformParent(_wheelControllers[2].transform, rearAxle.transform, "Front Right Wheel Set Parent");
+            _vehicleAxleArray[1].SetLeftHalfShaft(_wheelControllers[2], _wheelTransforms[2], null);
+
+            Undo.SetTransformParent(_wheelControllers[3].transform, rearAxle.transform, "Front Right Wheel Set Parent");
+            _vehicleAxleArray[1].SetRightHalfShaft(_wheelControllers[3], _wheelTransforms[3], null);
         }
 
         private void CreateWheelsHierarcy(Transform meshesParent, Transform controllerParent)
@@ -108,7 +137,6 @@ namespace Assets.VehicleController
 
                 Undo.SetTransformParent(_steerWheelTransforms[i], steerWheelParent.transform, $"{i} Steer Parenting");
                 _steerWheelTransforms[i].transform.localPosition = new (0, 0, 0);
-                //_steerWheelTransforms[i].transform.localRotation = Quaternion.identity;
 
                 _steerParentTransforms[i] = steerWheelParent.transform;
             }
@@ -187,65 +215,46 @@ namespace Assets.VehicleController
 
         }
 
+
+        //change to axles
         private void InjectCarVisualsFields(SerializedObject serializedCarVisuals)
         {
             //set meshes
-            var wheelMeshesArray = serializedCarVisuals.FindProperty("_wheelMeshes");
-            wheelMeshesArray.ClearArray();
-            int size1 = _wheelTransforms.Length;
+            var vehicleAxleArray = serializedCarVisuals.FindProperty("_axleArray");
+            vehicleAxleArray.ClearArray();
+            int size1 = _vehicleAxleArray.Length;
             for (int i = 0; i < size1; i++)
             {
-                wheelMeshesArray.InsertArrayElementAtIndex(i);
-                wheelMeshesArray.GetArrayElementAtIndex(i).objectReferenceValue = _wheelTransforms[i];
+                vehicleAxleArray.InsertArrayElementAtIndex(i);
+                vehicleAxleArray.GetArrayElementAtIndex(i).objectReferenceValue = _vehicleAxleArray[i];
             }
 
             //set steer wheels parents
-            var steerWheelsArray = serializedCarVisuals.FindProperty("_steerWheelTransformArray");
-            steerWheelsArray.ClearArray();
-            int size2 = _steerParentTransforms.Length;
-            for (int i = 0; i < size2; i++)
-            {
-                steerWheelsArray.InsertArrayElementAtIndex(i);
-                steerWheelsArray.GetArrayElementAtIndex(i).objectReferenceValue = _steerParentTransforms[i];
-            }
-
-            //set wheel controllers
-            var wheelControllerArray = serializedCarVisuals.FindProperty("_wheelControllerArray");
-            wheelControllerArray.ClearArray();
-            int size3 = _wheelControllers.Length;
-            for (int i = 0; i < size3; i++)
-            {
-                wheelControllerArray.InsertArrayElementAtIndex(i);
-                wheelControllerArray.GetArrayElementAtIndex(i).objectReferenceValue = _wheelControllers[i];
-            }
-
-            serializedCarVisuals.FindProperty("_steerWheel").objectReferenceValue = _steerWheelControllers[0];
-
+            var steerAxleArray = serializedCarVisuals.FindProperty("_steerAxleArray");
+            steerAxleArray.ClearArray();           
+            steerAxleArray.InsertArrayElementAtIndex(0);
+            steerAxleArray.GetArrayElementAtIndex(0).objectReferenceValue = _vehicleAxleArray[0];
+            
             serializedCarVisuals.ApplyModifiedProperties();
             serializedCarVisuals.Update();
         }
 
         private void InjectCustomVehicleFields(SerializedObject serializedController)
         {
-            var wheelControllersArray = serializedController.FindProperty("_wheelControllersArray");
-            wheelControllersArray.ClearArray();
-            int size1 = _wheelControllers.Length;
+            var vehicleAxlesArray = serializedController.FindProperty("_vehicleAxles");
+            vehicleAxlesArray.ClearArray();
+            int size1 = _vehicleAxleArray.Length;
             for (var i = 0; i < size1; i++)
             {
-                wheelControllersArray.InsertArrayElementAtIndex(i);
-                wheelControllersArray.GetArrayElementAtIndex(i).objectReferenceValue = _wheelControllers[i];
-                //do something with the property
+                vehicleAxlesArray.InsertArrayElementAtIndex(i);
+                vehicleAxlesArray.GetArrayElementAtIndex(i).objectReferenceValue = _vehicleAxleArray[i];
             }
 
-            var steerControllersArray = serializedController.FindProperty("_steerWheelControllersArray");
-            steerControllersArray.ClearArray();
-            int size2 = _steerWheelControllers.Length;
-            for (var i = 0; i < size2; i++)
-            {
-                steerControllersArray.InsertArrayElementAtIndex(i);
-                steerControllersArray.GetArrayElementAtIndex(i).objectReferenceValue = _steerWheelControllers[i];
-                //do something with the property
-            }
+            var steerAxleArray = serializedController.FindProperty("_steerAxles");
+            steerAxleArray.ClearArray();            
+            steerAxleArray.InsertArrayElementAtIndex(0);
+            steerAxleArray.GetArrayElementAtIndex(0).objectReferenceValue = _vehicleAxleArray[0];
+            
 
             serializedController.FindProperty("_centerOfGeometry").objectReferenceValue = _centerOfGeometry;
             serializedController.FindProperty("_centerOfMass").objectReferenceValue = _centerOfMass;

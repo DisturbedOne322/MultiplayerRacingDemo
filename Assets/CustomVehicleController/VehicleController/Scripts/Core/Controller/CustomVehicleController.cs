@@ -40,7 +40,7 @@ namespace Assets.VehicleController
         public float ForwardSlippingThreshold = 0.1f;
         [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be sideways slipping. " +
             "\n The slipping amount equals the dot product of the car forward vector and normalizd vehicle velocity.")]
-        public float SidewaysSlippingThreshold = 0.4f;
+        public float SidewaysSlippingThreshold = 0.5f;
         //allows you to control the car in air. 
         [Space]
         public bool AerialControlsEnabled = false;
@@ -107,7 +107,7 @@ namespace Assets.VehicleController
             _partsManager.ManageTransmissionUpShift(_inputProvider.GetGearUpInput());
             _partsManager.ManageTransmissionDownShift(_inputProvider.GetGearDownInput());
 
-            _carVisualsEssentials.HandleWheelVisuals(_inputProvider.GetHorizontalInput(), _steerAxles[0].LeftHalfShaft.WheelController.SteerAngle, SteerAngle);
+            _carVisualsEssentials.HandleWheelVisuals(_inputProvider.GetHorizontalInput(), _steerAxles[0].LeftHalfShaft.WheelController.SteerAngle, SteerAngle, SteerSpeed);
         }
         private void FixedUpdate()
         {

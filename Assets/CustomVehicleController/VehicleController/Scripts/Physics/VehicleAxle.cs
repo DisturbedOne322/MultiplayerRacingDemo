@@ -31,7 +31,7 @@ namespace Assets.VehicleController
 
         private void InitializeHalfShaft(HalfShaft halfShaft, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
-            halfShaft.WheelController.Initialize(halfShaft.Suspension, vehicleStats, rb, wheelBaseLen, axelLen, front);
+            halfShaft.WheelController.Initialize(halfShaft.Suspension, halfShaft.WheelVisualTransform, vehicleStats, rb, wheelBaseLen, axelLen, front);
             halfShaft.Suspension.Initialize(vehicleStats, front, _leftHalfShaft.WheelController.Radius, _leftHalfShaft.WheelVisualTransform);
         }
 
@@ -170,6 +170,16 @@ namespace Assets.VehicleController
             }
             return suspensionArray;
         }
+
+        public void SetLeftHalfShaft(WheelController wheelController, Transform wheelVisualTransform, Transform steerParentTransform)
+        {
+            _leftHalfShaft.SetFields(wheelController, wheelVisualTransform, steerParentTransform);
+        }
+
+        public void SetRightHalfShaft(WheelController wheelController, Transform wheelVisualTransform, Transform steerParentTransform)
+        {
+            _rightHalfShaft.SetFields(wheelController, wheelVisualTransform, steerParentTransform);
+        }
     }
 
     [Serializable]
@@ -180,6 +190,10 @@ namespace Assets.VehicleController
         public WheelController WheelController { get => _wheelController; }
 
         [SerializeField]
+        private SuspensionController _suspension;
+        public SuspensionController Suspension { get => _suspension; }
+
+        [SerializeField]
         private Transform _wheelVisualTransform;
         public Transform WheelVisualTransform { get => _wheelVisualTransform; }
 
@@ -187,8 +201,14 @@ namespace Assets.VehicleController
         private Transform _steerParentTransform;
         public Transform SteerParentTransform { get => _steerParentTransform; }
 
-        [SerializeField]
-        private SuspensionController _suspension;
-        public SuspensionController Suspension { get => _suspension; }
+
+
+        public void SetFields(WheelController wheelController, Transform wheelVisualTransform, Transform steerParentTransform)
+        {
+            _wheelController = wheelController;
+            _wheelVisualTransform = wheelVisualTransform;
+            _steerParentTransform = steerParentTransform;
+            _suspension = _wheelController.GetComponent<SuspensionController>();
+        }
     }
 }

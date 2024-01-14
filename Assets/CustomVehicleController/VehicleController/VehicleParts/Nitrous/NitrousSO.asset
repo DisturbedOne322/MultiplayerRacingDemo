@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7350a9fbb26cca148a211550ea1942d4, type: 3}
   m_Name: NitrousSO
   m_EditorClassIdentifier: 
-  BoostAmount: 500000
+  BoostAmount: 2000
   BoostIntensity: 500
-  RechargeRate: 1000000
+  RechargeRate: 300
   RechargeDelay: 2
-  MinAmountPercentToUse: 0.093
+  MinAmountPercentToUse: 0.01
   BoostType: 0

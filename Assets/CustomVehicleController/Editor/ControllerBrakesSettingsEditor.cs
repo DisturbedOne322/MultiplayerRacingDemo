@@ -145,8 +145,8 @@ namespace Assets.VehicleControllerEditor
         private BrakesSO CreateDefaultBrakes()
         {
             BrakesSO defaultBrakes = ScriptableObject.CreateInstance<BrakesSO>();
-            defaultBrakes.BrakesStrength = 30;
-            defaultBrakes.HandbrakeForce = 20000;
+            defaultBrakes.BrakesStrength = 30000;
+            defaultBrakes.HandbrakeForce = 30000;
             defaultBrakes.HandbrakeTractionPercent = 0.33f;
             return defaultBrakes;
         }

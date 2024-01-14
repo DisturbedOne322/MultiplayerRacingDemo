@@ -15,16 +15,16 @@ namespace Assets.VehicleController
 
         public (float, float, float) FindWheelBaseLenAndAxelLengthes(VehicleAxle[] axleArray)
         {
-            float maxZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+            float maxZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
                 InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
 
-            float minZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+            float minZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
                 InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
 
             int size = axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                float zPos = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+                float zPos = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
                     InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z;
 
                 if (zPos > maxZ)
@@ -50,7 +50,7 @@ namespace Assets.VehicleController
             int size = axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                bool front = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfGeometry().
+                bool front = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
                     InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z >= centerOfGeometry.localPosition.z;
 
                 if (!front)
@@ -63,8 +63,7 @@ namespace Assets.VehicleController
 
         public (VehicleControllerStatsManager, VehicleControllerPartsManager) InitializeVehicleControllers(
             VehicleAxle[] axleArray, VehicleAxle[] steerAxleArray,
-            Rigidbody rb, Transform transform, VehicleStats stats, Transform centerOfMass, Transform centerOfGeometry, 
-            CurrentCarStats currentCarStats)
+            Rigidbody rb, Transform transform, VehicleStats stats, Transform centerOfMass,CurrentCarStats currentCarStats)
         {
             _body = new Body();
             _engine = new Engine();
@@ -74,7 +73,7 @@ namespace Assets.VehicleController
             _shifter = new Shifter();
             _clutch = new Clutch();
 
-            (List<VehicleAxle> frontAxlesList , List<VehicleAxle> rearAxlesList) = FindFrontAndRearAxles(axleArray, centerOfGeometry);
+            (List<VehicleAxle> frontAxlesList , List<VehicleAxle> rearAxlesList) = FindFrontAndRearAxles(axleArray, centerOfMass);
             VehicleAxle[] frontAxles = frontAxlesList.ToArray();
             VehicleAxle[] rearAxles = rearAxlesList.ToArray();
 
@@ -95,7 +94,7 @@ namespace Assets.VehicleController
             VehicleControllerStatsManager statsManager = new(axleArray, frontAxles, rearAxles,
                 currentCarStats, rb, transform, _engine, _transmission, _shifter, stats);
             VehicleControllerPartsManager partsManager = new(_body, _engine, _transmission, _breaks, _handling,
-                currentCarStats, transform, axleArray, frontAxles, rearAxles, centerOfGeometry);
+                currentCarStats, transform, axleArray, frontAxles, rearAxles, centerOfMass);
 
             return (statsManager, partsManager);
         }

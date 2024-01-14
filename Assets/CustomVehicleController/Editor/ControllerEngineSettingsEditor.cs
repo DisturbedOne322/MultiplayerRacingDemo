@@ -192,9 +192,9 @@ namespace Assets.VehicleControllerEditor
             EngineSO defaultEngine = ScriptableObject.CreateInstance<EngineSO>();
             defaultEngine.MaxSpeed = 300;
             AnimationCurve torqueCurve = new ();
-            torqueCurve.AddKey(1000f, 100f);
-            torqueCurve.AddKey(8000f, 160f);
-            torqueCurve.AddKey(9000f, 130f);
+            torqueCurve.AddKey(1000f, 150f);
+            torqueCurve.AddKey(8000f, 260f);
+            torqueCurve.AddKey(9000f, 230f);
             int size = torqueCurve.keys.Length;
             for (int i = 0; i < size; i++)
             {

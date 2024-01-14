@@ -181,7 +181,6 @@ MonoBehaviour:
     _suspension: {fileID: 112283392}
     _wheelVisualTransform: {fileID: 6990355761795261249}
     _steerParentTransform: {fileID: 0}
-  AntiRollStrength: 50000
 --- !u!1 &22292512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1603,7 +1602,6 @@ MonoBehaviour:
     _suspension: {fileID: 54832123}
     _wheelVisualTransform: {fileID: 8091703249924999460}
     _steerParentTransform: {fileID: 1231071299}
-  AntiRollStrength: 50000
 --- !u!1 &721333772
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,37 +2204,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 116f924609af9764bb3436d815f453eb, type: 3}
---- !u!1 &1098147249
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1098147250}
-  m_Layer: 0
-  m_Name: CenterOfGeometry
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1098147250
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1098147249}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.4500528, z: 0.10253906}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1087937643993381936}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1117552251
 GameObject:
   m_ObjectHideFlags: 0
@@ -3869,7 +3836,7 @@ Transform:
   m_GameObject: {fileID: 1741229324}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.396, z: 0.105}
+  m_LocalPosition: {x: 0, y: 0.396, z: 0.219}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4908,7 +4875,6 @@ Transform:
   - {fileID: 1304342822}
   - {fileID: 816985835}
   - {fileID: 412590869}
-  - {fileID: 1098147250}
   - {fileID: 1741229325}
   - {fileID: 1117552254}
   m_Father: {fileID: 0}
@@ -5135,7 +5101,6 @@ MonoBehaviour:
   SteerAngle: 30
   SteerSpeed: 0.2
   _centerOfMass: {fileID: 1741229325}
-  _centerOfGeometry: {fileID: 1098147250}
   ForwardSlippingThreshold: 0.1
   SidewaysSlippingThreshold: 0.5
   AerialControlsEnabled: 0

@@ -49,6 +49,9 @@ namespace Assets.VehicleController
                     enabled = false;
             }
 
+            if(_boostAmountLeft <= 0)
+                enabled = false;
+
             _playerAlreadyBoosting = enabled;
 
             _currentCarStats.NitroBoosting = _playerAlreadyBoosting;
@@ -59,8 +62,7 @@ namespace Assets.VehicleController
 
             _boostAmountLeft = Mathf.Clamp(_boostAmountLeft, 0, _stats.NitrousSO.BoostAmount);
 
-
-            if (_playerAlreadyBoosting && _boostAmountLeft > 0)
+            if (_playerAlreadyBoosting)
             {
                 _lastUseTime = Time.time;
 
@@ -70,8 +72,6 @@ namespace Assets.VehicleController
                 _boostAmountLeft -= _stats.NitrousSO.BoostIntensity * Time.deltaTime;
                 return _stats.NitrousSO.BoostIntensity * _effectStrength;
             }
-            else
-                _playerAlreadyBoosting = false;
 
             _effectStrength = 0;
             return 0;

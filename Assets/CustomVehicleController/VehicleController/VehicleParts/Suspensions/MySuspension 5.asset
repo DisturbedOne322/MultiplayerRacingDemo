@@ -15,4 +15,4 @@ MonoBehaviour:
   SpringRestDistance: 0.24
   SpringStiffness: 120000
   SpringDampingStiffness: 2000
-  AntiRollForce: 50000
+  AntiRollForce: 60000

@@ -208,10 +208,10 @@ namespace Assets.VehicleControllerEditor
         private VehicleBodySO CreateDefaultBody()
         {
             VehicleBodySO defaultBodySO = ScriptableObject.CreateInstance<VehicleBodySO>();
-            defaultBodySO.Mass = 1500;
+            defaultBodySO.Mass = 1000;
             defaultBodySO.ForwardDrag = 0.07f;
-            defaultBodySO.CorneringResistanceStrength = 5f;
-            defaultBodySO.Downforce = 5;
+            defaultBodySO.CorneringResistanceStrength = 20f;
+            defaultBodySO.Downforce = 15;
 
             AnimationCurve curve = new ();
             curve.AddKey(0f, 0f);

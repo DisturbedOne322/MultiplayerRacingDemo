@@ -93,6 +93,13 @@ namespace Assets.VehicleControllerEditor
 
             _frontSuspensionDamperField.tooltip = sb2.ToString();
             _rearSuspensionDamperField.tooltip = sb2.ToString();
+
+            StringBuilder sb3 = new StringBuilder();
+            sb3.AppendLine("AntilRoll bar is an essential component in the vehicle's suspension system.");
+            sb3.AppendLine("");
+            sb3.AppendLine("It provides the most value to vehicle resistance to rolling over.");
+            sb3.AppendLine("");
+            sb3.AppendLine("Recommended value: 50% of the suspension stiffness.");
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -274,9 +281,10 @@ namespace Assets.VehicleControllerEditor
         private SuspensionSO CreateDefaultSuspension()
         {
             SuspensionSO defaultSuspension = ScriptableObject.CreateInstance<SuspensionSO>();
-            defaultSuspension.SpringStiffness = 60000f;
+            defaultSuspension.SpringStiffness = 120000f;
             defaultSuspension.SpringDampingStiffness = 3500f;
             defaultSuspension.SpringRestDistance = 0.3f;
+            defaultSuspension.AntiRollForce = 60000f;
 
             return defaultSuspension;
         }

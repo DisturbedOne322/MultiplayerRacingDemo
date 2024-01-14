@@ -11,8 +11,6 @@ namespace Assets.VehicleController
         private Transform[] _steerWheelTransforms;
 
         private DrivetrainType _drivetrainType;
-
-        private Transform _centerOfGeometry;
         private Transform _centerOfMass;
 
         private Transform[] _steerParentTransforms;
@@ -56,17 +54,10 @@ namespace Assets.VehicleController
 
             CreateAxles();
 
-            SetTransforms(mesh, controller.transform);
-
+            CreateCoM(controller.transform, mesh);
             InjectCustomVehicleFields(serializedController);
             InjectCarVisualsFields(serializedCarVisuals);
             Undo.CollapseUndoOperations(group);
-        }
-
-        public void SetTransforms(MeshRenderer mesh, Transform controller)
-        {
-            CreateCoG(controller.transform, mesh);
-            CreateCoM(controller.transform, mesh);
         }
 
         private void CreateAxles()
@@ -183,40 +174,11 @@ namespace Assets.VehicleController
             GameObject _centerOfMassGO = new GameObject("CenterOfMass");
             _centerOfMass = _centerOfMassGO.transform;
             Undo.RegisterCreatedObjectUndo(_centerOfMassGO, "Center Of Mass Creation");
-            _centerOfMass.transform.parent = transform.root;
+            Undo.SetTransformParent(_centerOfMass.transform, transform.root, "Center Of Mass Parenting");
             _centerOfMass.transform.localPosition = position;    
             _centerOfMass.transform.localRotation = Quaternion.identity;
         }
 
-        private void CreateCoG(Transform transform, MeshRenderer mesh)
-        {
-            if (mesh == null)
-                Debug.LogWarning("Mesh Renderer wasn't provided, so Center Of Geometry position couldn't be calculated automatically.");
-
-            Vector3 position;
-
-            //create temporary box collider to find the true center of body
-            //if the origin of the body is not in the center, mesh.localBounds.center doesn't give correct result
-            if (mesh != null)
-            {
-                BoxCollider tempBox = mesh.gameObject.AddComponent<BoxCollider>();
-                position = transform.root.InverseTransformPoint(tempBox.bounds.center);
-                GameObject.DestroyImmediate(tempBox);
-            }
-            else
-                position = Vector3.zero;
-
-            GameObject _centerOfGeometryGO = new GameObject("CenterOfGeometry");
-            _centerOfGeometry = _centerOfGeometryGO.transform;
-            Undo.RegisterCreatedObjectUndo(_centerOfGeometryGO, "Center Of Geometry Creation");
-            _centerOfGeometry.transform.parent = transform.root;
-            _centerOfGeometry.transform.localPosition = position;
-            _centerOfGeometry.transform.localRotation = Quaternion.identity;
-
-        }
-
-
-        //change to axles
         private void InjectCarVisualsFields(SerializedObject serializedCarVisuals)
         {
             //set meshes
@@ -255,8 +217,6 @@ namespace Assets.VehicleController
             steerAxleArray.InsertArrayElementAtIndex(0);
             steerAxleArray.GetArrayElementAtIndex(0).objectReferenceValue = _vehicleAxleArray[0];
             
-
-            serializedController.FindProperty("_centerOfGeometry").objectReferenceValue = _centerOfGeometry;
             serializedController.FindProperty("_centerOfMass").objectReferenceValue = _centerOfMass;
             serializedController.FindProperty("DrivetrainType").intValue = (int)_drivetrainType;
             serializedController.FindProperty("_rigidbody").objectReferenceValue = _rigidbody;

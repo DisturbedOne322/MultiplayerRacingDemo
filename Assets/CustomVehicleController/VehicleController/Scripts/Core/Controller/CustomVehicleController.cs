@@ -25,13 +25,9 @@ namespace Assets.VehicleController
         public float SteerSpeed = 0.2f;
         #endregion
 
-        [Space, SerializeField, Tooltip("Setting up the center of mass helps with vehicle stability. \n Place it slightly below the vehicle.")]
+        [Space, SerializeField, Tooltip("Center Of Mass of the vehicle. " +
+            "\nUsually placed in the middle of the vehicle, slightly closer to the engine.")]
         private Transform _centerOfMass;
-
-        [SerializeField, Tooltip("The center of geometry defines how weight is distributed among the wheels. " +
-            "\n If you place it closer to the rear axle, the wheel load would shift more to the rear wheels. " +
-            "\n If not sure, simply place it in the center of the vehicle.")]
-        private Transform _centerOfGeometry;
 
         #region Extra options
         [Header("   Extra options")]
@@ -95,8 +91,7 @@ namespace Assets.VehicleController
 
             VehicleControllerInitializer initializer = new();
             (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_vehicleAxles,
-                _steerAxles, _rigidbody, transform, VehicleStats, _centerOfMass,
-                _centerOfGeometry, CurrentCarStats);
+                _steerAxles, _rigidbody, transform, VehicleStats, _centerOfMass, CurrentCarStats);
         }
 
         private void Update()
@@ -119,7 +114,7 @@ namespace Assets.VehicleController
                 _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());
         }
 
-        public Transform GetCenterOfGeometry() => _centerOfGeometry;
+        public Transform GetCenterOfMass() => _centerOfMass;
         public CurrentCarStats GetCurrentCarStats() => CurrentCarStats;
         public Rigidbody GetRigidbody() => _rigidbody;
 

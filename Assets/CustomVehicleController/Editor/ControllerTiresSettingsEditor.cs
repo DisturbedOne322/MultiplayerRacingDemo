@@ -314,7 +314,7 @@ namespace Assets.VehicleControllerEditor
         private TiresSO CreateDefaultTires()
         {
             TiresSO defaultTires = ScriptableObject.CreateInstance<TiresSO>();
-            defaultTires.SteeringStiffness = 15;
+            defaultTires.SteeringStiffness = 50;
             defaultTires.ForwardGrip = 1.5f;
 
             AnimationCurve sidewaysGripCurve = new();
@@ -324,9 +324,13 @@ namespace Assets.VehicleControllerEditor
 
 
             AnimationCurve sidewaysSlipCurve = new ();
-            sidewaysSlipCurve.AddKey(0, 1);
-            sidewaysSlipCurve.AddKey(0.95f, 0.5f);
-            sidewaysSlipCurve.AddKey(1, 1f);
+            Keyframe slip1 = new(0, 1, 0, 0.2f);
+            Keyframe slip2 = new(0.95f, 0.5f, 0, 0);
+            Keyframe slip3 = new(1, 1, 1, 0);
+            sidewaysSlipCurve.AddKey(slip1);
+            sidewaysSlipCurve.AddKey(slip2);
+            sidewaysSlipCurve.AddKey(slip3);
+
             defaultTires.SidewaysSlipCurve = sidewaysSlipCurve;
             return defaultTires;
         }

@@ -56,12 +56,6 @@ namespace Assets.VehicleController
             else
                 _boostingTime = 0;
 
-            Vector3 velocityNormalized;
-            if (_currentCarStats.SpeedInMsPerS < 1)
-                velocityNormalized = Vector3.zero;
-            else
-                velocityNormalized = _rigidbody.velocity.normalized;
-
             for (int i = 0; i < _nitroVFXArray.Length; i++)
             {
                 if(_boostingTime == 0 || !_currentCarStats.Accelerating)

@@ -186,16 +186,6 @@ namespace Assets.VehicleControllerEditor
             _turboSpinSpeedField.Bind(so);
         }
 
-        private ForcedInductionSO CreateDefaultFI()
-        {
-            ForcedInductionSO defaultFISO = ScriptableObject.CreateInstance<ForcedInductionSO>();
-            defaultFISO.ForcedInductionType = ForcedInductionType.None;
-            defaultFISO.MaxTorqueBoostAmount = 50;
-            defaultFISO.TurboRPMPercentDelay = 0.35f;   
-            defaultFISO.TurboSpinTime = 2;
-            return defaultFISO;
-        }
-
         private void SubscribeToFISaveButtonClick()
         {
             var button = root.Q<Button>(name: FI_CREATE_BUTTON_NAME);
@@ -204,7 +194,6 @@ namespace Assets.VehicleControllerEditor
 
         private void FICreateAssetButton_onClick()
         {
-            Debug.Log("clicked");
             if (_foNameField.text.ToString() == "")
             {
                 Debug.LogWarning("Empty forced induction SO name");
@@ -222,6 +211,16 @@ namespace Assets.VehicleControllerEditor
             _inductionSO = newFI;
             _fiObjectField.value = _inductionSO;
         }
+        private ForcedInductionSO CreateDefaultFI()
+        {
+            ForcedInductionSO defaultFISO = ScriptableObject.CreateInstance<ForcedInductionSO>();
+            defaultFISO.ForcedInductionType = ForcedInductionType.Turbocharger;
+            defaultFISO.MaxTorqueBoostAmount = 150;
+            defaultFISO.TurboRPMPercentDelay = 0.3f;
+            defaultFISO.TurboSpinTime = 1;
+            return defaultFISO;
+        }
+
     }
 }
 

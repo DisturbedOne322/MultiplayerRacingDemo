@@ -229,9 +229,9 @@ namespace Assets.VehicleControllerEditor
             {
                 _addComponentMenu.style.display = DisplayStyle.None;
 
-                var wheels = serializedObject.FindProperty("_wheelControllersArray");
+                var axles = serializedObject.FindProperty("_vehicleAxles");
 
-                if (wheels == null || wheels.arraySize < 4)
+                if (axles == null || axles.arraySize < 2)
                 {
                     DisplayControllerNotInitializedMessage(true);
                     return;

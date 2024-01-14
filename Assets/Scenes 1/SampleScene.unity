@@ -173,14 +173,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leftHalfShaft:
     _wheelController: {fileID: 1417227008}
+    _suspension: {fileID: 1417227007}
     _wheelVisualTransform: {fileID: 78385730861513123}
     _steerParentTransform: {fileID: 0}
-    _suspension: {fileID: 1417227007}
   _rightHalfShaft:
     _wheelController: {fileID: 112283390}
+    _suspension: {fileID: 112283392}
     _wheelVisualTransform: {fileID: 6990355761795261249}
     _steerParentTransform: {fileID: 0}
-    _suspension: {fileID: 112283392}
   AntiRollStrength: 50000
 --- !u!1 &22292512
 GameObject:
@@ -1595,14 +1595,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leftHalfShaft:
     _wheelController: {fileID: 2037188905}
+    _suspension: {fileID: 2037188904}
     _wheelVisualTransform: {fileID: 1136208433993577649}
     _steerParentTransform: {fileID: 2120561131}
-    _suspension: {fileID: 2037188904}
   _rightHalfShaft:
     _wheelController: {fileID: 54832124}
+    _suspension: {fileID: 54832123}
     _wheelVisualTransform: {fileID: 8091703249924999460}
     _steerParentTransform: {fileID: 1231071299}
-    _suspension: {fileID: 54832123}
   AntiRollStrength: 50000
 --- !u!1 &721333772
 GameObject:

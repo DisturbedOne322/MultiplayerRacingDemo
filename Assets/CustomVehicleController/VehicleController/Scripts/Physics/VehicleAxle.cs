@@ -16,14 +16,13 @@ namespace Assets.VehicleController
         private VehicleStats _vehicleStats;
         private Rigidbody _rigidbody;
 
-        [SerializeField]
-        private float AntiRollStrength;
-
+        private bool _front = true;
 
         public void InitializeAxle(VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
             _vehicleStats = vehicleStats;
             _rigidbody = rb;
+            _front = front;
 
             InitializeHalfShaft(_leftHalfShaft, vehicleStats, rb, wheelBaseLen, axelLen, front);
             InitializeHalfShaft(_rightHalfShaft, vehicleStats, rb, wheelBaseLen, axelLen, front);
@@ -63,7 +62,8 @@ namespace Assets.VehicleController
 
             if (_leftHalfShaft.Suspension.HitInfo.Hit && _rightHalfShaft.Suspension.HitInfo.Hit)
             {
-                float antiRollForce = (leftTravel - rightTravel) * AntiRollStrength;
+                float antiRoll = _front ? _vehicleStats.FrontSuspensionSO.AntiRollForce : _vehicleStats.RearSuspensionSO.AntiRollForce;
+                float antiRollForce = (leftTravel - rightTravel) * antiRoll;
 
                 ApplySuspension(-antiRollForce, _leftHalfShaft.Suspension.HitInfo.HitNormal, _leftHalfShaft.Suspension.HitInfo.Position);
                 ApplySuspension(+antiRollForce, _rightHalfShaft.Suspension.HitInfo.HitNormal, _rightHalfShaft.Suspension.HitInfo.Position);

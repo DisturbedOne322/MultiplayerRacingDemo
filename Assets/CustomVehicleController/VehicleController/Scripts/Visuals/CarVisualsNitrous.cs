@@ -100,6 +100,7 @@ namespace Assets.VehicleController
                     _nitroVFXArray[i].SetAnimationCurve("sizeCurve", _parameters.SizeOverLifeCurve);
                     _nitroVFXArray[i].SetFloat("spawnRate", _boostingTime < _maxBoostTime ? Random.Range(0, SPAWN_AMOUNT_MAX_VFX / 4) : SPAWN_AMOUNT_MAX_VFX);
                     _nitroVFXArray[i].SetFloat("sideVelocity", _currentCarStats.SidewaysForce / -10);
+                    _nitroVFXArray[i].SetFloat("forwardVelocity", _boostingTime < _maxBoostTime ? 0 : -2);
                 }
             }
         }

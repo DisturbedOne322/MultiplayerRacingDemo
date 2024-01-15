@@ -214,6 +214,9 @@ namespace Assets.VehicleControllerEditor
 
         private CustomVehicleController TryGetVehicleController()
         {
+            if (Instance == null)
+                return null;
+
             if (Selection.activeGameObject != null)
             {
                 if(Selection.activeGameObject.TryGetComponent(out _controller) || 

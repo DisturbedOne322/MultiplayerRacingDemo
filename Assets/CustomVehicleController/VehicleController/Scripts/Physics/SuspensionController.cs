@@ -1,6 +1,7 @@
 using System;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
 
 
 namespace Assets.VehicleController
@@ -26,6 +27,11 @@ namespace Assets.VehicleController
         public float CurrentSpringLength
         {
             get => _currentSpringLength;
+        }
+        private float _currentSpringLengthPlusGroundOffset;
+        public float CurrentSpringLengthPlusGroundOffset
+        {
+            get => _currentSpringLengthPlusGroundOffset;
         }
         private float _springRestLength;
         public float SpringRestLength
@@ -112,6 +118,10 @@ namespace Assets.VehicleController
             {
                 if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, _maxSpringLength + _wheelRadius))
                 {
+#if UNITY_EDITOR
+                    Debug.DrawLine(transform.position, hit.point);
+#endif
+
                     _hitInfo.SetHitInfo(true, hit.point, hit.normal, hit.distance);
                     return;
                 }
@@ -128,6 +138,7 @@ namespace Assets.VehicleController
             Vector3 averageHitPoint = Vector3.zero;
             Vector3 normalAverage = Vector3.zero;
             float averageDistance = 0;
+            float lowestSin = 1;
 
             for (int i = 0; i < suspensionSimulationPrecision; i++)
             {
@@ -140,6 +151,16 @@ namespace Assets.VehicleController
 #if UNITY_EDITOR
                     Debug.DrawLine(transform.position + transform.forward * offsetZ, hit.point);
 #endif
+
+                    float distanceMultiplierFromRadius = _wheelRadius * (Mathf.Abs(offsetZ) / _wheelRadius);
+
+                    if(distanceMultiplierFromRadius < lowestSin)
+                    {
+                        lowestSin = distanceMultiplierFromRadius;
+                        _currentSpringLengthPlusGroundOffset = hit.distance + hit.distance * distanceMultiplierFromRadius;
+                    }
+
+
                     averageHitPoint += hit.point;
                     averageDistance += hit.distance;
                     normalAverage += hit.normal;

@@ -124,7 +124,7 @@ namespace Assets.VehicleController
             ApplySteering(_wheelMeshTransform.position, speed, speedPercent);
             ApplyTorque(_wheelMeshTransform.position);
 
-            UpdateWheelPosition(_springController.CurrentSpringLength);
+            UpdateWheelPosition();
         }
 
         private void ApplyTorque(Vector3 pos)
@@ -198,9 +198,9 @@ namespace Assets.VehicleController
                 _visualRpm -= _visualRpm * Time.fixedDeltaTime * 10;
         }
 
-        private void UpdateWheelPosition(float distance)
+        private void UpdateWheelPosition()
         {
-            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionTopPointToWheelTopPoint - (distance - _wheelRadius);
+            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionTopPointToWheelTopPoint - (_springController.CurrentSpringLengthPlusGroundOffset - _wheelRadius * 2);
             _wheelPosition = new(_wheelInitialPosition.x,
                                  targetY,
                                  _wheelInitialPosition.z);

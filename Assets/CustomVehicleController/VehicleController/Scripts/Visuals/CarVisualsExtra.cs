@@ -125,7 +125,7 @@ namespace Assets.VehicleController
                 _antiLagEffect = new(this, _currentCarStats, _antiLagParameters);
 
             if (_enableNitroEffect)
-                _nitroEffect = new(_nitroParameters, _currentCarStats, _rigidbody);
+                _nitroEffect = new(_nitroParameters, _currentCarStats);
 
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect = new(_brakeLightsParameters);
@@ -281,7 +281,7 @@ namespace Assets.VehicleController
     [Serializable]
     public class NitrousParameters
     {
-        public VisualEffectAsset VFXAsset;
+        public EffectTypeParameters VisualEffect;
         public Transform[] ExhaustsPositionArray;
         public AnimationCurve SizeOverLifeCurve;
         [GradientUsageAttribute(true)]

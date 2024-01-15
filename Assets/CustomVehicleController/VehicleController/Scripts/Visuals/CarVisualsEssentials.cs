@@ -102,7 +102,8 @@ namespace Assets.VehicleController
 
             for (int i = 0; i < _steerAxleArray.Length; i++)
             {
-                if (_axleArray[i].LeftHalfShaft.SteerParentTransform == null)
+                if (_axleArray[i].LeftHalfShaft.SteerParentTransform == null ||
+                    _axleArray[i].RightHalfShaft.SteerParentTransform == null)
                     continue;
 
                 _axleArray[i].LeftHalfShaft.SteerParentTransform.localRotation = Quaternion.Euler(_axleArray[i].LeftHalfShaft.SteerParentTransform.localRotation.x,

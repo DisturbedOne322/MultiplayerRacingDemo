@@ -108,8 +108,22 @@ namespace Assets.VehicleController
                 
                 _wheelControllers[i] = wheelObj.AddComponent<WheelController>();
                 _wheelControllers[i].SetWheelMeshTransform(_wheelTransforms[i]);
+                TrySetWheelRadius(_wheelControllers[i]);
             }
         }
+
+        private void TrySetWheelRadius(WheelController wheelController)
+        {
+            if(wheelController.GetWheelTransform().TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
+            {
+                SerializedObject so = new SerializedObject(wheelController);
+                SerializedProperty wheelRadius = so.FindProperty("_wheelRadius");
+                wheelRadius.floatValue = mesh.bounds.size.y / 2;
+                so.ApplyModifiedProperties();
+                so.Update();
+            }
+        }
+
         private void CreateSteerWheelsHierarcy(Transform meshesParent)
         {
             int size = _steerWheelTransforms.Length;
@@ -165,7 +179,7 @@ namespace Assets.VehicleController
             if (mesh != null)
             {
                 BoxCollider tempBox = mesh.gameObject.AddComponent<BoxCollider>();
-                position = transform.root.InverseTransformPoint(tempBox.bounds.center - new Vector3(0,tempBox.bounds.size.y / 2,0));
+                position = transform.root.InverseTransformPoint(tempBox.bounds.center);
                 GameObject.DestroyImmediate(tempBox);
             }
             else
@@ -181,6 +195,7 @@ namespace Assets.VehicleController
 
         private void InjectCarVisualsFields(SerializedObject serializedCarVisuals)
         {
+            serializedCarVisuals.Update();
             //set meshes
             var vehicleAxleArray = serializedCarVisuals.FindProperty("_axleArray");
             vehicleAxleArray.ClearArray();
@@ -203,6 +218,8 @@ namespace Assets.VehicleController
 
         private void InjectCustomVehicleFields(SerializedObject serializedController)
         {
+            serializedController.Update();
+
             var vehicleAxlesArray = serializedController.FindProperty("_vehicleAxles");
             vehicleAxlesArray.ClearArray();
             int size1 = _vehicleAxleArray.Length;

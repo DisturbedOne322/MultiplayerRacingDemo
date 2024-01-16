@@ -14,7 +14,7 @@ namespace Assets.VehicleController
         public float ShiftCooldown;
         [Range(0f, 0.99f)]
         public float UpShiftRPMPercent;
-        [Range(0f, 0.84f)]
+        [Range(0f, 0.94f)]
         public float DownShiftRPMPercent;
 
 #if UNITY_EDITOR

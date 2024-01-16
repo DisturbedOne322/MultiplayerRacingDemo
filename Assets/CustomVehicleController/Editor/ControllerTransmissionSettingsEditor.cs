@@ -45,7 +45,7 @@ namespace Assets.VehicleControllerEditor
 
         private const string TRANSMISSION_FOLDER_NAME = "Transmissions";
 
-        private const float MIN_RPM_DIFFERENCE = 0.15f;
+        private const float MIN_RPM_DIFFERENCE = 0.05f;
 
         public ControllerTransmissionSettingsEditor(VisualElement root, CustomVehicleControllerEditor editor)
         {

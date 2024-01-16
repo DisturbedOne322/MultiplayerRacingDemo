@@ -30,7 +30,7 @@ namespace Assets.VehicleController
 
                 _tireTrailArray[i].transform.forward = Vector3.up;
                 _tireTrailArray[i].transform.parent = wheelMeshesArray[i].parent;
-                _radiusArray[i] = wheelControllers[i].Radius;
+                _radiusArray[i] = wheelControllers[i].WheelRadius;
                 _tireTrailArray[i].transform.position = _wheelMeshesArray[i].position - new Vector3(0, _radiusArray[i] - _parameters.VerticalOffset, 0);
                 _tireTrailArray[i].enabled = true;
             }

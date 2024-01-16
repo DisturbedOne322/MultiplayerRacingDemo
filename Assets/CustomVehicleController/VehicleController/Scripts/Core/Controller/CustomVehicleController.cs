@@ -41,11 +41,6 @@ namespace Assets.VehicleController
         [Space]
         public bool AerialControlsEnabled = false;
         public float AerialControlsSensitivity = 0;
-
-        [Space]
-        public bool AutomaticFlipOverRecoverEnabled = false;
-        [Min(0f)]
-        public float AutomaticFlipOverRecoverDelay = 2;
         #endregion
 
 
@@ -98,7 +93,6 @@ namespace Assets.VehicleController
         {
             _statsManager.ManageStats(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetHandbrakeInput(),
                             SidewaysSlippingThreshold, ForwardSlippingThreshold, DrivetrainType);
-            _partsManager.AutomaticFlipOverRecover(AutomaticFlipOverRecoverEnabled, AutomaticFlipOverRecoverDelay);
             _partsManager.ManageTransmissionUpShift(_inputProvider.GetGearUpInput());
             _partsManager.ManageTransmissionDownShift(_inputProvider.GetGearDownInput());
 

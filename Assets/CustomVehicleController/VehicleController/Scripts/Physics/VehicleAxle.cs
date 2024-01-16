@@ -31,7 +31,7 @@ namespace Assets.VehicleController
         private void InitializeHalfShaft(HalfShaft halfShaft, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
             halfShaft.WheelController.Initialize(halfShaft.Suspension, halfShaft.WheelVisualTransform, vehicleStats, rb, wheelBaseLen, axelLen, front);
-            halfShaft.Suspension.Initialize(vehicleStats, front, _leftHalfShaft.WheelController.Radius, _leftHalfShaft.WheelVisualTransform);
+            halfShaft.Suspension.Initialize(vehicleStats, front, _leftHalfShaft.WheelController.WheelRadius, _leftHalfShaft.WheelVisualTransform);
         }
 
         public void HandleVehicleAxle(float speed, float speedPercent, float acceleration, float distanceToGround, int suspensionSimulationPrecision)

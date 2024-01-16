@@ -67,7 +67,7 @@ namespace Assets.VehicleController
             float torqueToApply = torque / (size * 2);
             for (int i = 0; i < size; i++)
             {
-                driveAxleArray[i].ApplyTorque(torqueToApply / driveAxleArray[i].LeftHalfShaft.WheelController.Radius);
+                driveAxleArray[i].ApplyTorque(torqueToApply / driveAxleArray[i].LeftHalfShaft.WheelController.WheelRadius);
             }
         }
 

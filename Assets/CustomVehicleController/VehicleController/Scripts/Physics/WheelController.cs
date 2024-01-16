@@ -19,9 +19,14 @@ namespace Assets.VehicleController
         [Header("Wheel radius can be calculated automatically from the mesh renderer. \nIn case the radius is wrong, set it manually.\nIf the radius value isn't 0, radius won't be calculated.")]
         [SerializeField]
         private float _wheelRadius;
-        public float Radius
+        public float WheelRadius
         {
-            get { return _wheelRadius; }
+            get 
+            {
+                if(_wheelRadius == 0)
+                    TryFindWheelRadius();
+                return _wheelRadius;
+            }
         }
         private float _speedRpm = 0;
         public float WheelRPM
@@ -81,31 +86,25 @@ namespace Assets.VehicleController
             _wheelInitialPosition = _wheelMeshTransform.transform.localPosition;
             _wheelPosition = _wheelInitialPosition;
 
-            if (_wheelRadius == 0)
+            if(_wheelRadius == 0)
+                TryFindWheelRadius();
+            _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
+        }
+
+        private void TryFindWheelRadius()
+        {
+            if (_wheelMeshTransform.TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
             {
-                if (_wheelMeshTransform.TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
-                {
-                    _wheelRadius = mesh.bounds.size.y / 2;
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    Debug.Log("Wheel Controller couldn't automatically define wheel's radius as mesh renderer was not found. " +
-                        "\n Radius has been set to default value (0.25). Set the radius to correct value manually in edit mode.");
-#endif
-                    _wheelRadius = 0.25f;
-                }
+                _wheelRadius = mesh.bounds.size.y / 2;
             }
             else
             {
 #if UNITY_EDITOR
-                if (_wheelMeshTransform.TryGetComponent<MeshRenderer>(out MeshRenderer mesh))
-                {
-                    Debug.Log("You have set the wheel radius on wheel " + gameObject.name + " manually, so it won't calculated from mesh renderer automatically.");
-                }
+                Debug.Log($"Wheel Controller couldn't automatically calculate wheel's radius as mesh renderer was not found on {_wheelMeshTransform.gameObject.name}. " +
+                    "\n Radius has been set to default value (0.25). Set the radius to correct value manually in edit mode.");
 #endif
-            }
-            _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
+                _wheelRadius = 0.25f;
+            }        
         }
 
         public void ControlWheel(float speed, float speedPercent, float acceleration, float distanceToGround)

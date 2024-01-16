@@ -24,7 +24,7 @@ namespace Assets.VehicleController
 
             _radiusArray = new float[wheelControllers.Length];
             for (int i = 0; i < wheelControllers.Length; i++)
-                _radiusArray[i] = wheelControllers[i].Radius;
+                _radiusArray[i] = wheelControllers[i].WheelRadius;
 
             if (_effectParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 TryInstantiateVFX(wheelMeshes);

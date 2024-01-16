@@ -111,12 +111,6 @@ namespace Assets.VehicleController
                 _body.PerformAerialControls(aerialControlsSensitivity, pitchInput, yawInput, rollInput);
             }
         }
-
-        public void AutomaticFlipOverRecover(bool enabled, float time)
-        {
-            if (enabled)
-                _body.AutomaticFlipOverRecover(time);
-        }
     }
 }
 

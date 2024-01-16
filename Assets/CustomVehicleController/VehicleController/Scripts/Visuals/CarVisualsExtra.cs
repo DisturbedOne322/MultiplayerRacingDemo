@@ -43,17 +43,20 @@ namespace Assets.VehicleController
         private BrakeLightsParameters _brakeLightsParameters;
         private CarVisualsBrakeLights _brakeLightsEffect;
 
+
         [SerializeField]
         private bool _enableBodyAeroEffect;
         [SerializeField]
         private EffectTypeParameters _bodyEffectParameters;
         private CarVisualsBodyWindEffect _bodyWindEffect;
 
+
         [SerializeField]
         private bool _enableWingAeroEffect;
         [SerializeField]
         private WingAeroParameters _wingAeroParameters;
         private CarVisualsWingAeroEffect _wingAeroEffect;
+
 
         [SerializeField]
         private bool _enableAntiLagEffect;
@@ -74,9 +77,12 @@ namespace Assets.VehicleController
         private CarVisualsCollisionEffects _collisionEffects;
         #endregion
 
-        private const float DELAY_BEFORE_DISABLING_EFFECTS = 0.15f;
+        private const float DELAY_BEFORE_DISABLING_EFFECTS = 0.33f;
         private float[] _lastStopEmitTimeArray;
         private bool[] _shouldEmitArray;
+
+        //used in custom editor, draws a line
+        public Separator Separator;
 
         private void Awake()
         {
@@ -227,6 +233,7 @@ namespace Assets.VehicleController
                 _collisionEffects.OnDestroy();
         }
     }
+
     [Serializable]
     public class AntiLagParameters
     {
@@ -301,5 +308,8 @@ namespace Assets.VehicleController
         public Light CollisionLight;
         public CollisionHandler CollisionHandler;
     }
+
+    [Serializable]
+    public class Separator { }
 }
 

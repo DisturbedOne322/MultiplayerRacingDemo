@@ -68,22 +68,6 @@ namespace Assets.VehicleController
                               _stats.BodySO.CorneringResistanceStrength * _handbrakeEffect;
         }
 
-        public void AutomaticFlipOverRecover(float flipOverRecoverTimerTotal)
-        {
-            if (_currentCarStats.FlipperOver && _currentCarStats.InAir)
-                _flipOverRecoverTimer += Time.deltaTime;
-            else
-                _flipOverRecoverTimer = 0;
-
-            if (_flipOverRecoverTimer > flipOverRecoverTimerTotal)
-            {
-                Vector3 fwd = _transform.forward;
-                _transform.rotation = Quaternion.identity;
-                _transform.forward = fwd;
-                _flipOverRecoverTimer = 0;
-            }
-        }
-
         public void PerformAerialControls(float sensitivity, float pitchInput, float yawInput, float rollInput)
         {
             if (!_currentCarStats.InAir)

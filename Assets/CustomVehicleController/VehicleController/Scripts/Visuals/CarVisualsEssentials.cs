@@ -92,8 +92,14 @@ namespace Assets.VehicleController
             {
                 float angle = 0;
 
-                if(_currentCarStats.SpeedInMsPerS > 0.01f)
-                    angle = Vector3.SignedAngle(transform.forward, _rigidBody.velocity, Vector3.up);
+                Debug.Log(_currentCarStats.SpeedInMsPerS);
+                if(!_currentCarStats.InAir)
+                    if (_currentCarStats.SpeedInMsPerS > 0.1f)
+                        angle = Vector3.SignedAngle(transform.forward, _rigidBody.velocity, Vector3.up);
+                    else if (_currentCarStats.SpeedInMsPerS < -0.1f)
+                        angle = Vector3.SignedAngle(-transform.forward, _rigidBody.velocity, Vector3.up);
+                    else
+                        angle = _steerWheelsAngle;
 
                 _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, angle, ref _smDempVelocity, steerSpeed);            
             }

@@ -46,6 +46,8 @@ namespace Assets.VehicleControllerEditor
         private SerializedProperty _collisionEffectsParameters;
         #endregion
 
+        private SerializedProperty Separator;
+
         private void OnEnable()
         {
             FindTireSmoke();
@@ -56,6 +58,12 @@ namespace Assets.VehicleControllerEditor
             FindAntiLagProperties();
             FindNitro();
             FindColl();
+            FindSeparators();
+        }
+
+        private void FindSeparators()
+        {
+            Separator = serializedObject.FindProperty("Separator");
         }
 
         private void FindTireSmoke()
@@ -123,13 +131,21 @@ namespace Assets.VehicleControllerEditor
             DefaultInspector();
 
             HandleSmoke();
+            EditorGUILayout.PropertyField(Separator);
             HandleTireTrails();
+            EditorGUILayout.PropertyField(Separator);
             HandleBrakeLights();
+            EditorGUILayout.PropertyField(Separator);
             HandleAntiLag();
+            EditorGUILayout.PropertyField(Separator);
             HandleNitro();
+            EditorGUILayout.PropertyField(Separator);
             HandleBodyAero();
+            EditorGUILayout.PropertyField(Separator);
             HandleWingAero();
+            EditorGUILayout.PropertyField(Separator);
             HandleCollisions();
+            EditorGUILayout.PropertyField(Separator);
 
             serializedObject.ApplyModifiedProperties();
         }

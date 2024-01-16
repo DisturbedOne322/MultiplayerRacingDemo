@@ -89,6 +89,9 @@ namespace Assets.VehicleController
             if(_wheelRadius == 0)
                 TryFindWheelRadius();
             _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
+
+            if (transform.position == wheelMeshTransform.position)
+                Debug.LogWarning($"GameObjects with WheelController script must be positioned above the wheel, at the point where the top of suspension is supposed to be.");
         }
 
         private void TryFindWheelRadius()

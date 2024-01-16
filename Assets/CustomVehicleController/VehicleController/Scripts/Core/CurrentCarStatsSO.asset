@@ -12,24 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06314f5ecc8d5424a8001a0aa9b54657, type: 3}
   m_Name: CurrentCarStatsSO
   m_EditorClassIdentifier: 
-  SpeedInMsPerS: 8.380886
-  SpeedPercent: 0.060342375
-  CurrentGear: 1
-  EngineRPM: 2202.173
-  EngineRPMPercent: 0.2446859
-  ForcedInductionBoostPercent: 1.495844e-11
+  ScriptableObjectOwners: []
+  SpeedInMsPerS: 0
+  SpeedPercent: 0
+  CurrentGear: N
+  EngineRPM: 0
+  EngineRPMPercent: 0
+  ForcedInductionBoostPercent: 0
   CurrentEngineTorque: 0
   Accelerating: 0
   Braking: 0
   NitroBoosting: 0
   NitroPercentLeft: 1
   AccelerationForce: 0
-  SidewaysForce: -0.0063679502
+  SidewaysForce: 0
   Reversing: 0
   InAir: 0
   FlipperOver: 0
   DriveWheelLostContact: 0
-  DriftAngle: 0.42887193
+  DriftAngle: 0
   DriftTime: 0
   AirTime: 0
   HandbrakePulled: 0

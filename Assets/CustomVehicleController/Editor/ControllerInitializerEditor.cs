@@ -47,7 +47,7 @@ namespace Assets.VehicleControllerEditor
         private Button _confirmButton;
         private Button _denyButton;
 
-        private const string WINDOW_NAME = "WarningWindow";
+        private const string WINDOW_NAME = "WarningWindowWrapper";
         private const string CONFIRM_BUTTON_NAME = "ConfirmButton";
         private const string DENY_BUTTON_NAME = "DenyButton";
         private const string CLOSE_WINDOWS_BUTTON_NAME = "CloseWindowButton";

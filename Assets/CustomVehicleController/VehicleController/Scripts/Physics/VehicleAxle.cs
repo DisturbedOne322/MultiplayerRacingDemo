@@ -72,6 +72,9 @@ namespace Assets.VehicleController
 
         private void ApplySuspension(float force, Vector3 normal, Vector3 pos)
         {
+            if (force == 0)
+                return;
+
             _rigidbody.AddForceAtPosition(force * normal, pos);
         }
 

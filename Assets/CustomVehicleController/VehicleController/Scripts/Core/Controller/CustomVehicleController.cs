@@ -79,7 +79,12 @@ namespace Assets.VehicleController
             if (CurrentCarStats == null)
                 CurrentCarStats = ScriptableObject.CreateInstance<CurrentCarStats>();
             else
-                CurrentCarStats.Reset();
+            {
+                if (CurrentCarStats.ScriptableObjectOwners.Count > 0)
+                    Debug.LogError("Assigning the same instance of CurrentCarStats Scriptable Object to different vehicles can lead to unexpected behaviour.");
+                CurrentCarStats.ScriptableObjectOwners.Add(gameObject);
+            }
+
 
             _carVisualsEssentials = GetComponent<CarVisualsEssentials>();
             _carVisualsEssentials.Initialize(_rigidbody, CurrentCarStats);
@@ -143,6 +148,11 @@ namespace Assets.VehicleController
             }
 
             _inputProvider = providersFound[0];
+        }
+
+        private void OnDestroy()
+        {
+            CurrentCarStats.Reset();
         }
 
 

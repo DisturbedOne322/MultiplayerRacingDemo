@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.VehicleController
 {
     public class CurrentCarStats : ScriptableObject
     {
+        public List<GameObject> ScriptableObjectOwners;
         public void Reset()
         {
             SpeedInMsPerS = 0;
@@ -28,6 +30,7 @@ namespace Assets.VehicleController
             AirTime = 0;
             HandbrakePulled = false;
             IsCarSlipping = false;
+            ScriptableObjectOwners.Clear();
         }
 
         public event Action OnAntiLag;

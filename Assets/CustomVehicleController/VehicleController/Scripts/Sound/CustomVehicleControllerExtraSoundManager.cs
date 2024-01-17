@@ -252,7 +252,7 @@ namespace Assets.VehicleController
                 _collisionAudioSource.Play();
         }
 
-        private void _collisionHandler_OnCollisionImpact(Vector3 arg, float collMagnitude)
+        private void _collisionHandler_OnCollisionImpact(Vector3 arg, Vector3 arg2, float collMagnitude)
         {
             RandomizeAntiLagPitchAndVolume();
 

@@ -81,7 +81,7 @@ namespace Assets.VehicleController
         private float[] _lastStopEmitTimeArray;
         private bool[] _shouldEmitArray;
 
-        //used in custom editor, draws a line
+        //a custom property drawer will draw this as a black line and in the custom editor this property will be drawn after every field
         public Separator Separator;
 
         private void Awake()
@@ -298,11 +298,11 @@ namespace Assets.VehicleController
     [Serializable]
     public class CollisionEffectParameters
     {
-        public VisualEffectAsset ContinuousSparksVFXAsset;
+        public EffectTypeParameters ContinousVisualEffect;
         public float HorizontalOffset;
         [Min(0.1f)]
         public float SparksSpawnAreaHeight;
-        public VisualEffectAsset BurstSparksVFXAsset;
+        public EffectTypeParameters BurstVisualEffect;
         [Min(0)]
         public float BurstSparkCooldown = 0.5f;
         public Light CollisionLight;

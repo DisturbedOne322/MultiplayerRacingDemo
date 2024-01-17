@@ -25,10 +25,6 @@ namespace Assets.VehicleController
         public float SteerSpeed = 0.2f;
         #endregion
 
-        [Space, SerializeField, Tooltip("Center Of Mass of the vehicle. " +
-            "\nUsually placed in the middle of the vehicle, slightly closer to the engine.")]
-        private Transform _centerOfMass;
-
         #region Extra options
         [Header("   Extra options")]
         [Min(0f), Tooltip("Defines how much slipping is allowed until the wheel is considered to be forward slipping. " +
@@ -50,6 +46,15 @@ namespace Assets.VehicleController
         [Range(1,27), Tooltip("The amount of raycasts that go along the forward axis of the wheel with an offset from -radius to +radius. " +
             "\n Recommended values: [3:9]")]
         public int SuspensionSimulationPrecision = 3;
+        #region Wheel Controllers
+        [SerializeField, Space]
+        private VehicleAxle[] _vehicleAxles;
+        [SerializeField]
+        private VehicleAxle[] _steerAxles;
+        #endregion
+        [Space, SerializeField, Tooltip("Center Of Mass of the vehicle. " +
+    "\nUsually placed in the middle of the vehicle, slightly closer to the engine.")]
+        private Transform _centerOfMass;
 
 
         [SerializeField, Header("   Current Car Stats Scriptable Object"), Tooltip("In case you want to expose current car stats, " +
@@ -61,13 +66,6 @@ namespace Assets.VehicleController
         //Abstract interface for handling input. Create a monobehaviour script that implements this interface,
         //or use the input scripts that come with this package
         private IVehicleControllerInputProvider _inputProvider;
-
-        #region Wheel Controllers
-        [SerializeField]
-        private VehicleAxle[] _vehicleAxles;
-        [SerializeField]
-        private VehicleAxle[] _steerAxles;
-        #endregion
 
         private void Awake()
         {

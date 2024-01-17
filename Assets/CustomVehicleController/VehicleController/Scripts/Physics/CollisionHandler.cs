@@ -6,7 +6,7 @@ namespace Assets.VehicleController
     [AddComponentMenu("CustomVehicleController/Physics/Collision Handler")]
     public class CollisionHandler : MonoBehaviour
     {
-        public event Action<Vector3, float> OnCollisionImpact;
+        public event Action<Vector3, Vector3, float> OnCollisionImpact;
 
         public event Action<Vector3, float> OnLeftSideCollisionStay;
         public event Action OnLeftSideCollisionExit;
@@ -23,12 +23,12 @@ namespace Assets.VehicleController
         public BoxCollider _boxCollider;
         private Collider[] _colliders;
 
-        private Vector3 _colliderSize;
+        private Vector3 _colliderHalfExtent;
 
         private void Awake()
         {
             _colliders = new Collider[6];
-            _colliderSize = _boxCollider.bounds.size;
+            _colliderHalfExtent = _boxCollider.bounds.size / 1.99f;
         }
 
         private void Update()
@@ -36,7 +36,7 @@ namespace Assets.VehicleController
             int leftColls = 0;
             int rightColls = 0;
 
-            for (int i = 0; i < Physics.OverlapBoxNonAlloc(_boxCollider.bounds.center, _colliderSize / 2, _colliders, transform.rotation); i++)
+            for (int i = 0; i < Physics.OverlapBoxNonAlloc(_boxCollider.bounds.center, _colliderHalfExtent, _colliders, transform.rotation); i++)
             {
                 if (_colliders[i].transform == _boxCollider.transform)
                     continue;
@@ -77,7 +77,7 @@ namespace Assets.VehicleController
             if (magnitude < _minCollisionMagnitude)
                 return;
 
-            OnCollisionImpact?.Invoke(collision.GetContact(0).point, magnitude);
+            OnCollisionImpact?.Invoke(collision.GetContact(0).point, collision.GetContact(0).normal, magnitude);
         }
 
         private void OnCollisionStay(Collision collision)

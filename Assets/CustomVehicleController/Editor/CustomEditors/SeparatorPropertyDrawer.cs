@@ -1,4 +1,5 @@
 using Assets.VehicleController;
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -17,7 +18,7 @@ namespace Assets.VehicleControllerEditor
             // prefab override logic works on the entire property.
             EditorGUI.BeginProperty(position, label, property);
 
-            Handles.color = Color.black;
+            Handles.color = Color.gray;
             Handles.DrawAAPolyLine(
                 Texture2D.whiteTexture,
                 2,

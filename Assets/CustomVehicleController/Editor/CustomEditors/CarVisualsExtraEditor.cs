@@ -130,22 +130,16 @@ namespace Assets.VehicleControllerEditor
             
             DefaultInspector();
 
-            HandleSmoke();
-            EditorGUILayout.PropertyField(Separator);
-            HandleTireTrails();
-            EditorGUILayout.PropertyField(Separator);
-            HandleBrakeLights();
-            EditorGUILayout.PropertyField(Separator);
+            DrawEffectSettings(_enableTireSmoke, _tireSmokeParameters);
+            DrawEffectSettings(_enableTireTrails, _tireTrailParameters);
+            DrawEffectSettings(_enableBrakeLightsEffect, _brakeLightsParameters);
+
             HandleAntiLag();
-            EditorGUILayout.PropertyField(Separator);
-            HandleNitro();
-            EditorGUILayout.PropertyField(Separator);
-            HandleBodyAero();
-            EditorGUILayout.PropertyField(Separator);
-            HandleWingAero();
-            EditorGUILayout.PropertyField(Separator);
-            HandleCollisions();
-            EditorGUILayout.PropertyField(Separator);
+
+            DrawEffectSettings(_enableNitroEffect, _nitroParameters);
+            DrawEffectSettings(_enableBodyAeroEffect, _bodyEffectParameters);
+            DrawEffectSettings(_enableWingAeroEffect, _wingAeroParameters);
+            DrawEffectSettings(_enableCollisionEffects, _collisionEffectsParameters);
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -157,61 +151,19 @@ namespace Assets.VehicleControllerEditor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_axleArray"));
         }
 
-        private void HandleSmoke()
+        private void DrawEffectSettings(SerializedProperty boolProperty, SerializedProperty parametersProperty)
         {
-            EditorGUILayout.PropertyField(_enableTireSmoke);
+            EditorGUILayout.PropertyField(boolProperty);
 
-            if (_enableTireSmoke.boolValue)
+            if(boolProperty.boolValue)
             {
-                EditorGUILayout.PropertyField(_tireSmokeParameters);
+                EditorGUILayout.PropertyField(parametersProperty);
                 EditorGUILayout.Space();
             }
+
+            EditorGUILayout.PropertyField(Separator);
         }
-
-        private void HandleTireTrails()
-        {
-            EditorGUILayout.PropertyField(_enableTireTrails);
-
-            if (_enableTireTrails.boolValue)
-            {
-                EditorGUILayout.PropertyField(_tireTrailParameters);
-                EditorGUILayout.Space();
-            }
-        }
-
-        private void HandleBrakeLights()
-        {
-            EditorGUILayout.PropertyField(_enableBrakeLightsEffect);
-
-            if (_enableBrakeLightsEffect.boolValue)
-            {
-                EditorGUILayout.PropertyField(_brakeLightsParameters);
-                EditorGUILayout.Space();
-            }
-        }
-
-        private void HandleBodyAero()
-        {
-            EditorGUILayout.PropertyField(_enableBodyAeroEffect);
-
-            if (_enableBodyAeroEffect.boolValue)
-            {
-                EditorGUILayout.PropertyField(_bodyEffectParameters);
-                EditorGUILayout.Space();
-            }
-        }
-
-        private void HandleWingAero()
-        {
-            EditorGUILayout.PropertyField(_enableWingAeroEffect);
-
-            if (_enableWingAeroEffect.boolValue)
-            {
-                EditorGUILayout.PropertyField(_wingAeroParameters);
-                EditorGUILayout.Space();
-            }
-        }
-
+       
         private void HandleAntiLag()
         {
             EditorGUILayout.PropertyField(_enableAntiLagEffect);
@@ -226,27 +178,8 @@ namespace Assets.VehicleControllerEditor
             {
                 _antiLagMaxCount.intValue = _antiLagMinCount.intValue;
             }
-        }
+            EditorGUILayout.PropertyField(Separator);
 
-        private void HandleNitro()
-        {
-            EditorGUILayout.PropertyField(_enableNitroEffect);
-
-            if (_enableNitroEffect.boolValue)
-            {
-                EditorGUILayout.PropertyField(_nitroParameters);
-                EditorGUILayout.Space();
-            }
-        }
-
-        private void HandleCollisions()
-        {
-            EditorGUILayout.PropertyField(_enableCollisionEffects);
-
-            if (_enableCollisionEffects.boolValue)
-            {
-                EditorGUILayout.PropertyField(_collisionEffectsParameters);
-            }
         }
     }
 }

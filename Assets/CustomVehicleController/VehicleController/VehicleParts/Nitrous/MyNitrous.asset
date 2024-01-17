@@ -9,17 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8a1f0792138ef3499d928787231913e, type: 3}
-  m_Name: MyTransmission 1
+  m_Script: {fileID: 11500000, guid: 7350a9fbb26cca148a211550ea1942d4, type: 3}
+  m_Name: MyNitrous
   m_EditorClassIdentifier: 
-  GearRatiosList:
-  - 4
-  - 3.053518
-  - 2.330993
-  - 1.7794322
-  - 1.358382
-  - 1.036961
-  FinalDriveRatio: 2
-  ShiftCooldown: 0
-  UpShiftRPMPercent: 0.99
-  DownShiftRPMPercent: 0.94
+  BoostAmount: 2000
+  BoostIntensity: 500
+  RechargeRate: 300
+  RechargeDelay: 2
+  MinAmountPercentToUse: 0
+  BoostType: 0

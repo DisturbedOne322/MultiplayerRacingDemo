@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
+    [RequireComponent(typeof(SuspensionController)), AddComponentMenu("CustomVehicleController/Physics/Vehicle Axle")]
     public class VehicleAxle : MonoBehaviour
     {
         [SerializeField]

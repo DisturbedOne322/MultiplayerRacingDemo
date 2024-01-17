@@ -1,5 +1,6 @@
 using Assets.VehicleController;
 using UnityEditor;
+using UnityEngine;
 
 namespace Assets.VehicleControllerEditor
 {
@@ -26,6 +27,10 @@ namespace Assets.VehicleControllerEditor
         private SerializedProperty _maxWindVolume;
         private SerializedProperty _speedForMaxWindVolume;
 
+        private SerializedProperty _nitroVolumeGainSpeedInSeconds;
+        private SerializedProperty _reverbZone;
+        private SerializedProperty _reverbDuringNitroPreset;
+
         private SerializedProperty _collisionHandler;
 
         private void OnEnable()
@@ -47,6 +52,11 @@ namespace Assets.VehicleControllerEditor
 
             _maxWindVolume = serializedObject.FindProperty("_maxWindVolume");
             _speedForMaxWindVolume = serializedObject.FindProperty("_speedForMaxWindVolume");
+
+            _nitroVolumeGainSpeedInSeconds = serializedObject.FindProperty("_nitroVolumeGainSpeedInSeconds");
+
+            _reverbZone = serializedObject.FindProperty("_reverbZone");
+            _reverbDuringNitroPreset = serializedObject.FindProperty("_reverbDuringNitroPreset");
 
             _collisionHandler = serializedObject.FindProperty("_collisionHandler");
         }
@@ -80,6 +90,15 @@ namespace Assets.VehicleControllerEditor
                     EditorGUILayout.PropertyField(_maxWindVolume);
                     EditorGUILayout.PropertyField(_speedForMaxWindVolume);
                 }
+
+                if (_extraSound.NitroContinuous != null)
+                {
+                    EditorGUILayout.PropertyField(_nitroVolumeGainSpeedInSeconds);
+                    EditorGUILayout.PropertyField(_reverbZone);
+                }
+
+                if (_reverbZone.objectReferenceValue != null)
+                    EditorGUILayout.PropertyField(_reverbDuringNitroPreset);
 
                 if (_extraSound.CollisionImpact != null || _extraSound.CollisionContinuous != null)
                     EditorGUILayout.PropertyField(_collisionHandler);

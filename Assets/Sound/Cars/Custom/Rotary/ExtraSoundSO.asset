@@ -16,3 +16,5 @@ MonoBehaviour:
   WindNoise: {fileID: 8300000, guid: 9cb5db9c5deaeb244a89d7e440eee07f, type: 3}
   CollisionImpact: {fileID: 8300000, guid: d5f8e332196bb0d499a62253ece1fc9b, type: 3}
   CollisionContinuous: {fileID: 8300000, guid: 5f4441c6b5cae4f43819c9d0e34d0bc3, type: 3}
+  NitroStart: {fileID: 8300000, guid: df249f20265c4ac4c91abeca721449db, type: 3}
+  NitroContinuous: {fileID: 8300000, guid: daf47d27b38cc6c4fb277d7a101198dd, type: 3}

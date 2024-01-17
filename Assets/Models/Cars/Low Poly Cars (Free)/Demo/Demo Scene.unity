@@ -1510,12 +1510,12 @@ PrefabInstance:
     - target: {fileID: 8304437710230666744, guid: 9d52677f7b725a845a627ed31cc40eb3,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000004281651
+      value: -0.0000000042816515
       objectReference: {fileID: 0}
     - target: {fileID: 8304437710230666744, guid: 9d52677f7b725a845a627ed31cc40eb3,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 4.1375012e-10
+      value: 4.1375017e-10
       objectReference: {fileID: 0}
     - target: {fileID: 8304437710230666744, guid: 9d52677f7b725a845a627ed31cc40eb3,
         type: 3}
@@ -1982,12 +1982,12 @@ PrefabInstance:
     - target: {fileID: 9176323770862133697, guid: 1a60d391c529c844aaab26b481665535,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000004281651
+      value: -0.0000000042816515
       objectReference: {fileID: 0}
     - target: {fileID: 9176323770862133697, guid: 1a60d391c529c844aaab26b481665535,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 4.1375012e-10
+      value: 4.1375017e-10
       objectReference: {fileID: 0}
     - target: {fileID: 9176323770862133697, guid: 1a60d391c529c844aaab26b481665535,
         type: 3}
@@ -4567,8 +4567,11 @@ MonoBehaviour:
   _forcedInductionMaxPitch: 1.5
   _forcedInductionMaxVolume: 0.7
   _tireVolumeIncreaseTime: 0.75
-  _maxWindVolume: 0.3
+  _maxWindVolume: 0.5
   _speedForMaxWindVolume: 100
+  _nitroVolumeGainSpeedInSeconds: 0.4
+  _reverbZone: {fileID: 2164675458864157674}
+  _reverbDuringNitroPreset: 26
   _collisionHandler: {fileID: 4542509656829394274}
 --- !u!1 &5835419420139029393
 GameObject:

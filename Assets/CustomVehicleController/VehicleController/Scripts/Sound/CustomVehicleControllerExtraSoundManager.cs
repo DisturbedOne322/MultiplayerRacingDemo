@@ -22,6 +22,8 @@ namespace Assets.VehicleController
         private AudioSource _carEffectsAudioSource;
         private AudioSource _collisionAudioSource;
         private AudioSource _windNoiseAudioSource;
+        private AudioSource _nitroStartAudioSource;
+        private AudioSource _nitroContinuousAudioSource;
 
         [SerializeField, Header("   Optional")]
         private AudioMixerGroup _vehicleSoundAudioMixerGroup;
@@ -35,25 +37,35 @@ namespace Assets.VehicleController
         [SerializeField, Min(0)]
         private float _forcedInductionMaxVolume = 0.7f;
 
-        [SerializeField, Min(0)]
+        [SerializeField, Min(0), Space]
         private float _tireVolumeIncreaseTime = 0.75f;
 
-        [SerializeField, Range(0,1f)]
+        [SerializeField, Range(0,1f), Space]
         private float _maxWindVolume = 0.3f;
         [SerializeField, Min(0)]
         private float _speedForMaxWindVolume = 100f;
 
+        [SerializeField, Min(0), Space]
+        private float _nitroVolumeGainSpeedInSeconds = 0.4f;
+        private float _boostingTime = 0;
+        [SerializeField, Tooltip("Optional")]
+        private AudioReverbZone _reverbZone;
         [SerializeField]
+        private AudioReverbPreset _reverbDuringNitroPreset = AudioReverbPreset.Off;
+
+        [SerializeField, Space]
         private CollisionHandler _collisionHandler;
 
         private bool _forcedInductionSoundInitialized = false;
         private bool _tireSlipSoundInitialized = false;
         private bool _windNoiseSoundInitialized = false;
         private bool _collisionEffectInitialized = false;
+        private bool _nitroEffectsInitialized = false;
 
         private bool _flutterSoundExists = false;
         private bool _antiLagSoundExists = false;
         private bool _antiLagMildSoundExists = false;
+        private bool _nitroStartSoundExists = false;
 
         private bool _collisionImpactSoundExists = false;
         private bool _collisionContinuousSoundExists = false;
@@ -74,6 +86,7 @@ namespace Assets.VehicleController
             InitializeCarEffectSound();
             InitializeCollisionSound();
             InitializedWindNoise();
+            InitializeNitroSound();
         }
 
         private void OnDestroy()
@@ -142,7 +155,7 @@ namespace Assets.VehicleController
             _forcedInductionAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             _forcedInductionAudioSource.clip = _forcedInductionSoundSO.ForcedInductionSound;
             _forcedInductionAudioSource.volume = 0;
-            SetupAudioSource(_forcedInductionAudioSource, true);
+            SetupAudioSource(_forcedInductionAudioSource, true, true);
 
             _forcedInductionSoundInitialized = true;
         }
@@ -155,7 +168,7 @@ namespace Assets.VehicleController
             _tireSlipAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             _tireSlipAudioSource.clip = _extraSoundSO.TireSlipSound;
             _tireSlipAudioSource.volume = 0;
-            SetupAudioSource(_tireSlipAudioSource, true);
+            SetupAudioSource(_tireSlipAudioSource, true, false);
 
             _tireSlipSoundInitialized = true;
         }
@@ -163,7 +176,7 @@ namespace Assets.VehicleController
         private void InitializeCarEffectSound()
         {
             _carEffectsAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
-            SetupAudioSource(_carEffectsAudioSource, false);
+            SetupAudioSource(_carEffectsAudioSource, false, false);
 
             _flutterSoundExists = _forcedInductionSoundSO.TurboFlutterSound != null;
             _antiLagSoundExists = _forcedInductionSoundSO.AntiLagSound != null;
@@ -200,7 +213,7 @@ namespace Assets.VehicleController
             if(_extraSoundSO.CollisionContinuous != null)
                 _collisionAudioSource.clip = _extraSoundSO.CollisionContinuous;
 
-            SetupAudioSource (_collisionAudioSource, true);
+            SetupAudioSource (_collisionAudioSource, true, false);
             _collisionAudioSource.Stop();
 
             _collisionHandler.OnCollisionImpact += _collisionHandler_OnCollisionImpact;
@@ -268,12 +281,31 @@ namespace Assets.VehicleController
             _windNoiseAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             _windNoiseAudioSource.clip = _extraSoundSO.WindNoise;
             _windNoiseAudioSource.volume = 0;
-            SetupAudioSource(_windNoiseAudioSource, true);
+            SetupAudioSource(_windNoiseAudioSource, true, false);
 
             _windNoiseSoundInitialized = true;
         }
 
-        private void SetupAudioSource(AudioSource source, bool loop)
+        private void InitializeNitroSound()
+        {
+            if (_extraSoundSO.NitroContinuous == null)
+                return;
+            _nitroStartSoundExists = _extraSoundSO.NitroStart != null;
+
+
+            _nitroStartAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
+            SetupAudioSource(_nitroStartAudioSource, false, false);
+            _nitroStartAudioSource.clip = _extraSoundSO.NitroStart;
+
+
+            _nitroContinuousAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
+            SetupAudioSource(_nitroContinuousAudioSource, true, false);
+            _nitroContinuousAudioSource.clip = _extraSoundSO.NitroContinuous;
+
+            _nitroEffectsInitialized = true;
+        }
+
+        private void SetupAudioSource(AudioSource source, bool loop, bool playOnAwake)
         {
             source.loop = loop;
             source.Play();
@@ -290,6 +322,8 @@ namespace Assets.VehicleController
                 HandleTireSlipSound();
             if (_windNoiseSoundInitialized)
                 HandleWindNoise();
+            if(_nitroEffectsInitialized)
+                HandleNitroSound();
         }
 
         private void HandleForcedInductionSound()
@@ -348,6 +382,54 @@ namespace Assets.VehicleController
                     _windNoiseAudioSource.Play();
                 _windNoiseAudioSource.volume = volume;
 
+            }
+        }
+
+        private void HandleNitroSound()
+        {
+            if (_currentCarStats.NitroBoosting)
+            {
+                if (_boostingTime == 0)
+                {
+                    _nitroContinuousAudioSource.volume = 0;
+                    _nitroContinuousAudioSource.Play();
+
+                    if (_nitroStartSoundExists)
+                    {
+                        _nitroStartAudioSource.volume = 1;
+                        _nitroStartAudioSource.Play();
+                    }
+                }
+
+                _boostingTime += Time.deltaTime;
+
+                if (_reverbZone != null && _boostingTime > _nitroVolumeGainSpeedInSeconds)
+                        _reverbZone.reverbPreset = _reverbDuringNitroPreset;
+
+                if (_nitroVolumeGainSpeedInSeconds == 0)
+                    _nitroContinuousAudioSource.volume = 1;
+                else if (_nitroContinuousAudioSource.volume < 1)
+                    _nitroContinuousAudioSource.volume += Time.deltaTime / _nitroVolumeGainSpeedInSeconds;
+            }
+            else
+            {
+                if(_reverbZone != null)
+                    _reverbZone.reverbPreset = AudioReverbPreset.Off;
+
+                _boostingTime = 0;
+
+                _nitroContinuousAudioSource.volume -= Time.deltaTime * 4;
+
+                if(_nitroStartSoundExists)
+                    _nitroStartAudioSource.volume -= Time.deltaTime * 4;
+
+                if (_nitroStartSoundExists && _nitroStartAudioSource.volume == 0)
+                    if (_nitroStartAudioSource.isPlaying)
+                        _nitroStartAudioSource.Stop();
+
+                if (_nitroContinuousAudioSource.volume == 0)
+                    if (_nitroContinuousAudioSource.isPlaying)
+                        _nitroContinuousAudioSource.Stop();
             }
         }
     }

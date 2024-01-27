@@ -172,7 +172,7 @@ namespace Assets.VehicleController
             if (mesh == null)
                 Debug.LogWarning("Mesh Renderer wasn't provided, so Center Of Mass position couldn't be calculated automatically.");
 
-            Vector3 position;
+            Vector3 position = Vector3.zero;
 
             //create temporary box collider to find the true center of body
             //if the origin of the body is not in the center, mesh.localBounds.center doesn't give correct results
@@ -182,8 +182,6 @@ namespace Assets.VehicleController
                 position = transform.root.InverseTransformPoint(tempBox.bounds.center);
                 GameObject.DestroyImmediate(tempBox);
             }
-            else
-                position = Vector3.zero;
 
             GameObject _centerOfMassGO = new GameObject("CenterOfMass");
             _centerOfMass = _centerOfMassGO.transform;

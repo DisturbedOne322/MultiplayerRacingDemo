@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Assets.VehicleController
 {
     public interface IHandling

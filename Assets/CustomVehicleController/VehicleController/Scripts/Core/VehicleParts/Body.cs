@@ -7,13 +7,10 @@ namespace Assets.VehicleController
     {
         private Rigidbody _rb;
         private Transform _transform;
-        private Transform _coM; 
 
         private VehicleStats _stats;
         private CurrentCarStats _currentCarStats;
 
-
-        private float _flipOverRecoverTimer = 0;
 
         private const float MAX_SENSITIVITY_AFTER_AERIAL_TIME = 2f;
 
@@ -25,7 +22,6 @@ namespace Assets.VehicleController
             _rb.centerOfMass = centerOfMass.localPosition;
             _stats = stats;
             _currentCarStats = currentCarStats;
-            _coM = centerOfMass;
             this._transform = transform;
         }
 
@@ -37,13 +33,6 @@ namespace Assets.VehicleController
 
         public void AddCorneringForce()
         {
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                Vector3 fwd = _transform.forward;
-                _transform.rotation = Quaternion.identity;
-                _transform.forward = fwd;
-                _flipOverRecoverTimer = 0;
-            }
             if (_currentCarStats.InAir)
                 return;
 

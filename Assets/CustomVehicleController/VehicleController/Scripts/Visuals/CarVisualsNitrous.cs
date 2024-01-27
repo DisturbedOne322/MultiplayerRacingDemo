@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -19,7 +17,6 @@ namespace Assets.VehicleController
         private const float SPAWN_AMOUNT_MAX_VFX = 30;
         private const float SPAWN_AMOUNT_MAX_PS = 300;
         private float _boostingTime = 0;
-
         public CarVisualsNitrous(NitrousParameters nitrousParameters, CurrentCarStats currentCarStats)
         {
             _parameters = nitrousParameters;
@@ -117,7 +114,10 @@ namespace Assets.VehicleController
             for (int i = 0; i < _nitroPSArray.Length; i++)
             {
                 if (_boostingTime == 0 || !_currentCarStats.Accelerating)
-                    _nitroPSArray[i].emissionRate = 0;
+                {
+                    ParticleSystem.EmissionModule emission = _nitroPSArray[i].emission;
+                    emission.rateOverTime = 0;
+                }
                 else
                 {
                     if (_nitroPSArray[i].isStopped)
@@ -131,7 +131,8 @@ namespace Assets.VehicleController
 
                     forceOverLife.z = _boostingTime < _maxBoostTime ? _boostingTime * _boostingTime * -160 : -80;
 
-                    _nitroPSArray[i].emissionRate = _boostingTime < _maxBoostTime ? Random.Range(0, SPAWN_AMOUNT_MAX_PS / 4) : SPAWN_AMOUNT_MAX_PS;
+                    ParticleSystem.EmissionModule emission = _nitroPSArray[i].emission;
+                    emission.rateOverTime = _boostingTime < _maxBoostTime ? Random.Range(0, SPAWN_AMOUNT_MAX_PS / 4) : SPAWN_AMOUNT_MAX_PS;
                 }
             }
         }

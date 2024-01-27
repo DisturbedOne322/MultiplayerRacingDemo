@@ -292,11 +292,12 @@ namespace Assets.VehicleController
                 return;
             _nitroStartSoundExists = _extraSoundSO.NitroStart != null;
 
-
-            _nitroStartAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
-            SetupAudioSource(_nitroStartAudioSource, false, false);
-            _nitroStartAudioSource.clip = _extraSoundSO.NitroStart;
-
+            if(_nitroStartSoundExists)
+            {
+                _nitroStartAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
+                SetupAudioSource(_nitroStartAudioSource, false, false);
+                _nitroStartAudioSource.clip = _extraSoundSO.NitroStart;
+            }
 
             _nitroContinuousAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             SetupAudioSource(_nitroContinuousAudioSource, true, false);
@@ -308,7 +309,7 @@ namespace Assets.VehicleController
         private void SetupAudioSource(AudioSource source, bool loop, bool playOnAwake)
         {
             source.loop = loop;
-            source.Play();
+            source.playOnAwake = playOnAwake;
 
             if (_vehicleSoundAudioMixerGroup != null)
                 source.outputAudioMixerGroup = _vehicleSoundAudioMixerGroup;

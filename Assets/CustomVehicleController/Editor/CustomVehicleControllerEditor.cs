@@ -49,11 +49,11 @@ namespace Assets.VehicleControllerEditor
 
         private const string VEHICLE_PARTS_FOLDER_PATH = "\\VehicleController\\VehicleParts\\";
 
-        [MenuItem("Tools/CustomVehicleControllerEditor")]
+        [MenuItem("CustomVehicleController/VehicleEditor")]
         public static void ShowTitle()
         {
             CustomVehicleControllerEditor wnd = GetWindow<CustomVehicleControllerEditor>();
-            wnd.titleContent = new GUIContent("CustomVehicleControllerEditor");
+            wnd.titleContent = new GUIContent("Vehicle Editor");
         }
      
         public void CreateGUI()

@@ -97,9 +97,11 @@ namespace Assets.VehicleControllerEditor
             StringBuilder sb3 = new StringBuilder();
             sb3.AppendLine("AntilRoll bar is an essential component in the vehicle's suspension system.");
             sb3.AppendLine("");
-            sb3.AppendLine("It provides the most value to vehicle resistance to rolling over.");
+            sb3.AppendLine("It provides the most value to vehicle resistance to rolling over, thus stabilizing the vehicle when turning.");
             sb3.AppendLine("");
             sb3.AppendLine("Recommended value: 50% of the suspension stiffness.");
+            _frontAntiRollBarField.tooltip = sb3.ToString();
+            _rearAntiRollBarField.tooltip = sb3.ToString();
         }
 
         private void _mainEditor_OnWindowClosed()
@@ -129,7 +131,9 @@ namespace Assets.VehicleControllerEditor
             });
 
             _frontAntiRollBarField = root.Q<FloatField>(FRONT_ANTIROLL_BAR_FIELD);
-            _frontAntiRollBarField.RegisterValueChangedCallback(evt => { _frontAntiRollBarField.value = _frontAntiRollBarField.value < 0 ? 0 : _frontAntiRollBarField.value; });
+            _frontAntiRollBarField.RegisterValueChangedCallback(evt => {
+                _frontAntiRollBarField.value = Mathf.Clamp(_frontAntiRollBarField.value, 0, _frontSuspensionStiffnessField.value);
+            });
 
             _frontSuspensionHeightSlider = root.Q<Slider>(FRONT_SUSPENSION_HEIGHT_SLIDER_FIELD);
             _frontSuspensionNameField = root.Q<TextField>(FRONT_SUSPENSION_NAME_FIELD);
@@ -151,7 +155,9 @@ namespace Assets.VehicleControllerEditor
 
 
             _rearAntiRollBarField = root.Q<FloatField>(REAR_ANTIROLL_BAR_FIELD);
-            _rearAntiRollBarField.RegisterValueChangedCallback(evt => { _rearAntiRollBarField.value = _rearAntiRollBarField.value < 0 ? 0 : _rearAntiRollBarField.value; });
+            _rearAntiRollBarField.RegisterValueChangedCallback(evt => { 
+                _rearAntiRollBarField.value = Mathf.Clamp(_rearAntiRollBarField.value, 0, _rearSuspensionStiffnessField.value); 
+            });
 
             _rearSuspensionHeightSlider = root.Q<Slider>(REAR_SUSPENSION_HEIGHT_SLIDER_FIELD);
             _rearSuspensionNameField = root.Q<TextField>(REAR_SUSPENSION_NAME_FIELD);

@@ -852,10 +852,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa7434149888e140b29100cffcf632c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _currentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
-  _speedText: {fileID: 7657210761919159367}
-  _rpmNeedle: {fileID: 7525269176908957205}
-  _currentGearText: {fileID: 2364352367579107790}
 --- !u!114 &5823202868680072231
 MonoBehaviour:
   m_ObjectHideFlags: 0

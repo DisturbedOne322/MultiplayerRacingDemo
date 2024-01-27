@@ -1,7 +1,4 @@
-using System;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 
 
 namespace Assets.VehicleController

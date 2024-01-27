@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Input/Vehicle Controller Input Provider Old")]
+    [AddComponentMenu("CustomVehicleController/Input/Vehicle Controller Input Provider")]
     public class VehicleControllerInputProviderOld : MonoBehaviour, IVehicleControllerInputProvider
     {
         #region Control field

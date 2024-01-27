@@ -134,17 +134,7 @@ namespace Assets.VehicleController
                 return;
             }
 
-            Debug.LogWarning("Multiple input provider scripts found on " + gameObject.name);
-            for (int i = 0; i < providersFound.Length; i++)
-            {
-                if (providersFound[i] is VehicleControllerInputProviderPlayerInput || providersFound[i] is VehicleControllerInputProviderNew)
-                {
-                    _inputProvider = providersFound[i];
-                    Debug.LogWarning("The one implenting the new input system was chosen");
-                    return;
-                }
-            }
-
+            Debug.LogWarning($"Multiple Input Providers on {gameObject.name}. Selecting the first one found");
             _inputProvider = providersFound[0];
         }
 

@@ -37,6 +37,9 @@ namespace Assets.VehicleControllerEditor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_steerAngle"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_steerSpeed"));
 
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("text"));
+
+
             EditorGUILayout.PropertyField(Separator);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_forwardSlippingThreshold"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("_sidewaysSlippingThreshold"));

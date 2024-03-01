@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -5,7 +6,7 @@ namespace Assets.VehicleController
 {
     [AddComponentMenu("CustomVehicleController/Sound/Vehicle Extra Sound Manager"),
     HelpURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/extra/adding-sound-effects/adding-extra-sound-effects")]
-    public class CustomVehicleControllerExtraSoundManager : MonoBehaviour
+    public class CustomVehicleControllerExtraSoundManager : NetworkBehaviour
     {
         public Separator Separator;
 
@@ -94,6 +95,12 @@ namespace Assets.VehicleController
 
         private void Start()
         {
+            if (!IsOwner)
+            {
+                _3DSound = true;
+                _spatialBlend = 1;
+            }
+
             _effectAudioSourceHolder = new GameObject("Car Sound Effects");
             _effectAudioSourceHolder.transform.parent = this.transform;
             _effectAudioSourceHolder.transform.localPosition = Vector3.zero;

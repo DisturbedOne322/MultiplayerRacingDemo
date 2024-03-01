@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -5,7 +6,7 @@ namespace Assets.VehicleController
 {
     [AddComponentMenu("CustomVehicleController/Sound/Vehicle Engine Sound Manager"),
     HelpURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/extra/adding-sound-effects/adding-engine-sound")]
-    public class VehicleEngineSoundManager : MonoBehaviour
+    public class VehicleEngineSoundManager : NetworkBehaviour
     {
         [SerializeField]
         private CustomVehicleController _vehicleController;
@@ -58,6 +59,12 @@ namespace Assets.VehicleController
             {
                 Debug.LogWarning("No Vehicle Controller assigned on " + gameObject.name);
                 return;
+            }
+
+            if (!IsOwner)
+            {
+                _3DSound = true;
+                _spatialBlend = 1;
             }
 
             _vehicleController.VehiclePartsSetWrapper.OnPartsChanged += VehiclePartsPresetWrapper_OnPartsChanged;

@@ -156,7 +156,6 @@ GameObject:
   - component: {fileID: 9176323770862133697}
   - component: {fileID: 1948858424045150307}
   - component: {fileID: 8904372912932545190}
-  - component: {fileID: 6942979308588626101}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -235,28 +234,3 @@ MonoBehaviour:
   AutoEnableInputs: 1
   XYAxis: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   ZAxis: {fileID: 0}
---- !u!114 &6942979308588626101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5473074738554185755}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a18d7ce8d60dc104cb7e3d2edfa6d4de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _virtualCamera: {fileID: 1948858424045150307}
-  _animeSpeedEffect: {fileID: 0}
-  _volume: {fileID: 0}
-  _currentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
-  _maxShakeAmp: 0.6
-  _maxShakeFreq: 12
-  DefaultFOV: 50
-  MAX_ACCELERATION_FORCE: 40
-  MAX_FOV_INCREASE_FOR_ACCEL: 30
-  MAX_FOV_INCREASE_FOR_SPEED: 5
-  MAX_SPEED_IN_MS: 80
-  MAX_SIDEWAYS_FORCE: 40
-  _nitroBoostFOV_Max: 20

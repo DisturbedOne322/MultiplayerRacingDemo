@@ -1,12 +1,14 @@
 using System;
 using UnityEngine;
+using Unity.Netcode;
+using UnityEngine.UI;
 
 namespace Assets.VehicleController
 {
     [RequireComponent(typeof(CarVisualsEssentials)),
     RequireComponent(typeof(Rigidbody)), DisallowMultipleComponent, AddComponentMenu("CustomVehicleController/Core/Custom Vehicle Controller"),
     HelpURL("https://distubredone322.gitbook.io/custom-vehicle-controller/")]
-    public class CustomVehicleController : MonoBehaviour
+    public class CustomVehicleController : NetworkBehaviour
     {
         public bool UsePreset = true;
         [SerializeField]
@@ -160,16 +162,22 @@ namespace Assets.VehicleController
             (_statsManager, _partsManager) = initializer.InitializeVehicleControllers(_frontAxles, _rearAxles,
                 _steerAxles, _rigidbody, transform, VehiclePartsSetWrapper, _centerOfMass, CurrentCarStats);
         }
-
+        public Text text;
         private void Update()
         {
+            text.text = CurrentCarStats.EngineRPM.ToString();
+
+            _statsManager.ManageStats(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetHandbrakeInput(),
+                            _sidewaysSlippingThreshold, _forwardSlippingThreshold, DrivetrainType);
+
+            if (!IsOwner)
+                return;
+
             if (UsePreset)
                 VehiclePartsSetWrapper.UpdateVehiclePartsPresetIfRequired(_vehiclePartsPreset);
             else
                 VehiclePartsSetWrapper.UpdateVehiclePartsPresetIfRequired(_customizableSet);
 
-            _statsManager.ManageStats(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetHandbrakeInput(),
-                            _sidewaysSlippingThreshold, _forwardSlippingThreshold, DrivetrainType);
             _partsManager.ManageTransmissionUpShift(_inputProvider.GetGearUpInput());
             _partsManager.ManageTransmissionDownShift(_inputProvider.GetGearDownInput());
 
@@ -178,6 +186,9 @@ namespace Assets.VehicleController
 
         private void FixedUpdate()
         {
+            if (!IsOwner)
+                return;
+
             _partsManager.ManageCarParts(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetNitroBoostInput(),
                 _inputProvider.GetHorizontalInput(), _inputProvider.GetHandbrakeInput(),
                 _steerAngle, _steerSpeed, TransmissionType, DrivetrainType, _suspensionSimulationPrecision, _ignoreLayers);

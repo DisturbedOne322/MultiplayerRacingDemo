@@ -2,7 +2,8 @@
     "name": "CustomVehicleController-Editor",
     "rootNamespace": "Assets.VehicleControllerEditor",
     "references": [
-        "GUID:2508049b3dd4d9b448a10a961ff29a22"
+        "GUID:2508049b3dd4d9b448a10a961ff29a22",
+        "GUID:1491147abca9d7d4bb7105af628b223e"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,9 +14,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [{
-	        "name": "com.unity.visualeffectgraph",
+    "versionDefines": [
+        {
+            "name": "com.unity.visualeffectgraph",
             "expression": "1.0.0",
-            "define": "VISUAL_EFFECT_GRAPH_INSTALLED_FOR_EDITOR"}],
+            "define": "VISUAL_EFFECT_GRAPH_INSTALLED_FOR_EDITOR"
+        }
+    ],
     "noEngineReferences": false
 }

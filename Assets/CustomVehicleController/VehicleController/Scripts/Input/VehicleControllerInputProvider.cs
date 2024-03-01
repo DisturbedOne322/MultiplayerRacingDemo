@@ -2,8 +2,9 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Input/Vehicle Controller Input Provider")]
-    public class VehicleControllerInputProviderOld : MonoBehaviour, IVehicleControllerInputProvider
+    [AddComponentMenu("CustomVehicleController/Input/Vehicle Controller Input Provider"),
+    HelpURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/vehicle-controller-input-provider")]
+    public class VehicleControllerInputProvider : MonoBehaviour, IVehicleControllerInputProvider
     {
         #region Control field
         private float _gasInput;
@@ -24,11 +25,20 @@ namespace Assets.VehicleController
         private void Update()
         {
             _gasInput = Input.GetKey(KeyCode.W) ? 1 : 0;
+            if (_gasInput == 0)
+                _gasInput = Input.GetKey(KeyCode.UpArrow) ? 1 : 0;
+
             _brakeInput = Input.GetKey(KeyCode.S) ? 1 : 0;
+            if (_brakeInput == 0)
+                _brakeInput = Input.GetKey(KeyCode.DownArrow) ? 1 : 0;
+
             _handbrakeInput = Input.GetKey(KeyCode.Space);
             _horizontalInput = Input.GetAxis("Horizontal");
 
-            _nitroBoostInput = Input.GetKey(KeyCode.N);
+            if (_horizontalInput == 0)
+                _horizontalInput = Input.GetKey(KeyCode.LeftArrow) ? -1 : Input.GetKey(KeyCode.RightArrow) ? 1 : 0;
+
+            _nitroBoostInput = Input.GetKey(KeyCode.N) || Input.GetKey(KeyCode.LeftAlt);
 
             _pitchInput = Input.GetAxis("Vertical");
 

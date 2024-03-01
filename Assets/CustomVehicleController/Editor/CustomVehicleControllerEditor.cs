@@ -1,7 +1,9 @@
 using Assets.VehicleController;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,20 +21,36 @@ namespace Assets.VehicleControllerEditor
         private Label _controllerSelectedLabel;
         private Toggle _saveChangedToggle;
         private Toggle _lockWindowToggle;
+        private Toggle _usePresetsToggle;
+        private VisualElement _usePreserHolder;
+
+        private List<Button> _helpButtonList;
+        private UnityEngine.Color _buttonMouseOverColor = new Color(180f / 255f, 180f / 255f, 180f / 255f, 1f);
+        private UnityEngine.Color _buttonMouseExitColor = new Color(1f, 1f, 1f, 1f);
+
+        private Button _docsLinkButton;
+        private UnityEngine.Color _docsMouseOverColor = new Color(100 / 255f, 200 / 255f, 255 / 255f);
+        private UnityEngine.Color _docsMouseExitColor = new Color(0, 165 / 255f, 240 / 255f);
 
         private const string CONTROLLER_SELECTED_LABEL = "ControllerSelectionLabel";
         private const string SAVE_CHANGES_TOGGLE_NAME = "SaveChangesToggle";
         private const string LOCK_WINDOW_TOGGLE = "LockWindowToggle";
+        private const string DOCS_LINK_BUTTON = "DocumentationLinkButton";
+        private const string USE_PRESETS_TOGGLE = "UsePresetToggle";
+        private const string USE_PRESET_HOLDER = "UsePresetFooter";
 
         private CustomVehicleController _controller;
 
         private SerializedObject _serializedController;
         private SerializedObject _serializedCarVisuals;
 
-        private VehicleStats _vehicleStatsPlayMode;
+        private VehiclePartsPresetSO _vehiclePartsPlayMode;
         private int _suspensionRaycastNumPlayMode;
+        private Vector3 _comPlayMode;
+        private TransmissionType _transTypePlayMode;
 
         #region Parts Editors
+        private ControllerPresetSettingsEditor _presetEditor;
         private ControllerTransmissionSettingsEditor _transmissionSettingsEditor;
         private ControllerEngineSettingsEditor _engineSettingsEditor;
         private ControllerNitrousSettingsEditor _nitrousSettingsEditor;
@@ -49,23 +67,21 @@ namespace Assets.VehicleControllerEditor
 
         private const string VEHICLE_PARTS_FOLDER_PATH = "\\VehicleController\\VehicleParts\\";
 
-        [MenuItem("CustomVehicleController/VehicleEditor")]
+        [MenuItem("Tools/CustomVehicleController/VehicleEditor")]
         public static void ShowTitle()
         {
             CustomVehicleControllerEditor wnd = GetWindow<CustomVehicleControllerEditor>();
             wnd.titleContent = new GUIContent("Vehicle Editor");
         }
-     
+
         public void CreateGUI()
         {
-            if(Instance == null)
+            if (Instance == null)
                 Initialize();
         }
 
         private void Initialize()
         {
-            Instance = this;
-
             VisualElement root = rootVisualElement;
             VisualElement labelFromUXML = m_VisualTreeAsset.Instantiate();
             root.Add(labelFromUXML);
@@ -76,6 +92,16 @@ namespace Assets.VehicleControllerEditor
 
             _saveChangedToggle = root.Q<Toggle>(SAVE_CHANGES_TOGGLE_NAME);
 
+            _usePresetsToggle = root.Q<Toggle>(USE_PRESETS_TOGGLE);
+            _usePresetsToggle.RegisterValueChangedCallback(evt => { 
+                DisplayPresetVisualElements(_usePresetsToggle.value);
+                SetVehicleControllerToSettingEditors();
+            });
+            _usePresetsToggle.bindingPath = nameof(CustomVehicleController.UsePreset);
+
+            _usePreserHolder = root.Q<VisualElement>(USE_PRESET_HOLDER);
+
+            _presetEditor = new(root, this);
             _transmissionSettingsEditor = new (root, this);
             _fiSettingEditor = new (root, this);
             _engineSettingsEditor = new (root, this, _fiSettingEditor);
@@ -88,36 +114,85 @@ namespace Assets.VehicleControllerEditor
             _initializerEditor = new (root, this);
             _extraVisualsSettingsEditor = new (root, this);
 
-            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+            Instance = this;
 
             BindController(TryGetVehicleController());
-            Undo.undoRedoPerformed += OnUndo;
+            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+
+            CreateDocsLink();
+            CreateLinksToDocs();
+            Undo.undoRedoPerformed += UpdateAfterUndo;
         }
 
-        private void OnUndo()
+        private void UpdateAfterUndo()
         {
-            if (_serializedController == null)
+            if (_lockWindowToggle.value && _controller != null)
                 return;
-            if (_serializedController.targetObject == null)
+
+            if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<CustomVehicleController>() != null)
+                return;
+
+            _initializerEditor.SetVehicleController(null);
+            _controllerSelectedLabel.text = "CURRENTLY SELECTED VEHICLE CONTROLLER: NONE";
+            _controllerSelectedLabel.style.color = Color.red;
+        }
+
+        private void CreateDocsLink()
+        {
+            _docsLinkButton = rootVisualElement.Q<Button>(DOCS_LINK_BUTTON);
+            _docsLinkButton.clicked += CustomVehicleControllerEditor_onClick;
+            _docsLinkButton.RegisterCallback<MouseOverEvent>(evt => { _docsLinkButton.style.color = _docsMouseOverColor; });
+            _docsLinkButton.RegisterCallback<MouseOutEvent>(evt => { _docsLinkButton.style.color = _docsMouseExitColor; });
+        }
+
+        private void CreateLinksToDocs()
+        {
+            _helpButtonList = new List<Button>()
             {
-                _controllerSelectedLabel.text = "CURRENTLY SELECTED VEHICLE CONTROLLER: NONE";
-                _controllerSelectedLabel.style.color = Color.red;
-                _initializerEditor.SetVehicleController(null);
-                return;
+                rootVisualElement.Q<Button>("EngineHelpButton"),
+                rootVisualElement.Q<Button>("FIHelpButton"),
+                rootVisualElement.Q<Button>("TransmissionHelpButton"),
+                rootVisualElement.Q<Button>("NitrousHelpButton"),
+                rootVisualElement.Q<Button>("WheelHelpButton"),
+                rootVisualElement.Q<Button>("SuspHelpButton"),
+                rootVisualElement.Q<Button>("BrakesHelpButton"),
+                rootVisualElement.Q<Button>("BodyHelpButton")
+            };
+
+            for(int i = 0; i < _helpButtonList.Count; i++)
+            {
+                _helpButtonList[i].RegisterCallback<MouseOverEvent>(evt => { _helpButtonList.Find(x => evt.target == x).style.unityBackgroundImageTintColor = _buttonMouseOverColor; });
+                _helpButtonList[i].RegisterCallback<MouseOutEvent>(evt => { _helpButtonList.Find(x => evt.target == x).style.unityBackgroundImageTintColor = _buttonMouseExitColor; });
             }
 
-            if (!_lockWindowToggle.value)
-                BindController(TryGetVehicleController());
-
-            _serializedController.Update();
-            SetVehicleControllerToSettingEditors(_serializedController);
+            //engine
+            _helpButtonList[0].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#torque-curve"); };
+            //forced induction
+            _helpButtonList[1].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#forced-induction-type"); };
+            //transmission
+            _helpButtonList[2].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#gear-ratios"); };
+            //nitrous
+            _helpButtonList[3].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#boost-amount"); };
+            //tires
+            _helpButtonList[4].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#steering-stiffness"); };
+            //suspension
+            _helpButtonList[5].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#suspension-stiffness"); };
+            //brakes
+            _helpButtonList[6].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#brakes-strength"); };
+            //body
+            _helpButtonList[7].clicked += () => { Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/workflow/modifying-parts#mass"); };
         }
+
+        private void CustomVehicleControllerEditor_onClick() => Application.OpenURL("https://distubredone322.gitbook.io/custom-vehicle-controller/");
 
         private void OnDestroy()
         {
             OnWindowClosed?.Invoke();
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
-            Undo.undoRedoPerformed -= OnUndo;
+            if(_docsLinkButton != null)
+                _docsLinkButton.clicked -= CustomVehicleControllerEditor_onClick;
+
+            Undo.undoRedoPerformed -= UpdateAfterUndo;
         }
 
         private void EditorApplication_playModeStateChanged(PlayModeStateChange newState)
@@ -135,16 +210,15 @@ namespace Assets.VehicleControllerEditor
                 if (_saveChangedToggle.value)
                 {
                     PasteStats();
+                    SaveController();
                 }
-                SaveController();
-                //update field values in the editor after play mode. even though the vehicle stats object gets reset, the fields in editor don't
-                SetVehicleControllerToSettingEditors(_serializedController);
+                BindController(TryGetVehicleController());
             }
         }
 
         private void CopyStats()
         {
-            if (_serializedController == null)
+            if (_serializedController == null || _serializedController.targetObject == null || _serializedController.targetObjects.Length == 0)
                 return;
             _serializedController.Update();
 
@@ -152,43 +226,69 @@ namespace Assets.VehicleControllerEditor
             _bodySettingsEditor.CopyStats(_serializedController);
             _steeringSettingsEditor.CopyStats(_serializedController);
 
-            _suspensionRaycastNumPlayMode = _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue;
-            _vehicleStatsPlayMode = new VehicleStats();
-            SerializedProperty vehicleStats = _serializedController.FindProperty(nameof(CustomVehicleController.VehicleStats));
+            _suspensionRaycastNumPlayMode = _serializedController.FindProperty("_suspensionSimulationPrecision").intValue;
+            _comPlayMode = (_serializedController.FindProperty("_centerOfMass").objectReferenceValue as Transform).localPosition;
+            _transTypePlayMode = (TransmissionType)_serializedController.FindProperty(nameof(CustomVehicleController.TransmissionType)).intValue;
 
-            _vehicleStatsPlayMode.EngineSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue as EngineSO;
-            _vehicleStatsPlayMode.TransmissionSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue as TransmissionSO;
-            _vehicleStatsPlayMode.FrontSuspensionSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontSuspensionSO)).objectReferenceValue as SuspensionSO;
-            _vehicleStatsPlayMode.RearSuspensionSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearSuspensionSO)).objectReferenceValue as SuspensionSO;
-            _vehicleStatsPlayMode.FrontTiresSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontTiresSO)).objectReferenceValue as TiresSO;
-            _vehicleStatsPlayMode.RearTiresSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue as TiresSO;
-            _vehicleStatsPlayMode.BrakesSO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue as BrakesSO;
-            _vehicleStatsPlayMode.BodySO = vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue as VehicleBodySO;
 
+            if (!_saveChangedToggle.value)
+                return;
+
+            if (!_usePresetsToggle.value)
+            {
+                _vehiclePartsPlayMode = ScriptableObject.CreateInstance<VehiclePartsPresetSO>();
+                SerializedProperty customPartsSet = _serializedController.FindProperty("_customizableSet");
+                _vehiclePartsPlayMode.Engine = customPartsSet.FindPropertyRelative("Engine").objectReferenceValue as EngineSO;
+                _vehiclePartsPlayMode.Nitrous = customPartsSet.FindPropertyRelative("Nitrous").objectReferenceValue as NitrousSO;
+                _vehiclePartsPlayMode.Transmission = customPartsSet.FindPropertyRelative("Transmission").objectReferenceValue as TransmissionSO;
+                _vehiclePartsPlayMode.FrontSuspension = customPartsSet.FindPropertyRelative("FrontSuspension").objectReferenceValue as SuspensionSO;
+                _vehiclePartsPlayMode.RearSuspension = customPartsSet.FindPropertyRelative("RearSuspension").objectReferenceValue as SuspensionSO;
+                _vehiclePartsPlayMode.FrontTires = customPartsSet.FindPropertyRelative("FrontTires").objectReferenceValue as TiresSO;
+                _vehiclePartsPlayMode.RearTires = customPartsSet.FindPropertyRelative("RearTires").objectReferenceValue as TiresSO;
+                _vehiclePartsPlayMode.Brakes = customPartsSet.FindPropertyRelative("Brakes").objectReferenceValue as BrakesSO;
+                _vehiclePartsPlayMode.Body = customPartsSet.FindPropertyRelative("Body").objectReferenceValue as VehicleBodySO;
+            }
+            else
+                _vehiclePartsPlayMode = _serializedController.FindProperty("_vehiclePartsPreset").objectReferenceValue as VehiclePartsPresetSO;
         }
 
         private void PasteStats()
         {
 
-            if (_serializedController == null)
+            if (_serializedController == null || _serializedController.targetObject == null)
                 return;
 
             _serializedController.Update();
 
-            SerializedProperty vehicleStats = _serializedController.FindProperty(nameof(CustomVehicleController.VehicleStats));
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue = _vehicleStatsPlayMode.EngineSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue = _vehicleStatsPlayMode.TransmissionSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontSuspensionSO)).objectReferenceValue = _vehicleStatsPlayMode.FrontSuspensionSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearSuspensionSO)).objectReferenceValue = _vehicleStatsPlayMode.RearSuspensionSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontTiresSO)).objectReferenceValue = _vehicleStatsPlayMode.FrontTiresSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue = _vehicleStatsPlayMode.RearTiresSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue = _vehicleStatsPlayMode.BrakesSO;
-            vehicleStats.FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue = _vehicleStatsPlayMode.BodySO;
-
             _extraVisualsSettingsEditor.PasteStats(_serializedController);
             _bodySettingsEditor.PasteStats(_serializedController);
             _steeringSettingsEditor.PasteStats(_serializedController);
-            _serializedController.FindProperty(nameof(CustomVehicleController.SuspensionSimulationPrecision)).intValue = _suspensionRaycastNumPlayMode;
+            _serializedController.FindProperty("_suspensionSimulationPrecision").intValue = _suspensionRaycastNumPlayMode;
+            (_serializedController.FindProperty("_centerOfMass").objectReferenceValue as Transform).localPosition = _comPlayMode;
+            _serializedController.FindProperty(nameof(CustomVehicleController.TransmissionType)).intValue = (int)_transTypePlayMode;
+
+            UnbindEditors();
+            if(_saveChangedToggle.value)
+            {
+                if (!_usePresetsToggle.value)
+                {
+                    SerializedProperty customPartsSet = _serializedController.FindProperty("_customizableSet");
+                    customPartsSet.FindPropertyRelative("Engine").objectReferenceValue = _vehiclePartsPlayMode.Engine;
+                    customPartsSet.FindPropertyRelative("Transmission").objectReferenceValue = _vehiclePartsPlayMode.Transmission;
+                    customPartsSet.FindPropertyRelative("Nitrous").objectReferenceValue = _vehiclePartsPlayMode.Nitrous;
+                    customPartsSet.FindPropertyRelative("FrontSuspension").objectReferenceValue = _vehiclePartsPlayMode.FrontSuspension;
+                    customPartsSet.FindPropertyRelative("RearSuspension").objectReferenceValue = _vehiclePartsPlayMode.RearSuspension;
+                    customPartsSet.FindPropertyRelative("FrontTires").objectReferenceValue = _vehiclePartsPlayMode.FrontTires;
+                    customPartsSet.FindPropertyRelative("RearTires").objectReferenceValue = _vehiclePartsPlayMode.RearTires;
+                    customPartsSet.FindPropertyRelative("Brakes").objectReferenceValue = _vehiclePartsPlayMode.Brakes;
+                    customPartsSet.FindPropertyRelative("Body").objectReferenceValue = _vehiclePartsPlayMode.Body;
+                }
+                else
+                    _serializedController.FindProperty("_vehiclePartsPreset").objectReferenceValue = _vehiclePartsPlayMode;
+            }
+
+            SaveController();
+            SetVehicleControllerToSettingEditors();
         }
 
         private void OnSelectionChange()
@@ -204,7 +304,7 @@ namespace Assets.VehicleControllerEditor
             if (Instance == null)
                 Initialize();
 
-            if (_lockWindowToggle.value)
+            if (_lockWindowToggle == null || _lockWindowToggle.value)
                 return;
 
             BindController(TryGetVehicleController());
@@ -214,9 +314,6 @@ namespace Assets.VehicleControllerEditor
 
         private CustomVehicleController TryGetVehicleController()
         {
-            if (Instance == null)
-                return null;
-
             if (Selection.activeGameObject != null)
             {
                 if(Selection.activeGameObject.TryGetComponent(out _controller) || 
@@ -226,32 +323,51 @@ namespace Assets.VehicleControllerEditor
                     {
                         Debug.Log("Multiobject editing isn't supported");
                     }
+
                     _serializedController = new SerializedObject(_controller);
+                    _usePresetsToggle.Bind(_serializedController);
                     _serializedCarVisuals = new SerializedObject(_controller.GetComponent<CarVisualsEssentials>());
+
+                    _usePreserHolder.style.display = DisplayStyle.Flex;
+
                     return _controller;
                 }
             }
 
-            if(_serializedController != null)
-            {
-                _serializedController.Dispose();
-                _serializedController = null;
-                _serializedCarVisuals.Dispose();
-                _serializedCarVisuals=null;
-            }
-
+            _usePresetsToggle.Unbind();
             _controller = null;
+            _usePresetsToggle.value = false;
+
+            _usePreserHolder.style.display = DisplayStyle.None;
+
             return _controller;
         }
 
         public SerializedObject GetSerializedController() => _serializedController;
+       
         public SerializedObject GetSerializedCarVisuals() => _serializedCarVisuals;
 
         public CustomVehicleController GetController() => _controller;
 
+        public void BindEditorPartFields(VehiclePartsPresetSO partsSO)
+        {
+            if (partsSO == null)
+                return;
+
+            SerializedObject serializedPreset = new SerializedObject(partsSO);
+
+            _engineSettingsEditor.BindPreset(serializedPreset);
+            _nitrousSettingsEditor.BindPreset(serializedPreset);
+            _transmissionSettingsEditor.BindPreset(serializedPreset);
+            _suspensionSettingsEditor.BindPreset(serializedPreset);
+            _bodySettingsEditor.BindPreset(_serializedController, serializedPreset);
+            _tiresSettingsEditor.BindPreset(serializedPreset);
+            _brakesSettingsEditor.BindPreset(serializedPreset);
+        }
+
         public void SaveController()
         {
-            if (_serializedController == null)
+            if (_serializedController == null || _serializedController.targetObject == null || _serializedController.targetObjects.Length == 0)
                 return;
             _serializedController.ApplyModifiedProperties();
             _serializedController.Update();
@@ -259,7 +375,12 @@ namespace Assets.VehicleControllerEditor
 
         private void BindController(CustomVehicleController controller)
         {
-            SetVehicleControllerToSettingEditors(_serializedController);
+            if(controller == null)
+                UnbindEditors();
+            else
+                SetVehicleControllerToSettingEditors();
+
+            _initializerEditor.SetVehicleController(controller);
 
             if (controller != null)
             {
@@ -271,19 +392,58 @@ namespace Assets.VehicleControllerEditor
             _controllerSelectedLabel.text = "CURRENTLY SELECTED VEHICLE CONTROLLER: NONE";
             _controllerSelectedLabel.style.color = Color.red;
         }
-
-        private void SetVehicleControllerToSettingEditors(SerializedObject so)
+        private void SetVehicleControllerToSettingEditors()
         {
-            _engineSettingsEditor.SetVehicleController(so);
-            _nitrousSettingsEditor.SetVehicleController(so);
-            _transmissionSettingsEditor.SetVehicleController(so);
-            _suspensionSettingsEditor.SetVehicleController(so);
-            _bodySettingsEditor.SetVehicleController(so);
-            _tiresSettingsEditor.SetVehicleController(so);
-            _brakesSettingsEditor.SetVehicleController(so);
-            _steeringSettingsEditor.SetVehicleController(so);
-            _initializerEditor.SetVehicleController(so);
-            _extraVisualsSettingsEditor.SetVehicleController(so);
+            if(_usePresetsToggle.value)
+                _presetEditor.BindVehicleController(_serializedController);
+            else
+                BindPartsToController();
+
+            _steeringSettingsEditor.SetVehicleController(_serializedController);
+            _extraVisualsSettingsEditor.SetVehicleController(_serializedController);
+        }
+
+        private void BindPartsToController()
+        {
+            if (_serializedController == null)
+                return;
+            if (_serializedController.FindProperty("_customizableSet") == null)
+                return;
+
+            _engineSettingsEditor.BindVehicleController(_serializedController.FindProperty("_customizableSet").FindPropertyRelative("Engine"));
+            _nitrousSettingsEditor.BindVehicleController(_serializedController.FindProperty("_customizableSet").FindPropertyRelative("Nitrous"));
+            _transmissionSettingsEditor.BindVehicleController(_serializedController.FindProperty("_customizableSet").FindPropertyRelative("Transmission"));
+            _suspensionSettingsEditor.BindVehicleController(_serializedController.FindProperty("_customizableSet").FindPropertyRelative("FrontSuspension"),
+                                                           _serializedController.FindProperty("_customizableSet").FindPropertyRelative("RearSuspension"));
+            _bodySettingsEditor.BindVehicleController(_serializedController, _serializedController.FindProperty("_customizableSet").FindPropertyRelative("Body"));
+            _tiresSettingsEditor.BindVehicleController(_serializedController.FindProperty("_customizableSet").FindPropertyRelative("FrontTires"),
+                                                      _serializedController.FindProperty("_customizableSet").FindPropertyRelative("RearTires"));
+            _brakesSettingsEditor.BindVehicleController(_serializedController.FindProperty("_customizableSet").FindPropertyRelative("Brakes"));
+        }
+
+        private void UnbindEditors()
+        {
+            if (_usePresetsToggle.value)
+                _presetEditor.Unbind();
+            else
+                UnbindPartsToController();
+        }
+
+        private void UnbindPartsToController()
+        {
+            _engineSettingsEditor.Unbind();
+            _nitrousSettingsEditor.Unbind();
+            _transmissionSettingsEditor.Unbind();
+            _suspensionSettingsEditor.Unbind();
+            _bodySettingsEditor.Unbind();
+            _tiresSettingsEditor.Unbind();
+            _brakesSettingsEditor.Unbind();
+        }
+
+        private void DisplayPresetVisualElements(bool display)
+        {
+            rootVisualElement.Q<Foldout>("PresetSettingsFoldout").style.display = display? DisplayStyle.Flex : DisplayStyle.None;
+            rootVisualElement.Q<VisualElement>("PresetLabel").style.display = display ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private string FindPath()

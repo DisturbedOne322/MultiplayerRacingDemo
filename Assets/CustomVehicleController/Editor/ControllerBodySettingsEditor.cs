@@ -48,7 +48,6 @@ namespace Assets.VehicleControllerEditor
             _mainEditor = editor;
             FindBodyFields();
             BindBodySOField();
-            RebindBodySettings(_bodySO);
             SubscribeToBodySaveButtonClick();
             _mainEditor.OnWindowClosed += Editor_OnWindowClosed;
             SetTooltips();
@@ -149,7 +148,7 @@ namespace Assets.VehicleControllerEditor
 
             if (_bodyObjectField.value == null)
             {
-                _bodySO = CreateDefaultBody();
+                _bodySO = VehicleBodySO.CreateDefaultBodySO();
             }
             else
             {
@@ -159,15 +158,9 @@ namespace Assets.VehicleControllerEditor
         private void RebindBodySettings(VehicleBodySO loadedBodySO)
         {
             _bodySO = loadedBodySO;
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue = _bodySO;
-                _mainEditor.SaveController();
-            }
+
             if (_bodySO == null)
-            {
-                _bodySO = CreateDefaultBody();
-            }
+                _bodySO = VehicleBodySO.CreateDefaultBodySO();
 
             SerializedObject so = new (_bodySO);
             BindBodyMasFields(so);
@@ -204,23 +197,6 @@ namespace Assets.VehicleControllerEditor
             _corneringResistanceCurve.Bind(so);
         }
 
-
-        private VehicleBodySO CreateDefaultBody()
-        {
-            VehicleBodySO defaultBodySO = ScriptableObject.CreateInstance<VehicleBodySO>();
-            defaultBodySO.Mass = 1000;
-            defaultBodySO.ForwardDrag = 0.07f;
-            defaultBodySO.CorneringResistanceStrength = 20f;
-            defaultBodySO.Downforce = 15;
-
-            AnimationCurve curve = new ();
-            curve.AddKey(0f, 0f);
-            curve.AddKey(1f, 1f);
-            defaultBodySO.CorneringResistanceCurve = curve;
-
-            return defaultBodySO;
-        }
-
         private void SubscribeToBodySaveButtonClick()
         {
             var button = root.Q<Button>(name: BODY_CREATE_BUTTON_NAME);
@@ -237,27 +213,40 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(BODY_FOLDER_NAME) + "/" + _bodyNameField.text + ".asset";
 
-            VehicleBodySO copy = CreateDefaultBody();
+            VehicleBodySO newBody = VehicleBodySO.CreateDefaultBodySO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
-            AssetDatabase.CreateAsset(copy, uniqueFileName);
+            AssetDatabase.CreateAsset(newBody, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newBody, "Created Body Asset");
 
-            _bodySO = copy;
+            _bodySO = newBody;
             _bodyObjectField.value = _bodySO;
         }
 
-        public void SetVehicleController(SerializedObject so)
+        public void BindVehicleController(SerializedObject controller, SerializedProperty bodyProperty)
         {
-            if (so == null)
-            {
-                _bodyObjectField.value = null;
-                return;
-            }
+            if(controller != null)
+                _drivetrainTypeEnum.value = (DrivetrainType)controller.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
 
-            _drivetrainTypeEnum.value = (DrivetrainType)so.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
-            _bodyObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BodySO)).objectReferenceValue;
+            _bodyObjectField.Unbind();
+
+            if(bodyProperty != null)
+                _bodyObjectField.BindProperty(bodyProperty);           
         }
+
+        public void BindPreset(SerializedObject controller, SerializedObject preset)
+        {
+            if (controller != null)
+                _drivetrainTypeEnum.value = (DrivetrainType)controller.FindProperty(nameof(CustomVehicleController.DrivetrainType)).intValue;
+
+            _bodyObjectField.Unbind();
+
+            if(preset != null)
+                _bodyObjectField.BindProperty(preset.FindProperty("Body"));
+        }
+
+        public void Unbind() => _bodyObjectField.Unbind();
     }
 
 }

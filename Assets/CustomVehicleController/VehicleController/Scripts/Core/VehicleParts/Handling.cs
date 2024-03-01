@@ -9,17 +9,18 @@ namespace Assets.VehicleController
         private float _smDampVelocity;
         private float _steerAxlesAmount;
 
-        public void Initialize(VehicleAxle[] wheelColliders)
+        private float _targetAngle = 0;
+
+        public void Initialize(VehicleAxle[] steerAxles)
         {
-            _steerAxle = wheelColliders;
-            _steerAxlesAmount = _steerAxle.Length;   
+            _steerAxle = steerAxles;
+            _steerAxlesAmount = _steerAxle.Length;
         }
 
-        public void SteerWheels(float input, float steerAngle, float steerSpeed)
+        public void SteerWheels(float input, float maxSteerAngle, float steerSpeed)
         {
-
-            float targetAngle = input * steerAngle;
-            float angle = Mathf.SmoothDampAngle(_steerAxle[0].LeftHalfShaft.WheelController.SteerAngle, targetAngle, ref _smDampVelocity, steerSpeed);
+            _targetAngle = input * maxSteerAngle;
+            float angle = Mathf.SmoothDampAngle(_steerAxle[0].LeftHalfShaft.WheelController.SteerAngle, _targetAngle, ref _smDampVelocity, steerSpeed);
 
             for (int i = 0; i < _steerAxlesAmount; i++)
             {

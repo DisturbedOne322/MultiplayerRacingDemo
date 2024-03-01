@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
+    [CreateAssetMenu(fileName = "CurrentCarStatsSO", menuName = "CustomVehicleController/CurrentCarStats")]
     public class CurrentCarStats : ScriptableObject
     {
         public List<GameObject> ScriptableObjectOwners;
@@ -19,18 +20,21 @@ namespace Assets.VehicleController
             Braking = false;
             NitroBoosting = false;
             NitroPercentLeft = 1f;
+            NitroBottlesLeft = 1;
+            NitroIntensity = 0;
             AccelerationForce = 0;
             SidewaysForce = 0;
             Reversing = false;
             InAir = false;
-            FlipperOver = false;
-            DriveWheelLostContact = false;
+            DriveWheelsGrounded = false;
             DriftAngle = 0;
             DriftTime = 0;
             AirTime = 0;
             HandbrakePulled = false;
             IsCarSlipping = false;
-            ScriptableObjectOwners.Clear();
+
+            if (ScriptableObjectOwners != null)
+                ScriptableObjectOwners.Clear();
         }
 
         public event Action OnAntiLag;
@@ -60,13 +64,15 @@ namespace Assets.VehicleController
         public bool Accelerating;
         public bool Braking;
         public bool NitroBoosting;
+        public int NitroBottlesLeft;
         public float NitroPercentLeft;
+        public float NitroIntensity;
         public float AccelerationForce;
         public float SidewaysForce;
         public bool Reversing;
+        public bool AllWheelsGrounded;
+        public bool DriveWheelsGrounded;
         public bool InAir;
-        public bool FlipperOver;
-        public bool DriveWheelLostContact;
         public float DriftAngle;
         public float DriftTime;
         public float AirTime;

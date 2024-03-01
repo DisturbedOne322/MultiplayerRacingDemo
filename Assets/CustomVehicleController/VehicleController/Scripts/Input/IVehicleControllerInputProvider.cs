@@ -1,22 +1,25 @@
-public interface IVehicleControllerInputProvider
+namespace Assets.VehicleController
 {
-    public float GetGasInput();
+    public interface IVehicleControllerInputProvider
+    {
+        public float GetGasInput();
 
-    public float GetBrakeInput();
+        public float GetBrakeInput();
 
-    public bool GetNitroBoostInput();
+        public bool GetNitroBoostInput();
 
-    public bool GetHandbrakeInput();
+        public bool GetHandbrakeInput();
 
-    public float GetHorizontalInput();
+        public float GetHorizontalInput();
 
-    public bool GetGearUpInput();
+        public bool GetGearUpInput();
 
-    public bool GetGearDownInput();
+        public bool GetGearDownInput();
 
-    public float GetPitchInput();
+        public float GetPitchInput();
 
-    public float GetYawInput();
+        public float GetYawInput();
 
-    public float GetRollInput();
+        public float GetRollInput();
+    }
 }

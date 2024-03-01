@@ -12,7 +12,6 @@ namespace Assets.VehicleControllerEditor
         private VisualElement root;
         private CustomVehicleControllerEditor _mainEditor;
 
-
         #region fields
         private ObjectField _brakesSOObjectField;
 
@@ -44,7 +43,6 @@ namespace Assets.VehicleControllerEditor
             FindBrakesFields();
 
             BindBrakesSOField();
-            RebindBrakesSettings(_brakesSO);
             SubscribeToBrakesSaveButtonClick();
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
@@ -99,27 +97,17 @@ namespace Assets.VehicleControllerEditor
             _brakesSOObjectField.RegisterValueChangedCallback(x => RebindBrakesSettings(_brakesSOObjectField.value as BrakesSO));
 
             if (_brakesSOObjectField.value == null)
-            {
-                _brakesSO = CreateDefaultBrakes();
-            }
+                _brakesSO = BrakesSO.CreateDefaultBrakesSO();
             else
-            {
                 _brakesSO = _brakesSOObjectField.value as BrakesSO;
-            }
+
         }
         private void RebindBrakesSettings(BrakesSO loadedBrakesSO)
         {
             _brakesSO = loadedBrakesSO;
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue = _brakesSO;
-                _mainEditor.SaveController();
-            }
+
             if (_brakesSO == null)
-            {
-                _brakesSO = CreateDefaultBrakes();
-            }
+                _brakesSO = BrakesSO.CreateDefaultBrakesSO();
 
             SerializedObject so = new (_brakesSO);
             BindBrakesForceField(so);
@@ -142,15 +130,6 @@ namespace Assets.VehicleControllerEditor
             _handbrakeTractionSlider.Bind(so);
         }
 
-        private BrakesSO CreateDefaultBrakes()
-        {
-            BrakesSO defaultBrakes = ScriptableObject.CreateInstance<BrakesSO>();
-            defaultBrakes.BrakesStrength = 30000;
-            defaultBrakes.HandbrakeForce = 30000;
-            defaultBrakes.HandbrakeTractionPercent = 0.33f;
-            return defaultBrakes;
-        }
-
         private void SubscribeToBrakesSaveButtonClick()
         {
             var button = root.Q<Button>(name: BRAKES_SAVE_BUTTON_NAME);
@@ -167,27 +146,33 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(BRAKES_FOLDER_NAME) + "/" + _brakesNameTextField.text + ".asset";
 
-            BrakesSO newBrakes = CreateDefaultBrakes();
+            BrakesSO newBrakes = BrakesSO.CreateDefaultBrakesSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newBrakes, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newBrakes, "Created Brakes Asset");
+
 
             _brakesSO = newBrakes;
             _brakesSOObjectField.value = _brakesSO;
         }
 
-        public void SetVehicleController(SerializedObject so)
+        public void BindVehicleController(SerializedProperty brakesProperty)
         {
-            if (so == null)
-            {
-                _brakesSOObjectField.value = null;
-                return;
-            }
-
-            _brakesSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.BrakesSO)).objectReferenceValue;
+            _brakesSOObjectField.Unbind();
+            if(brakesProperty != null)
+                _brakesSOObjectField.BindProperty(brakesProperty);      
         }
+
+        public void BindPreset(SerializedObject preset)
+        {
+            _brakesSOObjectField.Unbind();
+            if(preset != null)
+                _brakesSOObjectField.BindProperty(preset.FindProperty("Brakes"));
+        }
+
+        public void Unbind() => _brakesSOObjectField.Unbind();
     }
 
 }

@@ -10,7 +10,7 @@ namespace Assets.VehicleController
         private TransmissionType _transmissionType;
 
         private CurrentCarStats _currentCarStats;
-        private VehicleStats _stats;
+        private VehiclePartsSetWrapper _partsPresetWrapper;
         private IShifter _shifter;
 
         private float _downShiftRPM;
@@ -29,39 +29,30 @@ namespace Assets.VehicleController
         private float smDampVelocity;
         private const float SM_DAMP_SPEED = 0.15f;
 
-#if UNITY_EDITOR
         private EngineSO _engineSO;
         private TransmissionSO _transmissionSO;
-#endif
 
-        public void Initialize(VehicleStats stats, CurrentCarStats currentCarStats, IShifter shifter)
+        public void Initialize(VehiclePartsSetWrapper partsPresetWrapper, CurrentCarStats currentCarStats, IShifter shifter)
         {
-            if (stats.TransmissionSO.GearRatiosList.Count == 0)
-                Debug.LogError("Car has no gears. \n Add gear to the appropriate scriptable object");
-
             _currentCarStats = currentCarStats;
-            _stats = stats;
+            _partsPresetWrapper = partsPresetWrapper;
             _shifter = shifter;
 
             _lastShiftTime = Time.time;
 
-            _minRPM = _stats.EngineSO.MinRPM;
-            _maxRPM = _stats.EngineSO.MaxRPM;
+            _minRPM = _partsPresetWrapper.Engine.MinRPM;
+            _maxRPM = _partsPresetWrapper.Engine.MaxRPM;
 
-            _upShiftRPM = _maxRPM * _stats.TransmissionSO.UpShiftRPMPercent;
-            _downShiftRPM = _maxRPM * _stats.TransmissionSO.DownShiftRPMPercent;
+            _upShiftRPM = _maxRPM * _partsPresetWrapper.Transmission.UpShiftRPMPercent;
+            _downShiftRPM = _maxRPM * _partsPresetWrapper.Transmission.DownShiftRPMPercent;
 
             //this adds support to field changes during runtime
-#if UNITY_EDITOR
-            _transmissionSO = _stats.TransmissionSO;
-            _engineSO = _stats.EngineSO;
+            _transmissionSO = _partsPresetWrapper.Transmission;
+            _engineSO = _partsPresetWrapper.Engine;
             _transmissionSO.OnTransmissionStatsChanged += OnStatsChanged;
             _engineSO.OnEngineStatsChanged += OnStatsChanged;
-            _stats.OnFieldChanged += _stats_OnFieldChanged;
-#endif
+            _partsPresetWrapper.OnPartsChanged += _stats_OnPresetChanged;
         }
-
-#if UNITY_EDITOR
 
         private void OnStatsChanged()
         {
@@ -72,26 +63,28 @@ namespace Assets.VehicleController
         {
             _minRPM = _engineSO.MinRPM;
             _maxRPM = _engineSO.MaxRPM;
-
             _upShiftRPM = _maxRPM * _transmissionSO.UpShiftRPMPercent;
             _downShiftRPM = _maxRPM * _transmissionSO.DownShiftRPMPercent;
         }
 
-        private void _stats_OnFieldChanged()
+        private void _stats_OnPresetChanged()
         {
             _transmissionSO.OnTransmissionStatsChanged -= OnStatsChanged;
             _engineSO.OnEngineStatsChanged -= OnStatsChanged;
 
-            _transmissionSO = _stats.TransmissionSO;
-            _engineSO = _stats.EngineSO;
+            _transmissionSO = _partsPresetWrapper.Transmission;
+            _engineSO = _partsPresetWrapper.Engine;
 
             _transmissionSO.OnTransmissionStatsChanged += OnStatsChanged;
             _engineSO.OnEngineStatsChanged += OnStatsChanged;
             UpdateRPMValues();
         }
-#endif
+
         public void HandleGearChanges(TransmissionType transmissionType, VehicleAxle[] axleArray)
         {
+            if (_inCooldown)
+                return;
+
             _transmissionType = transmissionType;
 
             float wheelRPM = 0;
@@ -102,11 +95,11 @@ namespace Assets.VehicleController
                 wheelRPM += axleArray[i].LeftHalfShaft.WheelController.WheelRPM;
                 wheelRPM += axleArray[i].RightHalfShaft.WheelController.WheelRPM;
             }
-                
+
 
             wheelRPM /= size * 2;
 
-            float temp = Mathf.Abs(wheelRPM) * _stats.TransmissionSO.FinalDriveRatio * 60 / 6.28f;
+            float temp = Mathf.Abs(wheelRPM) * _partsPresetWrapper.Transmission.FinalDriveRatio * 60 / 6.28f;
 
             float RPMfromSpeed = CalculateRealRPM(temp);
             (float imaginaryRPM, int gearDown) = CalculateImaginaryRPMAndGearSkip(temp);
@@ -118,7 +111,7 @@ namespace Assets.VehicleController
 
             if (_currentCarStats.InAir)
                 return;
-            
+
             SwitchGearsAutomatically(RPMfromSpeed, imaginaryRPM, gearDown);
         }
 
@@ -129,18 +122,18 @@ namespace Assets.VehicleController
 
             for (int i = 0; i < size; i++)
             {
-                if(Mathf.Abs(driveAxleArray[i].LeftHalfShaft.WheelController.VisualRPM) > highestRPM)
+                if (Mathf.Abs(driveAxleArray[i].LeftHalfShaft.WheelController.VisualRPM) > highestRPM)
                     highestRPM = Mathf.Abs(driveAxleArray[i].LeftHalfShaft.WheelController.VisualRPM);
 
                 if (Mathf.Abs(driveAxleArray[i].RightHalfShaft.WheelController.VisualRPM) > highestRPM)
                     highestRPM = Mathf.Abs(driveAxleArray[i].RightHalfShaft.WheelController.VisualRPM);
             }
 
-            float imaginaryEngineRPM = CalculateRealRPM(Mathf.Abs(highestRPM) * _stats.TransmissionSO.FinalDriveRatio * 60 / 6.28f);
+            float imaginaryEngineRPM = CalculateRealRPM(Mathf.Abs(highestRPM) * _partsPresetWrapper.Transmission.FinalDriveRatio * 60 / 6.28f);
 
             _currentEngineRPM = Mathf.SmoothDamp(_currentEngineRPM, imaginaryEngineRPM, ref smDampVelocity, SM_DAMP_SPEED);
 
-            _inCooldown = Time.time < _lastShiftTime + _stats.TransmissionSO.ShiftCooldown;
+            _inCooldown = Time.time < _lastShiftTime + _partsPresetWrapper.Transmission.ShiftCooldown;
             PerformRedliningEffect(gasInput);
 
             return _currentEngineRPM;
@@ -148,7 +141,7 @@ namespace Assets.VehicleController
 
         private float CalculateRealRPM(float temp)
         {
-            float nextRPM = temp * _stats.TransmissionSO.GearRatiosList[_shifter.GetCurrentGearID()];
+            float nextRPM = temp * _partsPresetWrapper.Transmission.GearRatiosList[_shifter.GetCurrentGearID()];
             return Mathf.Clamp(nextRPM, _minRPM, _maxRPM);
         }
 
@@ -159,14 +152,14 @@ namespace Assets.VehicleController
             int gearSkip = -1;
 
             int bestGear = Mathf.Clamp(currentGear - 1, 0, _shifter.GetGearAmount());
-            float bestRPM = Mathf.Clamp(temp * _stats.TransmissionSO.GearRatiosList[bestGear],
+            float bestRPM = Mathf.Clamp(temp * _partsPresetWrapper.Transmission.GearRatiosList[bestGear],
                 _minRPM, _maxRPM);
 
             //find the gear that will give us the highest possible RPM when downshifting.
             //for example, in case of high speed crash, the best one would be the first gear, without the need to downshift multiple times
             for (int i = bestGear - 1; i >= 0; i--)
             {
-                float imaginaryRPM = temp * _stats.TransmissionSO.GearRatiosList[i];
+                float imaginaryRPM = temp * _partsPresetWrapper.Transmission.GearRatiosList[i];
 
                 if (imaginaryRPM > _maxRPM)
                     break;
@@ -185,8 +178,11 @@ namespace Assets.VehicleController
             if (_inCooldown)
                 return;
 
-            if (_currentCarStats.Reversing && !_currentCarStats.Accelerating)
+            if (_currentCarStats.Reversing && _currentCarStats.Accelerating)
+            {
                 ShiftGear(-1);
+                return;
+            }
 
             TryUpShift(rpmFromSpeed);
             TryDownShift(imaginaryRPM, gearDown);
@@ -197,7 +193,7 @@ namespace Assets.VehicleController
             if (_currentEngineRPM < _maxRPM * 0.99f)
                 return;
 
-            _currentEngineRPM -= _currentCarStats.CurrentEngineHorsepower * gasInput * UnityEngine.Random.Range(1f,2f) * Time.deltaTime;
+            _currentEngineRPM -= _currentCarStats.CurrentEngineHorsepower * gasInput * UnityEngine.Random.Range(1f, 2f) * Time.deltaTime;
         }
 
         private void TryUpShift(float currentRPM)
@@ -207,7 +203,7 @@ namespace Assets.VehicleController
 
             if (_shifter.InReverseGear())
                 ShiftGear(+1);
- 
+
             if (currentRPM > _upShiftRPM)
                 ShiftGear(+1);
         }
@@ -227,7 +223,7 @@ namespace Assets.VehicleController
             if (_inCooldown)
                 return;
 
-            if (!_shifter.TryChangeGear(i, _stats.TransmissionSO.ShiftCooldown))
+            if (!_shifter.TryChangeGear(i, _partsPresetWrapper.Transmission.ShiftCooldown))
                 return;
 
             _lastShiftTime = Time.time;
@@ -238,20 +234,26 @@ namespace Assets.VehicleController
 
         public bool Redlining() => _redlining;
 
-        public float DetermineGasInput(float gasInput, float breakInput)
+        public float DetermineGasInput(float gasInput, float brakeInput)
         {
-            if(_transmissionType == TransmissionType.Automatic)
-                return _currentCarStats.Reversing ? -breakInput : gasInput;
+            if (_transmissionType == TransmissionType.Automatic)
+                if (_currentCarStats.SpeedInMsPerS > 1)
+                    return gasInput;
+                else
+                {
+                    return brakeInput > gasInput ? -brakeInput : gasInput;
+                }
+
 
             return _shifter.InReverseGear() ? -gasInput : gasInput;
         }
 
-        public float DetermineBreakInput(float gasInput, float breakInput)
+        public float DetermineBrakeInput(float gasInput, float brakeInput)
         {
             if (_transmissionType == TransmissionType.Automatic)
-                return _currentCarStats.Reversing ? gasInput : breakInput;
+                return _currentCarStats.Reversing ? gasInput : brakeInput;
 
-            return breakInput;
+            return brakeInput;
         }
     }
 }

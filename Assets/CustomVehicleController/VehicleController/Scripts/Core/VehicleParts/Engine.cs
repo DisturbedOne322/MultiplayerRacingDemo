@@ -4,7 +4,7 @@ namespace Assets.VehicleController
 {
     public class Engine : IEngine
     {
-        private VehicleStats _stats;
+        private VehiclePartsSetWrapper _partsPresetWrapper;
 
         private ForcedInduction _forcedInduction;
         private NitrousBoost _nitrousBoost;
@@ -16,15 +16,15 @@ namespace Assets.VehicleController
 
         private float _totalTorque;
 
-        public void Initialize(CurrentCarStats currentCarStats, VehicleStats stats, IShifter shifter, ITransmission transmission)
+        public void Initialize(CurrentCarStats currentCarStats, VehiclePartsSetWrapper partsPresetWrapper, IShifter shifter, ITransmission transmission)
         {
-            _stats = stats;
+            _partsPresetWrapper = partsPresetWrapper;
             _currentCarStats = currentCarStats;
             _shifter = shifter;
             _transmission = transmission;
 
-            _forcedInduction = new(_stats, _currentCarStats, _transmission);
-            _nitrousBoost = new(_stats, _currentCarStats);
+            _forcedInduction = new(_partsPresetWrapper, _currentCarStats, _transmission);
+            _nitrousBoost = new(_partsPresetWrapper, _currentCarStats);
         }
 
         public void Accelerate(VehicleAxle[] driveAxleArray, float gasInput, float breakInput, bool nitroBoostInput, float rpm)
@@ -38,16 +38,24 @@ namespace Assets.VehicleController
             SetTorque(_totalTorque, driveAxleArray);
         }
 
-        public float CalculateAccelerationForce(float input, float rpm, float boost)
+        private float CalculateAccelerationForce(float input, float rpm, float boost)
         {
+            if (input == 0 && _currentCarStats.AllWheelsGrounded)
+            {
+                //engine braking;
+                float sign = (_shifter.InReverseGear() && _currentCarStats.SpeedInMsPerS < 0) || _currentCarStats.SpeedInMsPerS < 0 ? -1 : 1;
+                float engineBrakingMultiplierFromGear = _partsPresetWrapper.Transmission.GearRatiosList[_shifter.GetCurrentGearID()];
+                return -CalculateTorque(rpm, boost) * engineBrakingMultiplierFromGear * sign * 0.1f * _currentCarStats.EngineRPMPercent;
+            }
+
             if (_transmission.Redlining())
             {
                 float mult = (_shifter.InReverseGear() && _currentCarStats.SpeedInMsPerS < 0) || _currentCarStats.SpeedInMsPerS < 0 ? -1 : 1;
-                return -CalculateTorque(rpm, boost) * mult;
+                return -CalculateTorque(rpm, boost) * mult * Mathf.Abs(input);
             }
 
-            if (_stats.EngineSO.MaxSpeed < _currentCarStats.SpeedInKMperH)
-                return -CalculateTorque(rpm, boost);
+            if (_partsPresetWrapper.Engine.MaxSpeed < _currentCarStats.SpeedInKMperH)
+                return -CalculateTorque(rpm, boost) * input;
 
             if (_transmission.InShiftingCooldown())
                 return 0;
@@ -57,8 +65,8 @@ namespace Assets.VehicleController
 
         private float CalculateTorque(float rpm, float boost)
         {
-            return (_stats.EngineSO.TorqueCurve.Evaluate(rpm) + boost) * _stats.TransmissionSO.GearRatiosList[_shifter.GetCurrentGearID()] *
-                _stats.TransmissionSO.FinalDriveRatio;
+            return (_partsPresetWrapper.Engine.TorqueCurve.Evaluate(rpm) + boost) * _partsPresetWrapper.Transmission.GearRatiosList[_shifter.GetCurrentGearID()] *
+                _partsPresetWrapper.Transmission.FinalDriveRatio;
         }
 
         private void SetTorque(float torque, VehicleAxle[] driveAxleArray)
@@ -73,5 +81,7 @@ namespace Assets.VehicleController
 
         public float GetCurrentTorque() => Mathf.Abs(_totalTorque);
         public float GetForcedInductionBoostPercent() => _forcedInduction.GetForcedInductionBoostPercent();
+
+        public void AddNitro(float amount) => _nitrousBoost.AddNitro(amount);
     }
 }

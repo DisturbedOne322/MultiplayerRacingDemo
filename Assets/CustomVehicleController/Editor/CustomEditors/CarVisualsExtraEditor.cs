@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using Assets.VehicleController;
-using System.Runtime.InteropServices;
-using UnityEngine.VFX;
 
 namespace Assets.VehicleControllerEditor
 {
@@ -41,11 +39,6 @@ namespace Assets.VehicleControllerEditor
         private SerializedProperty _nitroParameters;
         #endregion
 
-        #region coll
-        private SerializedProperty _enableCollisionEffects;
-        private SerializedProperty _collisionEffectsParameters;
-        #endregion
-
         private SerializedProperty Separator;
 
         private void OnEnable()
@@ -57,7 +50,6 @@ namespace Assets.VehicleControllerEditor
             FindWingAero();
             FindAntiLagProperties();
             FindNitro();
-            FindColl();
             FindSeparators();
         }
 
@@ -110,12 +102,6 @@ namespace Assets.VehicleControllerEditor
             _antiLagMaxCount = _antiLagParameters.FindPropertyRelative(nameof(AntiLagParameters.MaxBackfireCount));
         }
 
-        private void FindColl()
-        {
-            _enableCollisionEffects = serializedObject.FindProperty("_enableCollisionEffects");
-            _collisionEffectsParameters = serializedObject.FindProperty("_collisionEffectsParameters");
-        }
-
         public override void OnInspectorGUI()
         {
             CarVisualsExtra carVisualsExtra = (CarVisualsExtra)target;
@@ -139,7 +125,6 @@ namespace Assets.VehicleControllerEditor
             DrawEffectSettings(_enableNitroEffect, _nitroParameters);
             DrawEffectSettings(_enableBodyAeroEffect, _bodyEffectParameters);
             DrawEffectSettings(_enableWingAeroEffect, _wingAeroParameters);
-            DrawEffectSettings(_enableCollisionEffects, _collisionEffectsParameters);
 
             serializedObject.ApplyModifiedProperties();
         }

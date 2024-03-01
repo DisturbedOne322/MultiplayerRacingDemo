@@ -6,7 +6,7 @@ namespace Assets.VehicleController
     public class WheelController : MonoBehaviour
     {
         private Rigidbody _rb;
-        private SuspensionController _springController;
+        private SuspensionController _suspensionController;
         private TireController _tireController;
 
         #region Forces
@@ -21,9 +21,9 @@ namespace Assets.VehicleController
         private float _wheelRadius;
         public float WheelRadius
         {
-            get 
+            get
             {
-                if(_wheelRadius == 0)
+                if (_wheelRadius == 0)
                     TryFindWheelRadius();
                 return _wheelRadius;
             }
@@ -58,7 +58,7 @@ namespace Assets.VehicleController
         }
         public bool HasContactWithGround
         {
-            get { return _springController.HitInfo.Hit; }
+            get { return _suspensionController.HitInfo.Hit; }
         }
         #endregion
 
@@ -71,24 +71,26 @@ namespace Assets.VehicleController
             get => _wheelPosition;
         }
         private Vector3 _wheelInitialPosition;
-        private float _distanceFromSuspensionTopPointToWheelTopPoint;
-        private const float SM_DAMP_TIME = 0.25f;
-        private Vector3 _smDampVelocity;
-
+        private float _distanceFromSuspensionToWheelTopPoint;
+        public float DistanceFromSuspensionToWheelTopPoint
+        {
+            get => _distanceFromSuspensionToWheelTopPoint;
+        }
         #endregion
 
-        public void Initialize(SuspensionController suspensionController, Transform wheelMeshTransform, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
+        public void Initialize(SuspensionController suspensionController, Transform wheelMeshTransform, VehiclePartsSetWrapper partsPresetWrapper, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
             _rb = rb;
-            _springController = suspensionController;
+            _suspensionController = suspensionController;
             _wheelMeshTransform = wheelMeshTransform;
-            _tireController = new(transform, vehicleStats, front, axelLen, wheelBaseLen, _rb);
+            _tireController = new(transform, partsPresetWrapper, front, axelLen, wheelBaseLen, _rb);
             _wheelInitialPosition = _wheelMeshTransform.transform.localPosition;
             _wheelPosition = _wheelInitialPosition;
 
-            if(_wheelRadius == 0)
+            if (_wheelRadius == 0)
                 TryFindWheelRadius();
-            _distanceFromSuspensionTopPointToWheelTopPoint = transform.position.y - (_wheelMeshTransform.position.y + _wheelRadius);
+
+            _distanceFromSuspensionToWheelTopPoint = Vector3.Distance(transform.position, _wheelMeshTransform.position + Vector3.up * _wheelRadius);
 
             if (transform.position == wheelMeshTransform.position)
                 Debug.LogWarning($"GameObjects with WheelController script must be positioned above the wheel, at the point where the top of suspension is supposed to be.");
@@ -107,7 +109,7 @@ namespace Assets.VehicleController
                     "\n Radius has been set to default value (0.25). Set the radius to correct value manually in edit mode.");
 #endif
                 _wheelRadius = 0.25f;
-            }        
+            }
         }
 
         public void ControlWheel(float speed, float speedPercent, float acceleration, float distanceToGround)
@@ -119,14 +121,12 @@ namespace Assets.VehicleController
 
             if (!HasContactWithGround)
             {
-                UpdateWheelAirPosition();
                 return;
             }
+
             ApplyBraking(_wheelMeshTransform.position);
             ApplySteering(_wheelMeshTransform.position, speed, speedPercent);
             ApplyTorque(_wheelMeshTransform.position);
-
-            UpdateWheelPosition();
         }
 
         private void ApplyTorque(Vector3 pos)
@@ -137,6 +137,8 @@ namespace Assets.VehicleController
             float slipMultiplier = (_tireController.ForwardSlip / 10) + 1;
             float force = Torque / slipMultiplier;
             _rb.AddForceAtPosition(force * transform.forward, pos);
+
+            Torque = 0;
         }
         private void ApplySteering(Vector3 pos, float speed, float speedPercent)
         {
@@ -162,11 +164,10 @@ namespace Assets.VehicleController
         private void CalculateWheelRPM(float speed)
         {
             _speedRpm = speed / _wheelRadius;
-
             if (HasContactWithGround)
             {
                 // this rpm is used to shift gears
-                if(Torque == 0)
+                if (Torque == 0)
                 {
                     _visualRpm = speed / _wheelRadius;
                     _slipWheelRPM = 0;
@@ -185,37 +186,62 @@ namespace Assets.VehicleController
                 _visualRpm = speed / _wheelRadius + _slipWheelRPM;
                 if (_tireController.ForwardSlip == 0)
                     _slipWheelRPM = 0;
-                
+
                 return;
             }
+
             _slipWheelRPM = 0;
             if (BrakeForce == 0)
             {
-                if (Torque <= 0)
-                    _visualRpm -= _visualRpm * Time.fixedDeltaTime * 3;
+                if (Torque == 0)
+                    _visualRpm -= _visualRpm * Time.fixedDeltaTime * 20;
                 else
-                    _visualRpm += Torque / 100 * Time.fixedDeltaTime;
+                    _visualRpm += Torque * Time.fixedDeltaTime;
             }
             else
-                _visualRpm -= _visualRpm * Time.fixedDeltaTime * 10;
+                _visualRpm -= _visualRpm * Time.fixedDeltaTime * 80;
+        }
+        public void UpdateWheelPosition(bool restrainPosition)
+        {
+            if (HasContactWithGround)
+                UpdateGroundPosition(restrainPosition);
+            else
+                UpdateWheelAirPosition();
         }
 
-        private void UpdateWheelPosition()
+
+        private void UpdateGroundPosition(bool restrainPosition)
         {
-            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionTopPointToWheelTopPoint - (_springController.CurrentSpringLengthPlusGroundOffset - _wheelRadius * 2);
-            _wheelPosition = new(_wheelInitialPosition.x,
+            if (_suspensionController.CurrentSpringLengthPlusGroundOffset > _suspensionController.MaxSpringLength + _wheelRadius)
+                return;
+
+            float targetY = _wheelInitialPosition.y + _distanceFromSuspensionToWheelTopPoint - (_suspensionController.CurrentSpringLengthPlusGroundOffset - _wheelRadius * 2);
+            if (restrainPosition)
+            {
+                //don't allow the wheel go beyond suspension top point
+                if (targetY > _wheelInitialPosition.y + _distanceFromSuspensionToWheelTopPoint)
+                    targetY = _wheelInitialPosition.y + _distanceFromSuspensionToWheelTopPoint;
+
+                //don't allow wheel go below ground
+                if (_suspensionController.HitInfo.Distance > _suspensionController.SpringRestLength + _wheelRadius)
+                    targetY += _suspensionController.HitInfo.Distance - (_suspensionController.SpringRestLength + _wheelRadius);
+            }
+
+            _wheelPosition = new Vector3(_wheelInitialPosition.x,
                                  targetY,
                                  _wheelInitialPosition.z);
         }
 
         private void UpdateWheelAirPosition()
         {
-            Vector3 target = Vector3.Lerp(
-                _wheelInitialPosition - new Vector3(0, _springController.MinimumSpringLength - _distanceFromSuspensionTopPointToWheelTopPoint - _wheelRadius, 0), 
-                _wheelInitialPosition - new Vector3(0, _springController.MaximumSpringLength - _distanceFromSuspensionTopPointToWheelTopPoint - _wheelRadius, 0),
-                Vector3.Dot(transform.up, Vector3.up) / 2 + 0.5f);
+            _wheelPosition.y += Vector3.Dot(transform.up, Vector3.up) * Physics.gravity.y / (_suspensionController.DamperStiffness / 50) * Time.deltaTime;
 
-            _wheelPosition = Vector3.SmoothDamp(_wheelPosition, target, ref _smDampVelocity, SM_DAMP_TIME);
+            float defaultPos = _wheelInitialPosition.y + _distanceFromSuspensionToWheelTopPoint + _wheelRadius;
+
+            _wheelPosition.y = Mathf.Clamp(_wheelPosition.y,
+                defaultPos - _suspensionController.MaxSpringLength,
+                defaultPos - _suspensionController.SpringRestLength
+                );
         }
 
         public void SetWheelMeshTransform(Transform transform) => _wheelMeshTransform = transform;
@@ -238,6 +264,8 @@ namespace Assets.VehicleController
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
+            Vector3 centerPos = (transform.position + _wheelMeshTransform.position) / 2;
+            Gizmos.DrawCube(centerPos, new Vector3(0.07f, Vector3.Distance(transform.position, _wheelMeshTransform.position), 0.07f));
             Gizmos.DrawWireSphere(_wheelMeshTransform.position, _wheelRadius);
         }
 #endif

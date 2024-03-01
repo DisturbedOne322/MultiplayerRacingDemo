@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TurboPro
   m_EditorClassIdentifier: 
   ForcedInductionType: 1
-  MaxTorqueBoostAmount: 600
-  TurboRPMPercentDelay: 0.2
-  TurboSpinTime: 1
+  MaxTorqueBoostAmount: 700
+  TurboRPMPercentDelay: 0
+  TurboSpinTime: 0.75

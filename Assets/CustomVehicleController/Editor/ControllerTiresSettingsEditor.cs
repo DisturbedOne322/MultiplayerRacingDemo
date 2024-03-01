@@ -13,7 +13,7 @@ namespace Assets.VehicleControllerEditor
         private CustomVehicleControllerEditor _mainEditor;
 
         #region body fields
-        private TiresSO _forwardTiresSO;
+        private TiresSO _frontTiresSO;
 
         private ObjectField _frontTiresObjectField;
         private FloatField _forwardTiresCorneringStiffnessField;
@@ -63,9 +63,6 @@ namespace Assets.VehicleControllerEditor
 
             BindForwardTiresSOField();
             BindRearTiresSOField();
-
-            RebindForwardTiresSettings(_forwardTiresSO);
-            RebindRearTiresSettings(_rearTiresSO);
 
             SubscribeToForwardTiresSaveButtonClick();
             SubscribeToRearTiresSaveButtonClick();
@@ -206,27 +203,21 @@ namespace Assets.VehicleControllerEditor
 
             if (_frontTiresObjectField.value == null)
             {
-                _forwardTiresSO = CreateDefaultTires();
+                _frontTiresSO = TiresSO.CreateDefaultTiresSO();
             }
             else
             {
-                _forwardTiresSO = _frontTiresObjectField.value as TiresSO;
+                _frontTiresSO = _frontTiresObjectField.value as TiresSO;
             }
         }
         private void RebindForwardTiresSettings(TiresSO loadedForwardTiresSO)
         {
-            _forwardTiresSO = loadedForwardTiresSO;
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontTiresSO)).objectReferenceValue = _forwardTiresSO;
-                _mainEditor.SaveController();
-            }
-            if (_forwardTiresSO == null)
-            {
-                _forwardTiresSO = CreateDefaultTires();
-            }
-            SerializedObject so = new (_forwardTiresSO);
+            _frontTiresSO = loadedForwardTiresSO;
+
+            if (_frontTiresSO == null)
+                _frontTiresSO = TiresSO.CreateDefaultTiresSO();
+
+            SerializedObject so = new (_frontTiresSO);
             BindForwardTiresCorneringStiffnessField(so);
             BindForwardTireSidewaysGripCurve(so);
             BindForwardTiresSideSlipCurve(so);
@@ -235,22 +226,22 @@ namespace Assets.VehicleControllerEditor
 
         private void BindForwardTiresCorneringStiffnessField(SerializedObject so)
         {
-            _forwardTiresCorneringStiffnessField.bindingPath = nameof(_forwardTiresSO.SteeringStiffness);
+            _forwardTiresCorneringStiffnessField.bindingPath = nameof(_frontTiresSO.SteeringStiffness);
             _forwardTiresCorneringStiffnessField.Bind(so);
         }
         private void BindForwardTireSidewaysGripCurve(SerializedObject so)
         {
-            _forwardTiresSideGripCurve.bindingPath = nameof(_forwardTiresSO.SidewaysGripCurve);
+            _forwardTiresSideGripCurve.bindingPath = nameof(_frontTiresSO.SidewaysGripCurve);
             _forwardTiresSideGripCurve.Bind(so);
         }
         private void BindForwardTiresSideSlipCurve(SerializedObject so)
         {
-            _forwardTiresSideSlipCurve.bindingPath = nameof(_forwardTiresSO.SidewaysSlipCurve);
+            _forwardTiresSideSlipCurve.bindingPath = nameof(_frontTiresSO.SidewaysSlipCurve);
             _forwardTiresSideSlipCurve.Bind(so);
         }
         private void BindForwardTiresForwardGripField(SerializedObject so)
         {
-            _forwardTiresForwardGripField.bindingPath = nameof(_forwardTiresSO.ForwardGrip);
+            _forwardTiresForwardGripField.bindingPath = nameof(_frontTiresSO.ForwardGrip);
             _forwardTiresForwardGripField.Bind(so);
         }
 
@@ -261,27 +252,16 @@ namespace Assets.VehicleControllerEditor
             _rearTiresObjectField.RegisterValueChangedCallback(x => RebindRearTiresSettings(_rearTiresObjectField.value as TiresSO));
 
             if (_rearTiresObjectField.value == null)
-            {
-                _rearTiresSO = CreateDefaultTires();
-            }
+                _rearTiresSO = TiresSO.CreateDefaultTiresSO();
             else
-            {
                 _rearTiresSO = _rearTiresObjectField.value as TiresSO;
-            }
         }
-        private void RebindRearTiresSettings(TiresSO loadedForwardSuspensionSO)
+        private void RebindRearTiresSettings(TiresSO loadedRearTiresSO)
         {
-            _rearTiresSO = loadedForwardSuspensionSO;
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue = _rearTiresSO;
-                _mainEditor.SaveController();
-            }
+            _rearTiresSO = loadedRearTiresSO;
+
             if (_rearTiresSO == null)
-            {
-                _rearTiresSO = CreateDefaultTires();
-            }
+                _rearTiresSO = TiresSO.CreateDefaultTiresSO();
 
             SerializedObject so = new (_rearTiresSO);
             BindRearTiresCorneringStiffnessField(so);
@@ -311,30 +291,6 @@ namespace Assets.VehicleControllerEditor
             _rearTiresForwardGripField.Bind(so);
         }
 
-        private TiresSO CreateDefaultTires()
-        {
-            TiresSO defaultTires = ScriptableObject.CreateInstance<TiresSO>();
-            defaultTires.SteeringStiffness = 50;
-            defaultTires.ForwardGrip = 1.5f;
-
-            AnimationCurve sidewaysGripCurve = new();
-            sidewaysGripCurve.AddKey(0, 0.25f);
-            sidewaysGripCurve.AddKey(1, 1);
-            defaultTires.SidewaysGripCurve = sidewaysGripCurve;
-
-
-            AnimationCurve sidewaysSlipCurve = new ();
-            Keyframe slip1 = new(0, 1, 0, 0.2f);
-            Keyframe slip2 = new(0.95f, 0.5f, 0, 0);
-            Keyframe slip3 = new(1, 1, 1, 0);
-            sidewaysSlipCurve.AddKey(slip1);
-            sidewaysSlipCurve.AddKey(slip2);
-            sidewaysSlipCurve.AddKey(slip3);
-
-            defaultTires.SidewaysSlipCurve = sidewaysSlipCurve;
-            return defaultTires;
-        }
-
         private void SubscribeToForwardTiresSaveButtonClick()
         {
             var button = root.Q<Button>(name: FORWARD_TIRES_CREATE_BUTTON_NAME);
@@ -350,14 +306,15 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(TIRES_FOLDER_NAME) + "/" + _forwardTiresNameField.text + ".asset";
 
-            TiresSO newTires = CreateDefaultTires();
+            TiresSO newTires = TiresSO.CreateDefaultTiresSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newTires, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newTires, "Created Suspension Asset");
 
-            _forwardTiresSO = newTires;
-            _frontTiresObjectField.value = _forwardTiresSO;
+            _frontTiresSO = newTires;
+            _frontTiresObjectField.value = _frontTiresSO;
         }
 
         private void SubscribeToRearTiresSaveButtonClick()
@@ -375,29 +332,43 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(TIRES_FOLDER_NAME) + "/" + _rearTiresNameField.text + ".asset";
 
-            TiresSO newTires = CreateDefaultTires();
+            TiresSO newTires = TiresSO.CreateDefaultTiresSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newTires, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newTires, "Created Suspension Asset");
 
             _rearTiresSO = newTires;
             _rearTiresObjectField.value = _rearTiresSO;
         }
-        public void SetVehicleController(SerializedObject so)
+
+        public void BindVehicleController(SerializedProperty frontTiresProperty, SerializedProperty rearTiresProperty)
         {
-            if(so == null)
-            {
-                _frontTiresObjectField.value = null;
-                _rearTiresObjectField.value = null;
-                return;
-            }
-            _frontTiresObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontTiresSO)).objectReferenceValue;
+            _frontTiresObjectField.Unbind();
+            if(frontTiresProperty != null )
+                _frontTiresObjectField.BindProperty(frontTiresProperty);
 
-            _rearTiresObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearTiresSO)).objectReferenceValue;
+            _rearTiresObjectField.Unbind();
+            if(rearTiresProperty != null )
+                _rearTiresObjectField.BindProperty(rearTiresProperty);
+        }
 
+        public void BindPreset(SerializedObject preset)
+        {
+            _frontTiresObjectField.Unbind();
+            if(preset != null)
+                _frontTiresObjectField.BindProperty(preset.FindProperty("FrontTires"));
+
+            _rearTiresObjectField.Unbind();
+            if(preset != null)
+                _rearTiresObjectField.BindProperty(preset.FindProperty("RearTires"));
+        }
+
+        public void Unbind()
+        {
+            _frontTiresObjectField.Unbind();
+            _rearTiresObjectField.Unbind();
         }
     }
 

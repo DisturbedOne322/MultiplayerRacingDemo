@@ -38,27 +38,28 @@ namespace Assets.VehicleController
 
         private float _returnGripTime = 2;
 
-        private VehicleStats _stats;
+        private VehiclePartsSetWrapper _partsPresetWrapper;
 
         private bool _isFrontTire;
         private Rigidbody _rb;
 
+        private float _currentLoad;
+
         private float _minLoad;
         private float _maxLoad;
 
-        public TireController(Transform transform, VehicleStats stats, bool front, float axelLen,
+        public TireController(Transform transform, VehiclePartsSetWrapper partsPresetWrapper, bool front, float axelLen,
             float wheelBaseLen, Rigidbody rb)
-        {     
+        {
             _transform = transform;
             _isFrontTire = front;
-            _stats = stats;
-            _staticTireLoad = (axelLen / wheelBaseLen) * stats.BodySO.Mass * 9.81f;
+            _partsPresetWrapper = partsPresetWrapper;
+            _staticTireLoad = (axelLen / wheelBaseLen) * partsPresetWrapper.Body.Mass * 9.81f;
             _minLoad = _staticTireLoad - _staticTireLoad / 2;
             _maxLoad = _staticTireLoad * 3;
             _wheelBaseLen = wheelBaseLen;
             _rb = rb;
         }
-
 
         public float CalculateTireLoad(float accel, float distanceToGround)
         {
@@ -69,23 +70,25 @@ namespace Assets.VehicleController
         }
         public float CalculateFrontTireLoad(float accel, float distanceToGround)
         {
-            float weightTransfer = (distanceToGround / _wheelBaseLen) * _stats.BodySO.Mass * accel / 2;
+            float weightTransfer = (distanceToGround / _wheelBaseLen) * _partsPresetWrapper.Body.Mass * accel / 2;
             float totalLoad = _staticTireLoad - weightTransfer;
+            _currentLoad = (_staticTireLoad - weightTransfer) / 3000;
             return Mathf.Clamp(totalLoad, _minLoad, _maxLoad);
         }
         public float CalculateRearTireLoad(float accel, float distanceToGround)
         {
-            float weightTransfer = (distanceToGround / _wheelBaseLen) * _stats.BodySO.Mass* accel / 2;
+            float weightTransfer = (distanceToGround / _wheelBaseLen) * _partsPresetWrapper.Body.Mass * accel / 2;
             float totalLoad = _staticTireLoad + weightTransfer;
+            _currentLoad = (_staticTireLoad + weightTransfer) / 3000;
             return Mathf.Clamp(totalLoad, _minLoad, _maxLoad);
         }
 
         public void CalculateForwardSlip(float accelForce, float wheelLoad, float speed)
         {
             if (_isFrontTire)
-                CalculateTireForwardSlip(accelForce, wheelLoad, speed, _stats.FrontTiresSO.ForwardGrip);
+                CalculateTireForwardSlip(accelForce, wheelLoad, speed, _partsPresetWrapper.FrontTires.ForwardGrip);
             else
-                CalculateTireForwardSlip(accelForce, wheelLoad, speed, _stats.RearTiresSO.ForwardGrip);
+                CalculateTireForwardSlip(accelForce, wheelLoad, speed, _partsPresetWrapper.RearTires.ForwardGrip);
         }
 
         private void CalculateTireForwardSlip(float accelForce, float wheelLoad, float speed, float tireGrip)
@@ -107,7 +110,7 @@ namespace Assets.VehicleController
                 _forwardSlip = 0;
             else
                 _forwardSlip = accelForce / maxGrip;
-        }      
+        }
 
         public Vector3 CalculateSidewaysForce(float speed, float speedPercent)
         {
@@ -119,27 +122,37 @@ namespace Assets.VehicleController
 
             if (_isFrontTire)
                 return CalculateTiresSidewaysForce(speed, speedPercent, steeringVel, steeringDir,
-                                                    _stats.FrontTiresSO.SteeringStiffness,
-                                                    _stats.FrontTiresSO.SidewaysGripCurve,
-                                                    _stats.FrontTiresSO.SidewaysSlipCurve);
+                                                    _partsPresetWrapper.FrontTires.SteeringStiffness,
+                                                    _partsPresetWrapper.FrontTires.SidewaysGripCurve,
+                                                    _partsPresetWrapper.FrontTires.SidewaysSlipCurve);
             else
-                return CalculateTiresSidewaysForce(speed, speedPercent, steeringVel, steeringDir, 
-                                                    _stats.RearTiresSO.SteeringStiffness,
-                                                    _stats.RearTiresSO.SidewaysGripCurve,
-                                                    _stats.RearTiresSO.SidewaysSlipCurve);
+                return CalculateTiresSidewaysForce(speed, speedPercent, steeringVel, steeringDir,
+                                                    _partsPresetWrapper.RearTires.SteeringStiffness,
+                                                    _partsPresetWrapper.RearTires.SidewaysGripCurve,
+                                                    _partsPresetWrapper.RearTires.SidewaysSlipCurve);
         }
-        private Vector3 CalculateTiresSidewaysForce(float speed, float speedPercent, float steeringVel, Vector3 steeringDir, 
-            float tireCorneringStiffness, AnimationCurve gripCurve, AnimationCurve slipCurve)
+
+        private Vector3 CalculateTiresSidewaysForce(float speed, float speedPercent, float steeringVel, Vector3 steeringDir,
+            float tireCorneringStiffnessMax, AnimationCurve gripCurve, AnimationCurve slipCurve)
         {
-            if (Mathf.Abs(speed) < 1)
+            if (speed < 0.1f)
                 _sidewaysSlip = 0;
             else
                 _sidewaysSlip = 1 - slipCurve.Evaluate(Mathf.Abs(_sidewaysDot));
 
             float desiredVelocityChange = -steeringVel * (1 - _sidewaysSlip) * _handbrakeGripMultiplier;
 
-            float desiredAccel = desiredVelocityChange / Time.fixedDeltaTime;
-            return (tireCorneringStiffness * gripCurve.Evaluate(speedPercent)) * desiredAccel * steeringDir;
+            float desiredAccel = (desiredVelocityChange) / 0.02f;
+
+            float tireCorneringStiffness = tireCorneringStiffnessMax * gripCurve.Evaluate(speedPercent);
+
+            return (tireCorneringStiffness + GetResistanceToOrthogonalMotion(speed, tireCorneringStiffness)) * desiredAccel * steeringDir;
+        }
+
+        private float GetResistanceToOrthogonalMotion(float speed, float tireStiffness)
+        {
+            speed = Mathf.Clamp(Mathf.Abs(speed), 0, tireStiffness);
+            return Mathf.Abs(_sidewaysDot) * (tireStiffness - speed);
         }
 
         public void ApplyHandbrake(bool engaged, float effectStrength, float tractionPercent)
@@ -147,7 +160,7 @@ namespace Assets.VehicleController
             if (engaged)
                 _handbrakeGripMultiplier = Mathf.Clamp(_handbrakeGripMultiplier - Time.deltaTime * 2 * effectStrength, tractionPercent, 1);
             else
-                _handbrakeGripMultiplier = Mathf.Clamp(_handbrakeGripMultiplier + Time.deltaTime / (_returnGripTime / _stats.RearTiresSO.ForwardGrip) * (1 - _sidewaysSlip), tractionPercent, 1);
+                _handbrakeGripMultiplier = Mathf.Clamp(_handbrakeGripMultiplier + Time.deltaTime / (_returnGripTime / _partsPresetWrapper.RearTires.ForwardGrip) * (1 - _sidewaysSlip), tractionPercent, 1);
         }
 
         public void DecreaseFriction(bool locked, float effectStrength)

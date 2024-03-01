@@ -27,9 +27,12 @@ namespace Assets.VehicleControllerEditor
 
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
             EditorGUI.PropertyField(typeRect, property.FindPropertyRelative("VisualEffectType"), GUIContent.none);
+
+#if VISUAL_EFFECT_GRAPH_INSTALLED_FOR_EDITOR
             if(property.FindPropertyRelative("VisualEffectType").intValue == (int)VisualEffectAssetType.Type.VisualEffect)
                 EditorGUI.PropertyField(vfxRect, property.FindPropertyRelative("VFXAsset"), GUIContent.none);
-            else
+#endif
+            if (property.FindPropertyRelative("VisualEffectType").intValue == (int)VisualEffectAssetType.Type.ParticleSystem)
                 EditorGUI.PropertyField(psRect, property.FindPropertyRelative("ParticleSystem"), GUIContent.none);
 
             // Set indent back to what it was

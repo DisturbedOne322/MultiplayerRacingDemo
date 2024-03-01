@@ -1,6 +1,7 @@
 using Assets.VehicleController;
 using UnityEditor;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Assets.VehicleControllerEditor
 {
@@ -28,14 +29,14 @@ namespace Assets.VehicleControllerEditor
 
         public void PasteStats(SerializedObject controller)
         {
-            controller.FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue = _steerAnglePlayMode;
-            controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue = _steerSpeedPlayMode;
+            controller.FindProperty("_steerAngle").floatValue = _steerAnglePlayMode;
+            controller.FindProperty("_steerSpeed").floatValue = _steerSpeedPlayMode;
         }
 
         public void CopyStats(SerializedObject controller)
         {
-            _steerAnglePlayMode = controller.FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue;
-            _steerSpeedPlayMode = controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue;
+            _steerAnglePlayMode = controller.FindProperty("_steerAngle").floatValue;
+            _steerSpeedPlayMode = controller.FindProperty("_steerSpeed").floatValue;
         }
 
         private void FindSteeringFields()
@@ -53,10 +54,12 @@ namespace Assets.VehicleControllerEditor
                 if (newValue < 0)
                     newValue = 0;
                 _steerAngleField.value = newValue;
-                _editor.GetSerializedController().FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue = newValue;
+                _editor.GetSerializedController().FindProperty("_steerAngle").floatValue = newValue;
                 _editor.SaveController();
             }
         }
+
+
         private void HandleSpeedValueChanges(float newValue)
         {
             if (_editor.GetSerializedController() != null)
@@ -64,7 +67,7 @@ namespace Assets.VehicleControllerEditor
                 if (newValue < 0)
                     newValue = 0;
                 _steerSpeedField.value = newValue;
-                _editor.GetSerializedController().FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue = newValue;
+                _editor.GetSerializedController().FindProperty("_steerSpeed").floatValue = newValue;
                 _editor.SaveController();
             }
         }
@@ -73,8 +76,12 @@ namespace Assets.VehicleControllerEditor
         {
             if (controller != null)
             {
-                _steerAngleField.value = controller.FindProperty(nameof(CustomVehicleController.SteerAngle)).floatValue;
-                _steerSpeedField.value = controller.FindProperty(nameof(CustomVehicleController.SteerSpeed)).floatValue;
+                SerializedProperty steerAngle = controller.FindProperty("_steerAngle");
+                if(steerAngle != null)
+                {
+                    _steerAngleField.value = steerAngle.floatValue;
+                    _steerSpeedField.value = controller.FindProperty("_steerSpeed").floatValue;
+                }
             }
             else
             {

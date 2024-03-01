@@ -20,6 +20,7 @@ namespace Assets.VehicleControllerEditor
         private FloatField _frontSuspensionStiffnessField;
         private FloatField _frontSuspensionDamperField;
         private Slider _frontSuspensionHeightSlider;
+        private FloatField _frontSuspTravelField;
         private FloatField _frontAntiRollBarField;
         private TextField _frontSuspensionNameField;
 
@@ -29,6 +30,7 @@ namespace Assets.VehicleControllerEditor
         private FloatField _rearSuspensionStiffnessField;
         private FloatField _rearSuspensionDamperField;
         private Slider _rearSuspensionHeightSlider;
+        private FloatField _rearSuspTravelField;
         private FloatField _rearAntiRollBarField;
         private TextField _rearSuspensionNameField;
         #endregion
@@ -38,6 +40,7 @@ namespace Assets.VehicleControllerEditor
         private const string FRONT_SUSPENSION_STIFFNESS_FIELD = "FrontSuspensionStiffnessField";
         private const string FRONT_SUSPENSION_DAMPER_FIELD = "FrontSuspensionDamperField";
         private const string FRONT_SUSPENSION_HEIGHT_SLIDER_FIELD = "FrontSuspensionHeightSliderField";
+        private const string FRONT_SUSPENSTION_TRAVEL_FIELD = "FrontSuspensionTravelDistance";
         private const string FRONT_ANTIROLL_BAR_FIELD = "FrontAntiRollField";
         private const string FRONT_SUSPENSION_NAME_FIELD = "FrontSuspensionNameField";
         private const string FRONT_SUSPENSION_SAVE_BUTTON_NAME = "FrontSuspensionSaveButton";
@@ -46,6 +49,7 @@ namespace Assets.VehicleControllerEditor
         private const string REAR_SUSPENSION_STIFFNESS_FIELD = "RearSuspensionStiffnessField";
         private const string REAR_SUSPENSION_DAMPER_FIELD = "RearSuspensionDamperField";
         private const string REAR_SUSPENSION_HEIGHT_SLIDER_FIELD = "RearSuspensionHeightSliderField";
+        private const string REAR_SUSPENSTION_TRAVEL_FIELD = "RearSuspensionTravelDistance";
         private const string REAR_ANTIROLL_BAR_FIELD = "RearAntiRollField";
         private const string REAR_SUSPENSION_NAME_FIELD = "RearSuspensionNameField";
         private const string REAR_SUSPENSION_SAVE_BUTTON_NAME = "RearSuspensionSaveButton";
@@ -61,8 +65,6 @@ namespace Assets.VehicleControllerEditor
 
             BindFrontSuspensionSOField();
             BindRearSuspensionSOField();
-            RebindFrontSuspensionSettings(_frontSuspensionSO);
-            RebindRearSuspensionSettings(_rearSuspensionSO);
 
             SubscribeToFrontSuspensionSaveButtonClick();
             SubscribeToRearSuspensionSaveButtonClick();
@@ -136,7 +138,11 @@ namespace Assets.VehicleControllerEditor
             });
 
             _frontSuspensionHeightSlider = root.Q<Slider>(FRONT_SUSPENSION_HEIGHT_SLIDER_FIELD);
+            _frontSuspensionHeightSlider.RegisterValueChangedCallback(evt => { _frontSuspTravelField.value = Mathf.Clamp(_frontSuspTravelField.value, 0, _frontSuspensionHeightSlider.value); });
             _frontSuspensionNameField = root.Q<TextField>(FRONT_SUSPENSION_NAME_FIELD);
+
+            _frontSuspTravelField = root.Q<FloatField>(FRONT_SUSPENSTION_TRAVEL_FIELD);
+            _frontSuspTravelField.RegisterValueChangedCallback(evt => { _frontSuspTravelField.value = Mathf.Clamp(_frontSuspTravelField.value, 0 , _frontSuspensionHeightSlider.value); });
         }
         private void FindRearSuspensionFields()
         {
@@ -160,7 +166,11 @@ namespace Assets.VehicleControllerEditor
             });
 
             _rearSuspensionHeightSlider = root.Q<Slider>(REAR_SUSPENSION_HEIGHT_SLIDER_FIELD);
+            _rearSuspensionHeightSlider.RegisterValueChangedCallback(evt => { _rearSuspTravelField.value = Mathf.Clamp(_rearSuspTravelField.value, 0, _rearSuspensionHeightSlider.value); });
             _rearSuspensionNameField = root.Q<TextField>(REAR_SUSPENSION_NAME_FIELD);
+
+            _rearSuspTravelField = root.Q<FloatField>(REAR_SUSPENSTION_TRAVEL_FIELD);
+            _rearSuspTravelField.RegisterValueChangedCallback(evt => { _rearSuspTravelField.value = Mathf.Clamp(_rearSuspTravelField.value, 0, _rearSuspensionHeightSlider.value); });
         }
 
         private void BindFrontSuspensionSOField()
@@ -171,7 +181,7 @@ namespace Assets.VehicleControllerEditor
 
             if (_frontSuspensionObjectField.value == null)
             {
-                _frontSuspensionSO = CreateDefaultSuspension();
+                _frontSuspensionSO = SuspensionSO.CreateDefaultSuspensionSO();
             }
             else
             {
@@ -183,23 +193,15 @@ namespace Assets.VehicleControllerEditor
         {
             _frontSuspensionSO = loadedFrontSuspensionSO;
 
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontSuspensionSO)).objectReferenceValue = _frontSuspensionSO;
-                _mainEditor.SaveController();
-            }
-
             if (_frontSuspensionSO == null)
-            {
-                _frontSuspensionSO = CreateDefaultSuspension();
-            }
+                _frontSuspensionSO = SuspensionSO.CreateDefaultSuspensionSO();
 
             SerializedObject so = new (_frontSuspensionSO);
             BindFrontSuspensionStiffnessField(so);
             BindFrontdSuspensionDamperField(so);
             BindFrontSuspensionHeightField(so);
             BindFrontAntirollField(so);
+            BindFrontTravel(so);
         }
 
         private void BindFrontSuspensionStiffnessField(SerializedObject so)
@@ -224,6 +226,12 @@ namespace Assets.VehicleControllerEditor
             _frontAntiRollBarField.Bind(so);
         }
 
+        private void BindFrontTravel(SerializedObject so)
+        {
+            _frontSuspTravelField.bindingPath = nameof(_frontSuspensionSO.SpringTravelLength);
+            _frontSuspTravelField.Bind(so);
+        }
+
         private void BindRearSuspensionSOField()
         {
             _rearSuspensionObjectField = root.Q<ObjectField>(REAR_SUSPENSION_OBJECT_FIELD);
@@ -232,7 +240,7 @@ namespace Assets.VehicleControllerEditor
 
             if (_rearSuspensionObjectField.value == null)
             {
-                _rearSuspensionSO = CreateDefaultSuspension();
+                _rearSuspensionSO = SuspensionSO.CreateDefaultSuspensionSO();
             }
             else
             {
@@ -244,23 +252,15 @@ namespace Assets.VehicleControllerEditor
         {
             _rearSuspensionSO = loadedFrontSuspensionSO;
 
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearSuspensionSO)).objectReferenceValue = _rearSuspensionSO;
-                _mainEditor.SaveController();
-            }
-
             if (_rearSuspensionSO == null)
-            {
-                _rearSuspensionSO = CreateDefaultSuspension();
-            }
+                _rearSuspensionSO = SuspensionSO.CreateDefaultSuspensionSO();
 
             SerializedObject so = new (_rearSuspensionSO);
             BindRearSuspensionStiffnessField(so);
             BindRearSuspensionDamperField(so);
             BindRearSuspensionHeightField(so);
             BindRearAntirollField(so);
+            BindRearTravel(so);
         }
 
         private void BindRearSuspensionStiffnessField(SerializedObject so)
@@ -283,17 +283,12 @@ namespace Assets.VehicleControllerEditor
             _rearAntiRollBarField.bindingPath = nameof(_rearSuspensionSO.AntiRollForce);
             _rearAntiRollBarField.Bind(so);
         }
-
-        private SuspensionSO CreateDefaultSuspension()
+        private void BindRearTravel(SerializedObject so)
         {
-            SuspensionSO defaultSuspension = ScriptableObject.CreateInstance<SuspensionSO>();
-            defaultSuspension.SpringStiffness = 120000f;
-            defaultSuspension.SpringDampingStiffness = 3500f;
-            defaultSuspension.SpringRestDistance = 0.3f;
-            defaultSuspension.AntiRollForce = 60000f;
-
-            return defaultSuspension;
+            _rearSuspTravelField.bindingPath = nameof(_rearSuspensionSO.SpringTravelLength);
+            _rearSuspTravelField.Bind(so);
         }
+
         private void SubscribeToFrontSuspensionSaveButtonClick()
         {
             var button = root.Q<Button>(name: FRONT_SUSPENSION_SAVE_BUTTON_NAME);
@@ -309,11 +304,12 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(SUSPENSION_FOLDER_NAME) + "/" + _frontSuspensionNameField.text + ".asset";
 
-            SuspensionSO newSusp = CreateDefaultSuspension();
+            SuspensionSO newSusp = SuspensionSO.CreateDefaultSuspensionSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newSusp, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newSusp, "Created Suspension Asset");
 
             _frontSuspensionSO = newSusp;
             _frontSuspensionObjectField.value = _frontSuspensionSO;
@@ -333,30 +329,49 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(SUSPENSION_FOLDER_NAME) + "/" + _rearSuspensionNameField.text + ".asset";
 
-            SuspensionSO newSusp = CreateDefaultSuspension();
+            SuspensionSO newSusp = SuspensionSO.CreateDefaultSuspensionSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newSusp, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newSusp, "Created Suspension Asset");
 
             _rearSuspensionSO = newSusp;
             _rearSuspensionObjectField.value = _rearSuspensionSO;
         }
 
-        public void SetVehicleController(SerializedObject so)
+        public void SetVehicleController(SuspensionSO frontSusp, SuspensionSO rearSusp)
         {
-            if (so == null)
-            {
-                _frontSuspensionObjectField.value = null;
-                _rearSuspensionObjectField.value = null;
-                return;
-            }
+            _frontSuspensionObjectField.value = frontSusp;
+            _rearSuspensionObjectField.value = rearSusp;
+        }
 
-            _frontSuspensionObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.FrontSuspensionSO)).objectReferenceValue;
+        public void BindVehicleController(SerializedProperty frontSuspProperty, SerializedProperty rearSuspProperty)
+        {
+            _frontSuspensionObjectField.Unbind();
+            if(frontSuspProperty != null)
+                _frontSuspensionObjectField.BindProperty(frontSuspProperty);
 
-            _rearSuspensionObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.RearSuspensionSO)).objectReferenceValue;
+            _rearSuspensionObjectField.Unbind();
+            if (rearSuspProperty != null)
+                _rearSuspensionObjectField.BindProperty(rearSuspProperty);
+        }
+
+        public void BindPreset(SerializedObject preset)
+        {
+            _frontSuspensionObjectField.Unbind();
+            if(preset != null)
+                _frontSuspensionObjectField.BindProperty(preset.FindProperty("FrontSuspension"));
+
+            _rearSuspensionObjectField.Unbind();
+            if (preset != null)
+                _rearSuspensionObjectField.BindProperty(preset.FindProperty("RearSuspension"));
+        }
+
+        public void Unbind()
+        {
+            _frontSuspensionObjectField.Unbind();
+            _rearSuspensionObjectField.Unbind();
         }
     }
 

@@ -63,6 +63,7 @@
     -unity-font-style: bold;
     margin-bottom: 25px;
     -unity-font: url('project://database/Assets/CustomVehicleController/Editor/Font/Vegur-Yg1a.otf?fileID=12800000&guid=6c91916d973bdd74fa85ea681d8ea7e9&type=3#Vegur-Yg1a');
+    color: rgb(176, 176, 176);
 }
 
 .inputField {
@@ -170,4 +171,129 @@
     flex-direction: row;
     flex-shrink: 0;
     -unity-font: url('project://database/Assets/CustomVehicleController/Editor/Font/Vegur-Yg1a.otf?fileID=12800000&guid=6c91916d973bdd74fa85ea681d8ea7e9&type=3#Vegur-Yg1a');
+}
+
+.ControllerSelectionLabel {
+    -unity-font: url('project://database/Assets/CustomVehicleController/Editor/Font/Vegur-Yg1a.otf?fileID=12800000&guid=6c91916d973bdd74fa85ea681d8ea7e9&type=3#Vegur-Yg1a');
+    -unity-font-style: bold;
+    font-size: 12px;
+    color: rgb(255, 0, 0);
+    -unity-text-align: middle-left;
+    background-color: rgba(255, 0, 0, 0);
+    word-spacing: 0;
+    letter-spacing: 3px;
+    text-overflow: clip;
+    white-space: nowrap;
+    align-items: auto;
+    align-self: auto;
+    justify-content: flex-end;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-direction: column;
+    top: auto;
+    bottom: auto;
+    position: relative;
+    max-width: none;
+    height: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 300px;
+    -unity-font-definition: initial;
+}
+
+.PresetLabel {
+    flex-grow: 0;
+    flex-direction: row;
+    flex-shrink: 0;
+    display: none;
+}
+
+.PresetLabel1 {
+    -unity-font: url('project://database/Assets/CustomVehicleController/Editor/Font/Vegur-Yg1a.otf?fileID=12800000&guid=6c91916d973bdd74fa85ea681d8ea7e9&type=3#Vegur-Yg1a');
+    -unity-font-style: bold;
+    font-size: 11px;
+    color: rgb(210, 210, 208);
+    -unity-text-align: middle-left;
+    background-color: rgba(255, 0, 0, 0);
+    word-spacing: 0;
+    letter-spacing: 3px;
+    text-overflow: clip;
+    white-space: normal;
+    align-items: auto;
+    align-self: auto;
+    justify-content: flex-end;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    margin-left: 5px;
+    margin-right: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-direction: column;
+    top: auto;
+    bottom: auto;
+    position: relative;
+    max-width: none;
+    height: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: auto;
+    -unity-font-definition: initial;
+}
+
+.PresetLabel2 {
+    -unity-font: url('project://database/Assets/CustomVehicleController/Editor/Font/Vegur-Yg1a.otf?fileID=12800000&guid=6c91916d973bdd74fa85ea681d8ea7e9&type=3#Vegur-Yg1a');
+    -unity-font-style: bold;
+    font-size: 11px;
+    color: rgb(255, 0, 0);
+    -unity-text-align: middle-left;
+    background-color: rgba(255, 0, 0, 0);
+    word-spacing: 0;
+    letter-spacing: 3px;
+    text-overflow: clip;
+    white-space: normal;
+    align-items: auto;
+    align-self: auto;
+    justify-content: flex-end;
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    margin-left: 2px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-direction: column;
+    top: auto;
+    bottom: auto;
+    position: relative;
+    max-width: none;
+    height: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 300px;
+    -unity-font-definition: initial;
+}
+
+.SubFoldout {
+    color: rgb(255, 255, 255);
+}
+
+.helpButton {
+    background-image: url('project://database/Assets/CustomVehicleController/Editor/images/helpButton.png?fileID=2800000&guid=9470bc8a1ec71ae4da9f05b975763855&type=3#helpButton');
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(255, 255, 255, 0);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    width: 15px;
+    height: 15px;
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    margin-left: 10px;
 }

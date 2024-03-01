@@ -55,7 +55,6 @@ namespace Assets.VehicleControllerEditor
             FindEngineFields();
 
             BindEngineSOField();
-            RebindEngineSettings(_engineSO);
             SubscribeToEngineSaveButtonClick();
 
             RecalculateHorsepower();
@@ -141,28 +140,16 @@ namespace Assets.VehicleControllerEditor
             _engineSOObjectField.RegisterValueChangedCallback(x => RebindEngineSettings(_engineSOObjectField.value as EngineSO));
 
             if (_engineSOObjectField.value == null)
-            {
-                _engineSO = CreateDefaultEngine();
-            }
+                _engineSO = EngineSO.CreateDefaultEngineSO();
             else
-            {
                 _engineSO = _engineSOObjectField.value as EngineSO;
-            }
         }
         private void RebindEngineSettings(EngineSO loadedEngineSO)
         {
             _engineSO = loadedEngineSO;
 
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue = _engineSO;
-                _mainEditor.SaveController();
-            }
-
             if (_engineSO == null)
-            {
-                _engineSO = CreateDefaultEngine();
-            }
+                _engineSO = EngineSO.CreateDefaultEngineSO();
 
             SerializedObject so = new (_engineSO);
             BindForcedInduction(so);
@@ -187,24 +174,6 @@ namespace Assets.VehicleControllerEditor
             _engineMaxSpeedField.Bind(so);
         }
 
-        private EngineSO CreateDefaultEngine()
-        {
-            EngineSO defaultEngine = ScriptableObject.CreateInstance<EngineSO>();
-            defaultEngine.MaxSpeed = 300;
-            AnimationCurve torqueCurve = new ();
-            torqueCurve.AddKey(1000f, 150f);
-            torqueCurve.AddKey(8000f, 260f);
-            torqueCurve.AddKey(9000f, 230f);
-            int size = torqueCurve.keys.Length;
-            for (int i = 0; i < size; i++)
-            {
-                AnimationUtility.SetKeyLeftTangentMode(torqueCurve, i, AnimationUtility.TangentMode.Auto);
-                AnimationUtility.SetKeyRightTangentMode(torqueCurve, i, AnimationUtility.TangentMode.Auto);
-            }
-            defaultEngine.TorqueCurve = torqueCurve;
-            return defaultEngine;
-        }
-
         private void SubscribeToEngineSaveButtonClick()
         {
             var button = root.Q<Button>(name: ENGINE_SAVE_BUTTON_NAME);
@@ -221,27 +190,36 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(ENGINE_FOLDER_NAME) + "/" + _engineNameTextField.text + ".asset";
 
-            EngineSO newEngine = CreateDefaultEngine();
+            EngineSO newEngine = EngineSO.CreateDefaultEngineSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newEngine, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newEngine, "Created Engine Asset");
 
             _engineSO = newEngine;
             _engineSOObjectField.value = _engineSO;
         }
 
-        public void SetVehicleController(SerializedObject so)
+        public void BindVehicleController(EngineSO engine)
         {
-            if(so == null)
-            {
-                _engineSOObjectField.value = null;
-                return;
-            }
-
-            _engineSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.EngineSO)).objectReferenceValue;
+            _engineSOObjectField.value = engine;
         }
-    }
 
+        public void BindVehicleController(SerializedProperty engineProperty)
+        {
+            _engineSOObjectField.Unbind();
+            if(engineProperty != null)
+                _engineSOObjectField.BindProperty(engineProperty);
+        }
+
+        public void BindPreset(SerializedObject preset)
+        {
+            _engineSOObjectField.Unbind();
+            if(preset != null)
+                _engineSOObjectField.BindProperty(preset.FindProperty("Engine"));
+        }
+
+        public void Unbind() => _engineSOObjectField.Unbind();
+    }
 }

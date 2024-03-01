@@ -1,0 +1,20 @@
+{
+    "name": "CustomVehicleController",
+    "rootNamespace": "Assets.VehicleController",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.visualeffectgraph",
+            "expression": "1.0.0",
+            "define": "VISUAL_EFFECT_GRAPH_INSTALLED"
+        }
+    ],
+    "noEngineReferences": false
+}

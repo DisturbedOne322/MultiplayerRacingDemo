@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-//
+
 
 namespace Assets.VehicleControllerEditor
 {
@@ -48,7 +48,6 @@ namespace Assets.VehicleControllerEditor
             _mainEditor = editor;
             FindFIFields();
             BindFISOField();
-            RebindFISettings(_inductionSO);
             SubscribeToFISaveButtonClick();
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
 
@@ -126,7 +125,7 @@ namespace Assets.VehicleControllerEditor
 
             if (_fiObjectField.value == null)
             {
-                _inductionSO = CreateDefaultFI();
+                _inductionSO = ForcedInductionSO.CreateDefaultForcedInductionSO();
             }
             else
             {
@@ -136,13 +135,10 @@ namespace Assets.VehicleControllerEditor
         private void RebindFISettings(ForcedInductionSO loadedFISO)
         {
             _inductionSO = loadedFISO;
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.SaveController();
-            }
+
             if (_inductionSO == null)
             {
-                _inductionSO = CreateDefaultFI();
+                _inductionSO = ForcedInductionSO.CreateDefaultForcedInductionSO();
             }
 
             DisplayForcedInductionTypeField(_inductionSO.ForcedInductionType);
@@ -202,25 +198,16 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(FORCED_INDUCTION_FOLDER_NAME) + "/" + _foNameField.text + ".asset";
 
-            ForcedInductionSO newFI = CreateDefaultFI();
+            ForcedInductionSO newFI = ForcedInductionSO.CreateDefaultForcedInductionSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newFI, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newFI, "Created Forced Induction Asset");
 
             _inductionSO = newFI;
             _fiObjectField.value = _inductionSO;
         }
-        private ForcedInductionSO CreateDefaultFI()
-        {
-            ForcedInductionSO defaultFISO = ScriptableObject.CreateInstance<ForcedInductionSO>();
-            defaultFISO.ForcedInductionType = ForcedInductionType.Turbocharger;
-            defaultFISO.MaxTorqueBoostAmount = 150;
-            defaultFISO.TurboRPMPercentDelay = 0.3f;
-            defaultFISO.TurboSpinTime = 1;
-            return defaultFISO;
-        }
-
     }
 }
 

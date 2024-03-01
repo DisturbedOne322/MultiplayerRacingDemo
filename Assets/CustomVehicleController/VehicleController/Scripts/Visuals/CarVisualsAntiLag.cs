@@ -21,15 +21,12 @@ namespace Assets.VehicleController
             _carVisualsExtra = carVisualsExtra;
             _currentCarStats = currentCarStats;
             _antiLagParameters = antiLagParameters;
-
+#if VISUAL_EFFECT_GRAPH_INSTALLED
             if (_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
-            {
                 InitializeVFX();
-            }
-            else
-            {
+#endif
+            if (_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.ParticleSystem)
                 InstantiateAntiLagPS();
-            }
 
             if (_currentCarStats == null)
                 return;
@@ -57,6 +54,7 @@ namespace Assets.VehicleController
                 _antiLagParticleSystemArray[i].transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
         }
+#if VISUAL_EFFECT_GRAPH_INSTALLED
 
         private void InitializeVFX()
         {
@@ -77,6 +75,7 @@ namespace Assets.VehicleController
                 _antiLagVFXArray[i].Stop();
             }
         }
+#endif
 
         private void _currentCarStats_OnShiftedAntiLag()
         {
@@ -114,8 +113,8 @@ namespace Assets.VehicleController
 
         private IEnumerator PlayAntilagNTimes(int times, int id, float delay)
         {
-
-            if(_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+#if VISUAL_EFFECT_GRAPH_INSTALLED
+            if (_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
             {
                 for (int i = 0; i < times; i++)
                 {
@@ -123,7 +122,8 @@ namespace Assets.VehicleController
                     yield return new WaitForSeconds(delay);
                 }
             }
-            else
+#endif
+            if (_antiLagParameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.ParticleSystem)
             {
                 for (int i = 0; i < times; i++)
                 {

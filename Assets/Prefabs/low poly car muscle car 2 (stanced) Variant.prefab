@@ -373,14 +373,13 @@ GameObject:
   m_Component:
   - component: {fileID: 3874895126340536426}
   - component: {fileID: 3892326767790635829}
-  - component: {fileID: 2378913853249191193}
   - component: {fileID: 3614204176274034927}
   - component: {fileID: 1584716990109415591}
   - component: {fileID: 2556018666965285511}
   - component: {fileID: 1080230521640637655}
-  - component: {fileID: 4655146072925246374}
   - component: {fileID: 1522876685277166681}
   - component: {fileID: 4978500529377462909}
+  - component: {fileID: 7457814235218116941}
   m_Layer: 0
   m_Name: low poly car muscle car 2 (stanced) Variant
   m_TagString: Untagged
@@ -438,27 +437,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!65 &2378913853249191193
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052826118628400490}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.33, y: 0.66943127, z: 2.982666}
-  m_Center: {x: 0, y: 0.48679885, z: 0.11099243}
 --- !u!114 &3614204176274034927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,34 +449,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a930dbde2fcf984193c5530d8cd2426, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VehicleStats:
-    EngineSO: {fileID: 11400000, guid: 2b220c2568dcb9d49bc3cb179240ac4b, type: 2}
-    NitrousSO: {fileID: 11400000, guid: be2065c4e7281b54dad79d9631c7928a, type: 2}
-    TransmissionSO: {fileID: 11400000, guid: 45f50ce1b0d6d444daae567a746a5b44, type: 2}
-    FrontTiresSO: {fileID: 11400000, guid: 9fce9f69af75f0a45b858a32809f94d6, type: 2}
-    RearTiresSO: {fileID: 11400000, guid: 9fce9f69af75f0a45b858a32809f94d6, type: 2}
-    FrontSuspensionSO: {fileID: 11400000, guid: 055458320c0fe4c4791b3da1b29670bc,
-      type: 2}
-    RearSuspensionSO: {fileID: 11400000, guid: 055458320c0fe4c4791b3da1b29670bc, type: 2}
-    BrakesSO: {fileID: 11400000, guid: 64d9a289927543d40b3264a26bdfa404, type: 2}
-    BodySO: {fileID: 11400000, guid: 3db7fb85ec7a7c3458b60064742f08ea, type: 2}
+  UsePreset: 1
+  _vehiclePartsPreset: {fileID: 11400000, guid: bc7b4cf0476ee97488b153cfd23e0b24,
+    type: 2}
+  _customizableSet:
+    Engine: {fileID: 0}
+    Nitrous: {fileID: 0}
+    Transmission: {fileID: 0}
+    FrontTires: {fileID: 0}
+    RearTires: {fileID: 0}
+    FrontSuspension: {fileID: 0}
+    RearSuspension: {fileID: 0}
+    Brakes: {fileID: 0}
+    Body: {fileID: 0}
   DrivetrainType: 0
   TransmissionType: 0
-  SteerAngle: 30
-  SteerSpeed: 0.2
-  ForwardSlippingThreshold: 0.1
-  SidewaysSlippingThreshold: 0.5
+  _steerAngle: 25
+  _steerSpeed: 0.2
+  _forwardSlippingThreshold: 0.1
+  _sidewaysSlippingThreshold: 0.5
   AerialControlsEnabled: 1
   AerialControlsSensitivity: 3000
   _rigidbody: {fileID: 3892326767790635829}
-  SuspensionSimulationPrecision: 5
-  _vehicleAxles:
+  _suspensionSimulationPrecision: 5
+  _ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  _frontAxles:
   - {fileID: 940804207736455105}
+  _rearAxles:
   - {fileID: 4355234488942676643}
   _steerAxles:
   - {fileID: 940804207736455105}
   _centerOfMass: {fileID: 8905341432295420569}
-  CurrentCarStats: {fileID: 11400000, guid: 83b7088bdf510bd47aed819bd00fe7e3, type: 2}
+  CurrentCarStats: {fileID: 0}
 --- !u!114 &1584716990109415591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,13 +504,23 @@ MonoBehaviour:
   _antiLagSoundCooldown: 1
   _forcedInductionMaxPitch: 1.5
   _forcedInductionMaxVolume: 0.7
+  _turboFlutterVolumeMultiplier: 0.55
+  _antiLagVolumeMultiplier: 0.55
   _tireVolumeIncreaseTime: 0.75
+  _maxTireSlipVolume: 0.5
   _maxWindVolume: 0.5
   _speedForMaxWindVolume: 100
   _nitroVolumeGainSpeedInSeconds: 0.4
+  _nitroMaxVolume: 0.5
   _reverbZone: {fileID: 4978500529377462909}
   _reverbDuringNitroPreset: 26
-  _collisionHandler: {fileID: 4655146072925246374}
+  _3DSound: 0
+  _spatialBlend: 0
+  _dopplerLevel: 1
+  _spread: 0
+  _volumeRolloff: 0
+  _minDistance: 1
+  _maxDistance: 500
 --- !u!114 &2556018666965285511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,6 +538,8 @@ MonoBehaviour:
   - {fileID: 4355234488942676643}
   _steerAxleArray:
   - {fileID: 940804207736455105}
+  _restrainWheelPosition: 1
+  _alignSteerWheelsToVelocity: 1
 --- !u!114 &1080230521640637655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,7 +588,7 @@ MonoBehaviour:
     TrailRendererArray:
     - {fileID: 7201435098723053767}
     - {fileID: 3214785807857635099}
-    MinSpeedMStoDisplay: 20
+    MinSpeedToDisplay: 20
     MaxAlpha: 1
   _enableAntiLagEffect: 1
   _antiLagParameters:
@@ -622,39 +618,6 @@ MonoBehaviour:
     - {fileID: 4303917342338404472}
     - {fileID: 7834136405071943410}
     - {fileID: 3370432344387849776}
-    SizeOverLifeCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0.00048065186
-        value: -0.00012207031
-        inSlope: 0.12305452
-        outSlope: 0.12305452
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 1
-      - serializedVersion: 3
-        time: 0.08018732
-        value: 0.13116086
-        inSlope: -0.007888163
-        outSlope: -0.007888163
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.14001755
-        outWeight: 0.16491903
-      - serializedVersion: 3
-        time: 1.000608
-        value: 0.002202725
-        inSlope: -0.074150905
-        outSlope: -0.074150905
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.09367039
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
     Gradient:
       serializedVersion: 2
       key0: {r: 0, g: 6.395227, b: 14.259475, a: 0}
@@ -685,40 +648,6 @@ MonoBehaviour:
       m_ColorSpace: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 4
-  _enableCollisionEffects: 1
-  _collisionEffectsParameters:
-    ContinousVisualEffect:
-      VisualEffectType: 1
-      ParticleSystem: {fileID: 5468446043404729520, guid: 078fe86a021cd4e479f198dbc71cf5c9,
-        type: 3}
-      VFXAsset: {fileID: 8926484042661614526, guid: 20e6691053a28354995d082efdb95175,
-        type: 3}
-    HorizontalOffset: -0.1
-    SparksSpawnAreaHeight: 0.35
-    BurstVisualEffect:
-      VisualEffectType: 1
-      ParticleSystem: {fileID: 5674868588698813568, guid: 55474b5443c7e3047a908c442a96b021,
-        type: 3}
-      VFXAsset: {fileID: 8926484042661614526, guid: c35b12927062a9546b256e381cde7394,
-        type: 3}
-    BurstSparkCooldown: 0.5
-    CollisionLight: {fileID: 8819630581795328860}
-    CollisionHandler: {fileID: 4655146072925246374}
---- !u!114 &4655146072925246374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052826118628400490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d997ca52f7c9a0d45ba28891263003e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _minCollisionMagnitude: 20
-  _vehicleController: {fileID: 3614204176274034927}
-  _boxCollider: {fileID: 2378913853249191193}
 --- !u!114 &1522876685277166681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,7 +664,14 @@ MonoBehaviour:
   _engineSoundsSO: {fileID: 11400000, guid: de4e2752ad0a6e842a080986783b41fb, type: 2}
   _vehicleSoundAudioMixerGroup: {fileID: 5968836965800969409, guid: 43f964548b1973d41bc54ae5454ec382,
     type: 2}
-  _engineSoundPitch: 1
+  EngineSoundPitch: 1
+  _3DSound: 0
+  _spatialBlend: 0
+  _dopplerLevel: 1
+  _spread: 0
+  _volumeRolloff: 0
+  _minDistance: 1
+  _maxDistance: 500
 --- !u!167 &4978500529377462909
 AudioReverbZone:
   m_ObjectHideFlags: 0
@@ -760,6 +696,18 @@ AudioReverbZone:
   m_Density: 100
   m_LFReference: 250
   m_RoomLF: 0
+--- !u!114 &7457814235218116941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052826118628400490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dddcae02cf8b20b4b8e03642d445d3e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1272529983818511869
 GameObject:
   m_ObjectHideFlags: 0
@@ -1096,7 +1044,8 @@ GameObject:
   - component: {fileID: 6455256783808164922}
   - component: {fileID: 7108931909915879121}
   - component: {fileID: 3672193794740847500}
-  m_Layer: 0
+  - component: {fileID: 4864363559851203799}
+  m_Layer: 3
   m_Name: Muscle car 2.Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1183,6 +1132,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4864363559851203799
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2901681172822114114}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4659521791525755576, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
 --- !u!1 &3026793467879039101
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,7 +2177,7 @@ Transform:
   m_GameObject: {fileID: 4937349642314972971}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 23.098791, y: 0.9559669, z: 40.930786}
+  m_LocalPosition: {x: 23.098791, y: 1.0059669, z: 40.930786}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2355,7 +2326,7 @@ Transform:
   m_GameObject: {fileID: 6224185089806845793}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 21.974705, y: 0.9559669, z: 40.930786}
+  m_LocalPosition: {x: 21.974705, y: 1.0059669, z: 40.930786}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2500,7 +2471,7 @@ Transform:
   m_GameObject: {fileID: 6800850671190416475}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 23.081512, y: 0.92665344, z: 42.73767}
+  m_LocalPosition: {x: 23.081512, y: 0.9766534, z: 42.73767}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2590,7 +2561,7 @@ Transform:
   m_GameObject: {fileID: 6931774731032255316}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 21.991982, y: 0.92665356, z: 42.73767}
+  m_LocalPosition: {x: 21.991982, y: 0.9766534, z: 42.73767}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

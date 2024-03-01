@@ -22,8 +22,8 @@ namespace Assets.VehicleControllerEditor
             Handles.DrawAAPolyLine(
                 Texture2D.whiteTexture,
                 2,
-                new Vector3(position.x, position.y, 0),
-                new Vector3(position.size.x, position.y, 0));
+                new Vector3(position.x, position.y + 5, 0),
+                new Vector3(position.size.x, position.y + 5, 0));
         }
     }
 }

@@ -18,10 +18,10 @@ namespace Assets.VehicleController
             if (parameters.TrailRendererArray.Length == 0)
                 Debug.LogWarning("You have Wing Wind Effect, but TrailRenderer is not assigned");
         }
-        
+
         public void HandleWingAeroEffect()
         {
-            if (_currentCarStats.SpeedInMsPerS < _parameters.MinSpeedMStoDisplay)
+            if (_currentCarStats.SpeedInMsPerS < _parameters.MinSpeedToDisplay)
             {
                 for (int i = 0; i < _size; i++)
                 {

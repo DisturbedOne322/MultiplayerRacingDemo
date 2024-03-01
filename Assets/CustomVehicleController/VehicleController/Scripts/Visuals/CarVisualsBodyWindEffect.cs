@@ -21,13 +21,16 @@ namespace Assets.VehicleController
             _parameters = parameters;
             _transform = transform;
 
+#if VISUAL_EFFECT_GRAPH_INSTALLED
             if (parameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 InitializeVFX();
-            else
+#endif
+            if (parameters.VisualEffectType == VisualEffectAssetType.Type.ParticleSystem)
                 InitializePS();
 
         }
 
+#if VISUAL_EFFECT_GRAPH_INSTALLED
         private void InitializeVFX()
         {
             if (_parameters.VFXAsset == null)
@@ -40,6 +43,19 @@ namespace Assets.VehicleController
             _bodySpeedEffect = parent.AddComponent<VisualEffect>();
             _bodySpeedEffect.visualEffectAsset = _parameters.VFXAsset;
         }
+
+        private void DisplayVFX(float speed, Vector3 rbVelocity)
+        {
+            if (_parameters.VFXAsset == null)
+            {
+                Debug.LogWarning("You have Body Wind Effect, but Visual Effect Asset is not assigned");
+                return;
+            }
+
+            _bodySpeedEffect.SetFloat(SPEED_FIELD_NAME, speed);
+            _bodySpeedEffect.SetFloat(SIDE_VELOCITY_FIELD_NAME, _transform.InverseTransformDirection(rbVelocity).x);
+        }
+#endif
 
         private void InitializePS()
         {
@@ -55,32 +71,27 @@ namespace Assets.VehicleController
 
         public void HandleSpeedEffect(float speed, Vector3 rbVelocity)
         {
-            if(_parameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
+#if VISUAL_EFFECT_GRAPH_INSTALLED
+            if (_parameters.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
                 DisplayVFX(speed, rbVelocity);
-            else
+#endif
+            if (_parameters.VisualEffectType == VisualEffectAssetType.Type.ParticleSystem)
                 DisplayPS(speed, rbVelocity);
         }
 
-        private void DisplayVFX(float speed, Vector3 rbVelocity)
-        {
-            if (_parameters.VFXAsset == null)
-            {
-                Debug.LogWarning("You have Body Wind Effect, but Visual Effect Asset is not assigned");
-                return;
-            }
 
-            _bodySpeedEffect.SetFloat(SPEED_FIELD_NAME, speed);
-            _bodySpeedEffect.SetFloat(SIDE_VELOCITY_FIELD_NAME, _transform.InverseTransformDirection(rbVelocity).x);
-        }
 
         private void DisplayPS(float speed, Vector3 rbVelocity)
         {
+            if (rbVelocity == Vector3.zero)
+                return;
+
             _bodyWindPSInstance.transform.forward = rbVelocity.normalized;
 
             var main = _bodyWindPSInstance.main;
             var emission = _bodyWindPSInstance.emission;
             main.startLifetime = Mathf.Clamp(1 / (speed / 120), 0.2f, 1);
-            emission.rateOverTime = Mathf.Clamp(speed, 0 , 100);
+            emission.rateOverTime = Mathf.Clamp(speed, 0, 100);
             main.startSpeed = -speed / 2;
 
             Color targetColor = Color.white;
@@ -88,5 +99,4 @@ namespace Assets.VehicleController
             main.startColor = targetColor;
         }
     }
-
 }

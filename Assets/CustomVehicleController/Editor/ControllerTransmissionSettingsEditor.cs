@@ -55,7 +55,6 @@ namespace Assets.VehicleControllerEditor
             FindTransmissionFields();
 
             BindTransmissionSOField();
-            RebindTransmissionSettings(_transmissionSO);
             SubscribeToTransmissionSaveButtonClick();
 
             _mainEditor.OnWindowClosed += _mainEditor_OnWindowClosed;
@@ -161,44 +160,17 @@ namespace Assets.VehicleControllerEditor
             _transmissionSOObjectField.RegisterValueChangedCallback(x => RebindTransmissionSettings(_transmissionSOObjectField.value as TransmissionSO));
 
             if (_transmissionSOObjectField.value == null)
-            {
-                _transmissionSO = CreateDefaultTransmission();
-            }
+                _transmissionSO = TransmissionSO.CreateDefaultTransmissionSO();
             else
-            {
                 _transmissionSO = _transmissionSOObjectField.value as TransmissionSO;
-            }
-        }
-
-        private TransmissionSO CreateDefaultTransmission()
-        {
-            TransmissionSO defaultTransmissionSO = ScriptableObject.CreateInstance<TransmissionSO>();
-            List<float> gearList = new List<float>
-            {
-                3.45f,
-                2.12f,
-                1.44f,
-                1.13f,
-                0.91f
-            };
-            defaultTransmissionSO.GearRatiosList = gearList;
-            defaultTransmissionSO.FinalDriveRatio = 3;
-            defaultTransmissionSO.ShiftCooldown = 0.2f;
-            return defaultTransmissionSO;
         }
 
         private void RebindTransmissionSettings(TransmissionSO loadedTransmissionSO)
         {
             _transmissionSO = loadedTransmissionSO;
-            if (_mainEditor.GetSerializedController() != null)
-            {
-                _mainEditor.GetSerializedController().FindProperty(nameof(CustomVehicleController.VehicleStats)).FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue = _transmissionSO;
-                _mainEditor.SaveController();
-            }
+
             if (_transmissionSO == null)
-            {
-                _transmissionSO = CreateDefaultTransmission();
-            }
+                _transmissionSO = TransmissionSO.CreateDefaultTransmissionSO();
 
             SerializedObject so = new (_transmissionSO);
             BindFinalDrive(so);
@@ -256,26 +228,32 @@ namespace Assets.VehicleControllerEditor
 
             string filePath = _mainEditor.GetVehiclePartsFolderPath(TRANSMISSION_FOLDER_NAME) + "/" + _transmissionTextField.text + ".asset";
 
-            TransmissionSO newTransmission = CreateDefaultTransmission();
+            TransmissionSO newTransmission = TransmissionSO.CreateDefaultTransmissionSO();
 
             var uniqueFileName = AssetDatabase.GenerateUniqueAssetPath(filePath);
             AssetDatabase.CreateAsset(newTransmission, uniqueFileName);
             AssetDatabase.SaveAssets();
+            Undo.RegisterCreatedObjectUndo(newTransmission, "Created Suspension Asset");
 
             _transmissionSO = newTransmission;
             _transmissionSOObjectField.value = _transmissionSO;
         }
 
-        public void SetVehicleController(SerializedObject so)
+        public void BindVehicleController(SerializedProperty transmissionProperty)
         {
-            if(so == null)
-            {
-                _transmissionSOObjectField.value = null;
-                return;
-            }
-            _transmissionSOObjectField.value = so.FindProperty(nameof(CustomVehicleController.VehicleStats)).
-                    FindPropertyRelative(nameof(CustomVehicleController.VehicleStats.TransmissionSO)).objectReferenceValue;
+            _transmissionSOObjectField.Unbind();
+            if(transmissionProperty != null)
+                _transmissionSOObjectField.BindProperty(transmissionProperty);
         }
+
+        public void BindPreset(SerializedObject preset)
+        {
+            _transmissionSOObjectField.Unbind();
+            if(preset != null)
+                _transmissionSOObjectField.BindProperty(preset.FindProperty("Transmission"));
+        }
+
+        public void Unbind() => _transmissionSOObjectField.Unbind();
 
         public class GearRatioVisualElement : VisualElement
         {

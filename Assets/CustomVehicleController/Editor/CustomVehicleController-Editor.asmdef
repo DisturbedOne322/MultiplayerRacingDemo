@@ -13,6 +13,9 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [{
+	        "name": "com.unity.visualeffectgraph",
+            "expression": "1.0.0",
+            "define": "VISUAL_EFFECT_GRAPH_INSTALLED_FOR_EDITOR"}],
     "noEngineReferences": false
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 
 namespace Assets.VehicleController
@@ -22,9 +21,10 @@ namespace Assets.VehicleController
         private IShifter _shifter;
         private IEngine _engine;
 
-        private float _maxRPM;
+        private float _minEngineRPM;
+        private float _maxEngineRPM;
 
-        private VehicleStats _stats;
+        private VehiclePartsSetWrapper _partsPresetWrapper;
         private int _axleAmount;
         private int _wheelAmount;
 
@@ -33,13 +33,11 @@ namespace Assets.VehicleController
 
         private string[] _gearsArray;
 
-#if UNITY_EDITOR
         private EngineSO _engineSO;
-#endif
 
         public VehicleControllerStatsManager(VehicleAxle[] axleArray, VehicleAxle[] frontAxleArray, VehicleAxle[] rearAxleArray,
             CurrentCarStats currentCarStats, Rigidbody rb, Transform transform, IEngine engine, ITransmission transmission,
-            IShifter shifter, VehicleStats stats)
+            IShifter shifter, VehiclePartsSetWrapper partsPresetWrapper)
         {
             _currentCarStats = currentCarStats;
             _axleArray = axleArray;
@@ -58,35 +56,36 @@ namespace Assets.VehicleController
             _wheelAmount = _axleAmount * 2;
             _currentCarStats.WheelSlipArray = new bool[_axleAmount * 2];
 
-            _stats = stats;
-            _maxRPM = _stats.EngineSO.MaxRPM;
+            _partsPresetWrapper = partsPresetWrapper;
+            _minEngineRPM = _partsPresetWrapper.Engine.MinRPM;
+            _maxEngineRPM = _partsPresetWrapper.Engine.MaxRPM;
 
-            CreateGearCharArray();
-
-#if UNITY_EDITOR
-            _engineSO = _stats.EngineSO;
+            _engineSO = _partsPresetWrapper.Engine;
             _engineSO.OnEngineStatsChanged += OnStatsChanged;
-            _stats.OnFieldChanged += _stats_OnFieldChanged;
-#endif
+            _partsPresetWrapper.OnPartsChanged += _stats_OnPresetChanged;
+            CreateGearCharArray();
         }
 
-#if UNITY_EDITOR
+        private void OnStatsChanged()
+        {
+            _minEngineRPM = _engineSO.MinRPM;
+            _maxEngineRPM = _engineSO.MaxRPM;
+        }
 
-        private void OnStatsChanged() => _maxRPM = _engineSO.MaxRPM;
-
-        private void _stats_OnFieldChanged()
+        private void _stats_OnPresetChanged()
         {
             _engineSO.OnEngineStatsChanged -= OnStatsChanged;
 
-            _engineSO = _stats.EngineSO;
+            _engineSO = _partsPresetWrapper.Engine;
+            _minEngineRPM = _engineSO.MinRPM;
+            _maxEngineRPM = _engineSO.MaxRPM;
 
             _engineSO.OnEngineStatsChanged += OnStatsChanged;
         }
-#endif
 
         private void CreateGearCharArray()
         {
-            _gearsArray = new string[_stats.TransmissionSO.GearRatiosList.Count];
+            _gearsArray = new string[_partsPresetWrapper.Transmission.GearRatiosList.Count];
 
             for (int i = 1; i <= _gearsArray.Length; i++)
                 _gearsArray[i - 1] = i.ToString();
@@ -98,15 +97,15 @@ namespace Assets.VehicleController
             float speedMS = Vector3.Dot(_rb.velocity, _transform.forward);
 
             _currentCarStats.SpeedInMsPerS = speedMS;
-            _currentCarStats.SpeedPercent = Mathf.Clamp01(Mathf.Abs(_currentCarStats.SpeedInKMperH) / _stats.EngineSO.MaxSpeed);
+            _currentCarStats.SpeedPercent = Mathf.Clamp01(Mathf.Abs(_currentCarStats.SpeedInKMperH) / _partsPresetWrapper.Engine.MaxSpeed);
             _currentCarStats.EngineRPM = _transmission.EvaluateRPM(gasInput, _driveAxleArray);
-            _currentCarStats.EngineRPMPercent = _currentCarStats.EngineRPM / _maxRPM;
+            _currentCarStats.EngineRPMPercent = (_currentCarStats.EngineRPM - _minEngineRPM) / (_maxEngineRPM - _minEngineRPM);
 
             _currentCarStats.CurrentEngineTorque = _engine.GetCurrentTorque();
             _currentCarStats.ForcedInductionBoostPercent = _engine.GetForcedInductionBoostPercent();
 
-            _currentCarStats.Accelerating = gasInput != 0;
-            _currentCarStats.Braking = _transmission.DetermineBreakInput(gasInput, brakeInput) != 0;
+            _currentCarStats.Accelerating = _transmission.DetermineGasInput(gasInput, brakeInput) != 0;
+            _currentCarStats.Braking = _transmission.DetermineBrakeInput(gasInput, brakeInput) != 0;
             _currentCarStats.HandbrakePulled = handbrakeInput;
 
             _currentCarStats.AccelerationForce = (_currentCarStats.SpeedInMsPerS - _lastSpeed) / Time.deltaTime;
@@ -114,7 +113,7 @@ namespace Assets.VehicleController
 
             _currentCarStats.SidewaysForce = _rb.velocity.x * _transform.right.x + _rb.velocity.z * _transform.right.z;
 
-            _currentCarStats.Reversing = gasInput == 0 && brakeInput > 0 && speedMS <= 1;
+            _currentCarStats.Reversing = _transmission.DetermineGasInput(gasInput, brakeInput) < 0 && speedMS <= 1;
 
             CalculateDriftAngle();
             CalculateDriftTime(sideSlipThreshold);
@@ -151,10 +150,8 @@ namespace Assets.VehicleController
         private void CalculateDriftTime(float sideSlipThreshold)
         {
             if (Mathf.Abs(Vector3.Dot(_rb.velocity.normalized, _transform.right)) > sideSlipThreshold)
-            {
                 _lastDriftTime = Time.time;
-            }            
-                   
+
             _currentCarStats.DriftTime = Time.time < _lastDriftTime + 1 ? _currentCarStats.DriftTime + Time.deltaTime : 0;
         }
 
@@ -209,6 +206,7 @@ namespace Assets.VehicleController
             }
             _currentCarStats.InAir = wheelsInAir == _wheelAmount;
             _currentCarStats.AirTime = _currentCarStats.InAir ? _currentCarStats.AirTime + Time.deltaTime : 0;
+            _currentCarStats.AllWheelsGrounded = wheelsInAir == 0;
         }
 
         private void HaveDriveWheelNoGroundContact()
@@ -224,8 +222,18 @@ namespace Assets.VehicleController
                     wheelsInAir++;
             }
 
-            _currentCarStats.DriveWheelLostContact = wheelsInAir == size * 2;
+            _currentCarStats.DriveWheelsGrounded = wheelsInAir < size * 2;
+        }
+
+        public void OnDestroy()
+        {
+            if (_engineSO != null)
+                _engineSO.OnEngineStatsChanged -= OnStatsChanged;
+
+            if (_partsPresetWrapper == null)
+                return;
+
+            _partsPresetWrapper.OnPartsChanged -= _stats_OnPresetChanged;
         }
     }
-
 }

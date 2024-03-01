@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Assets.VehicleController
 {
@@ -10,11 +9,20 @@ namespace Assets.VehicleController
         private CurrentCarStats _currentCarStats;
 
         #region Wheel Meshes
-        [SerializeField, Tooltip("Array of wheel controllers")]
+        [SerializeField, Tooltip("Array of all the vehicle's axles")]
         private VehicleAxle[] _axleArray;
-        [SerializeField]
+
+        [SerializeField, Tooltip("Array of the axles with steerable wheels")]
         private VehicleAxle[] _steerAxleArray;
         #endregion
+
+        [Space, SerializeField, Tooltip("Doesn't allow the wheel position to go beyond suspension top point and tries to keep the wheel above the ground (for example, when landing after a jump)." +
+            "If the suspension length is too low, wheel position might be to updated correctly when grounded.")]
+        private bool _restrainWheelPosition = true;
+        [SerializeField, Tooltip("When there is no user input, steer wheels will rotate to face the vehicle's velocity.")]
+        private bool _alignSteerWheelsToVelocity = true;
+        // metres per second
+        private const float ALIGN_MIN_SPEED = 5;
 
         private float _steerWheelsAngle = 0;
 
@@ -25,11 +33,11 @@ namespace Assets.VehicleController
         public void Initialize(Rigidbody rb, CurrentCarStats currentCarStats)
         {
             _rigidBody = rb;
-            _currentCarStats = currentCarStats; 
+            _currentCarStats = currentCarStats;
 
             //if the wheel has wrong orientation
             //(for example it has to be rotated 180 degrees around the Y-axis to have the same forward vector as the car)
-            //then this find out those wheels and adds 180 degrees to their rotation in update loop.
+            //then this find those wheels and adds 180 degrees to their rotation in update loop.
             _isOrientationCorrectArray = new bool[_axleArray.Length * 2];
 
             int wheelId = 0;
@@ -44,7 +52,7 @@ namespace Assets.VehicleController
             }
         }
 
-        private bool IsOrientationCorrect(float angle )
+        private bool IsOrientationCorrect(float angle)
         {
             if (angle >= 180)
                 angle -= 360;
@@ -58,7 +66,7 @@ namespace Assets.VehicleController
         {
             SpinWheels();
             SteerWheels(input, currentWheelAngle, maxSteerAngle, steerSpeed);
-            UpdateWheelPosition();
+            UpdateWheelsPosition();
         }
 
         private void SpinWheels()
@@ -85,54 +93,69 @@ namespace Assets.VehicleController
             }
         }
 
-
         private void SteerWheels(float input, float currentWheelAngle, float maxSteerAngle, float steerSpeed)
         {
-            if (input == 0)
+            if (_alignSteerWheelsToVelocity)
             {
-                float angle = 0;
-
-                if(!_currentCarStats.InAir)
-                    if (_currentCarStats.SpeedInMsPerS > 0.1f)
-                        angle = Vector3.SignedAngle(transform.forward, _rigidBody.velocity, Vector3.up);
-                    else if (_currentCarStats.SpeedInMsPerS < -0.1f)
-                        angle = Vector3.SignedAngle(-transform.forward, _rigidBody.velocity, Vector3.up);
-                    else
-                        angle = _steerWheelsAngle;
-
-                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, angle, ref _smDempVelocity, steerSpeed);            
+                _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, AlignWheelsWithVelocityVelocity(input, maxSteerAngle), ref _smDempVelocity, steerSpeed);
             }
             else
                 _steerWheelsAngle = Mathf.SmoothDampAngle(_steerWheelsAngle, currentWheelAngle, ref _smDempVelocity, steerSpeed);
 
+
             for (int i = 0; i < _steerAxleArray.Length; i++)
             {
-                if (_axleArray[i].LeftHalfShaft.SteerParentTransform == null ||
-                    _axleArray[i].RightHalfShaft.SteerParentTransform == null)
+                if (_steerAxleArray[i].LeftHalfShaft.SteerParentTransform == null ||
+                    _steerAxleArray[i].RightHalfShaft.SteerParentTransform == null)
                     continue;
 
-                _axleArray[i].LeftHalfShaft.SteerParentTransform.localRotation = Quaternion.Euler(_axleArray[i].LeftHalfShaft.SteerParentTransform.localRotation.x,
+                _steerAxleArray[i].LeftHalfShaft.SteerParentTransform.localRotation = Quaternion.Euler(_steerAxleArray[i].LeftHalfShaft.SteerParentTransform.localRotation.x,
                     Mathf.Clamp(_steerWheelsAngle, -maxSteerAngle, maxSteerAngle),
-                    _axleArray[i].LeftHalfShaft.SteerParentTransform.localRotation.z);
+                    _steerAxleArray[i].LeftHalfShaft.SteerParentTransform.localRotation.z);
 
-                _axleArray[i].RightHalfShaft.SteerParentTransform.localRotation = Quaternion.Euler(_axleArray[i].RightHalfShaft.SteerParentTransform.localRotation.x,
+                _steerAxleArray[i].RightHalfShaft.SteerParentTransform.localRotation = Quaternion.Euler(_steerAxleArray[i].RightHalfShaft.SteerParentTransform.localRotation.x,
                     Mathf.Clamp(_steerWheelsAngle, -maxSteerAngle, maxSteerAngle),
-                    _axleArray[i].RightHalfShaft.SteerParentTransform.localRotation.z);
+                    _steerAxleArray[i].RightHalfShaft.SteerParentTransform.localRotation.z);
             }
         }
 
-        private void UpdateWheelPosition()
+        private float AlignWheelsWithVelocityVelocity(float input, float maxSteerAngle)
+        {
+            float angle = 0;
+
+            if (input == 0)
+            {
+                if (!_currentCarStats.InAir && Mathf.Abs(_currentCarStats.SpeedInMsPerS) > ALIGN_MIN_SPEED)
+                    angle = Vector3.SignedAngle(transform.forward * Mathf.Sign(_currentCarStats.SpeedInMsPerS), _rigidBody.velocity, transform.up);
+            }
+            else
+                angle = maxSteerAngle * input;
+
+            angle = Mathf.Clamp(angle, -maxSteerAngle, maxSteerAngle);
+
+            return angle;
+        }
+
+        private void UpdateWheelsPosition()
         {
             for (int i = 0; i < _axleArray.Length; i++)
             {
+                _axleArray[i].LeftHalfShaft.WheelController.UpdateWheelPosition(_restrainWheelPosition);
                 _axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.localPosition = _axleArray[i].LeftHalfShaft.WheelController.WheelPosition;
+
+                _axleArray[i].RightHalfShaft.WheelController.UpdateWheelPosition(_restrainWheelPosition);
                 _axleArray[i].RightHalfShaft.WheelVisualTransform.transform.localPosition = _axleArray[i].RightHalfShaft.WheelController.WheelPosition;
             }
         }
-
-
         public VehicleAxle[] GetAxleArray() => _axleArray;
-        public CurrentCarStats GetCurrentCarStats() => GetComponent<CustomVehicleController>().GetCurrentCarStats();
+
+        public CurrentCarStats GetCurrentCarStats()
+        {
+            if (_currentCarStats == null)
+                _currentCarStats = GetComponent<CustomVehicleController>().GetCurrentCarStats();
+
+            return _currentCarStats;
+        }
         public Rigidbody GetRigidbody() => GetComponent<CustomVehicleController>().GetRigidbody();
     }
 }

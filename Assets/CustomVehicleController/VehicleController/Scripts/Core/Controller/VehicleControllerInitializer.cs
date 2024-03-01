@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.VehicleController
@@ -11,21 +10,17 @@ namespace Assets.VehicleController
         private IHandling _handling;
         private ITransmission _transmission;
         private IShifter _shifter;
-        private IClutch _clutch;
 
-        public (float, float, float) FindWheelBaseLenAndAxelLengthes(VehicleAxle[] axleArray)
+        public (float, float, float) FindWheelBaseLenAndAxelLengthes(VehicleAxle[] axleArray, Transform coM)
         {
-            float maxZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
-                InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
+            float maxZ = coM.InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
 
-            float minZ = axleArray[0].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
-                InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
+            float minZ = coM.InverseTransformPoint(axleArray[0].LeftHalfShaft.WheelVisualTransform.transform.position).z;
 
             int size = axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                float zPos = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
-                    InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z;
+                float zPos = coM.InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z;
 
                 if (zPos > maxZ)
                 {
@@ -38,69 +33,51 @@ namespace Assets.VehicleController
             }
 
             minZ = Mathf.Abs(minZ);
+            maxZ = Mathf.Abs(maxZ);
+
             return (maxZ + minZ, minZ, maxZ);
         }
 
-        private (List<VehicleAxle>, List<VehicleAxle>) FindFrontAndRearAxles(VehicleAxle[] axleArray, Transform centerOfGeometry)
-        {
-            List<VehicleAxle> rearAxles = new List<VehicleAxle>();
-            List<VehicleAxle> frontAxles = new List<VehicleAxle>();
-
-
-            int size = axleArray.Length;
-            for (int i = 0; i < size; i++)
-            {
-                bool front = axleArray[i].transform.root.GetComponent<CustomVehicleController>().GetCenterOfMass().
-                    InverseTransformPoint(axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position).z >= centerOfGeometry.localPosition.z;
-
-                if (!front)
-                    rearAxles.Add(axleArray[i]);
-                else
-                    frontAxles.Add(axleArray[i]);
-            }
-            return (frontAxles, rearAxles);
-        }
-
         public (VehicleControllerStatsManager, VehicleControllerPartsManager) InitializeVehicleControllers(
-            VehicleAxle[] axleArray, VehicleAxle[] steerAxleArray,
-            Rigidbody rb, Transform transform, VehicleStats stats, Transform centerOfMass,CurrentCarStats currentCarStats)
+            VehicleAxle[] frontAxleArray, VehicleAxle[] rearAxleArray, VehicleAxle[] steerAxleArray,
+            Rigidbody rb, Transform transform, VehiclePartsSetWrapper partsPresetWrapper, Transform centerOfMass, CurrentCarStats currentCarStats)
         {
+            if (!CheckIfPartsAreAssigned(partsPresetWrapper))
+                return (null, null);
+
             _body = new Body();
             _engine = new Engine();
             _breaks = new Brakes();
             _handling = new Handling();
             _transmission = new Transmission();
             _shifter = new Shifter();
-            _clutch = new Clutch();
 
-            (List<VehicleAxle> frontAxlesList , List<VehicleAxle> rearAxlesList) = FindFrontAndRearAxles(axleArray, centerOfMass);
-            VehicleAxle[] frontAxles = frontAxlesList.ToArray();
-            VehicleAxle[] rearAxles = rearAxlesList.ToArray();
+            VehicleAxle[] axleArray = VehicleAxle.CombineFrontAndRearAxles(frontAxleArray, rearAxleArray);
 
-            _body.Initialize(rb, stats, currentCarStats, transform, centerOfMass);
-            _shifter.Initialize(_clutch, stats);
-            _transmission.Initialize(stats, currentCarStats, _shifter);
-            _engine.Initialize(currentCarStats, stats, _shifter, _transmission);
-            _breaks.Initialize(stats, axleArray, rearAxles,
+            _body.Initialize(rb, partsPresetWrapper, currentCarStats, transform, centerOfMass);
+            _shifter.Initialize(partsPresetWrapper);
+            _transmission.Initialize(partsPresetWrapper, currentCarStats, _shifter);
+            _engine.Initialize(currentCarStats, partsPresetWrapper, _shifter, _transmission);
+            _breaks.Initialize(partsPresetWrapper, axleArray, rearAxleArray,
                 currentCarStats, rb, _transmission);
             _handling.Initialize(steerAxleArray);
 
             rb.centerOfMass = centerOfMass.transform.localPosition;
-            (float wheelBase, float frontAxel, float rearAxel) = FindWheelBaseLenAndAxelLengthes(axleArray);
+            (float wheelBase, float frontAxel, float rearAxel) = FindWheelBaseLenAndAxelLengthes(axleArray, centerOfMass);
 
-            InitializeControllers(axleArray, stats, rb, transform,
+            InitializeControllers(axleArray, partsPresetWrapper, rb, transform,
                 wheelBase, frontAxel, rearAxel);
 
-            VehicleControllerStatsManager statsManager = new(axleArray, frontAxles, rearAxles,
-                currentCarStats, rb, transform, _engine, _transmission, _shifter, stats);
+            VehicleControllerStatsManager statsManager = new(axleArray, frontAxleArray, rearAxleArray,
+                currentCarStats, rb, transform, _engine, _transmission, _shifter, partsPresetWrapper);
             VehicleControllerPartsManager partsManager = new(_body, _engine, _transmission, _breaks, _handling,
-                currentCarStats, transform, axleArray, frontAxles, rearAxles, centerOfMass);
+                currentCarStats, transform, axleArray, frontAxleArray, rearAxleArray, centerOfMass);
 
             return (statsManager, partsManager);
         }
 
         public void InitializeControllers(VehicleAxle[] axleArray,
-                    VehicleStats vehicleStats, Rigidbody _rb, Transform transform,
+                    VehiclePartsSetWrapper partsPresetWrapper, Rigidbody _rb, Transform transform,
                     float wheelBase, float frontAxelLen, float rearAxelLen)
         {
 
@@ -110,8 +87,57 @@ namespace Assets.VehicleController
                 bool front = Vector3.Dot(transform.forward, axleArray[i].LeftHalfShaft.WheelVisualTransform.transform.position - transform.position) > 0;
                 float axelLen = front ? frontAxelLen : rearAxelLen;
 
-                axleArray[i].InitializeAxle(vehicleStats, _rb, wheelBase, axelLen, front);
+                axleArray[i].InitializeAxle(partsPresetWrapper, _rb, wheelBase, axelLen, front);
             }
+        }
+
+        private bool CheckIfPartsAreAssigned(VehiclePartsSetWrapper partsPresetWrapper)
+        {
+            bool result = true;
+
+            if (partsPresetWrapper.Engine == null)
+            {
+                Debug.LogError("No EngineSO assigned.");
+                result = false;
+            }
+
+            if (partsPresetWrapper.Transmission == null)
+            {
+                Debug.LogError("No Transmission SO assigned.");
+                result = false;
+            }
+            else if (partsPresetWrapper.Transmission.GearRatiosList.Count == 0)
+            {
+                Debug.LogError("Car has no gears. \n Add gear to the appropriate scriptable object.");
+                result = false;
+            }
+
+            if (partsPresetWrapper.FrontTires == null || partsPresetWrapper.RearTires == null)
+            {
+                Debug.LogError("No TiresSO assigned.");
+                result = false;
+            }
+
+            if (partsPresetWrapper.FrontSuspension == null || partsPresetWrapper.RearSuspension == null)
+            {
+                Debug.LogError("No SuspensionSO assigned.");
+                result = false;
+            }
+
+            if (partsPresetWrapper.Brakes == null)
+            {
+                Debug.LogError("No BrakesSO assigned.");
+                result = false;
+            }
+
+
+            if (partsPresetWrapper.Body == null)
+            {
+                Debug.LogError("No VehicleBodySO assigned.");
+                result = false;
+            }
+
+            return result;
         }
 
         public ITransmission GetTransmission() => _transmission;

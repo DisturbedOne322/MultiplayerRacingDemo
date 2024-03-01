@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
 
 namespace Assets.VehicleController
 {
-    [AddComponentMenu("CustomVehicleController/Visuals/Car Visuals Extra")]
+    [AddComponentMenu("CustomVehicleController/Visuals/Car Visuals Extra"),
+    HelpURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/extra/adding-visual-effects")]
     public class CarVisualsExtra : MonoBehaviour
     {
         [SerializeField]
@@ -69,12 +69,6 @@ namespace Assets.VehicleController
         [SerializeField]
         private NitrousParameters _nitroParameters;
         private CarVisualsNitrous _nitroEffect;
-
-        [SerializeField]
-        private bool _enableCollisionEffects;
-        [SerializeField]
-        private CollisionEffectParameters _collisionEffectsParameters;
-        private CarVisualsCollisionEffects _collisionEffects;
         #endregion
 
         private const float DELAY_BEFORE_DISABLING_EFFECTS = 0.33f;
@@ -84,8 +78,16 @@ namespace Assets.VehicleController
         //a custom property drawer will draw this as a black line and in the custom editor this property will be drawn after every field
         public Separator Separator;
 
-        private void Awake()
+        private void Start()
         {
+            if (_currentCarStats == null)
+            {
+                if (_carVisualsEssentials == null)
+                    Debug.LogError("CurrentCarStats wasn't assigned and couldn't be found");
+                else
+                    _currentCarStats = _carVisualsEssentials.GetCurrentCarStats();
+            }
+
             _lastStopEmitTimeArray = new float[_axleArray.Length * 2];
             _shouldEmitArray = new bool[_axleArray.Length * 2];
 
@@ -95,8 +97,17 @@ namespace Assets.VehicleController
             TryInstantiateExtraEffects();
         }
 
+        private void Reset()
+        {
+#if !VISUAL_EFFECT_GRAPH_INSTALLED
+            _tireSmokeParameters.VisualEffect.VisualEffectType = VisualEffectAssetType.Type.ParticleSystem;
+            _bodyEffectParameters.VisualEffectType = VisualEffectAssetType.Type.ParticleSystem;
+            _antiLagParameters.VisualEffect.VisualEffectType = VisualEffectAssetType.Type.ParticleSystem;
+            _nitroParameters.VisualEffect.VisualEffectType = VisualEffectAssetType.Type.ParticleSystem;
+#endif
+        }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (_enableTireSmoke || _enableTireTrails)
                 ShouldEmitWheelEffects();
@@ -106,7 +117,7 @@ namespace Assets.VehicleController
             if (_enableTireTrails)
                 DisplaySkidMarksEffects();
 
-            if(_enableNitroEffect)
+            if (_enableNitroEffect)
                 _nitroEffect.HandleNitroEffect();
 
             if (_enableBodyAeroEffect)
@@ -121,8 +132,8 @@ namespace Assets.VehicleController
 
         private void TryInstantiateExtraEffects()
         {
-            if(_enableTireSmoke)
-                _tireSmoke = new (_wheelMeshesArray, _wheelControllerArray, transform, _tireSmokeParameters);
+            if (_enableTireSmoke)
+                _tireSmoke = new(_wheelMeshesArray, _wheelControllerArray, transform, _tireSmokeParameters);
 
             if (_enableTireTrails)
                 _tireTrails = new(_wheelMeshesArray, _wheelControllerArray, _tireTrailParameters);
@@ -141,9 +152,6 @@ namespace Assets.VehicleController
 
             if (_enableWingAeroEffect)
                 _wingAeroEffect = new(_wingAeroParameters, _currentCarStats);
-
-            if (_enableCollisionEffects)
-                _collisionEffects = new CarVisualsCollisionEffects(_collisionEffectsParameters, transform);
         }
 
         private void ShouldEmitWheelEffects()
@@ -218,7 +226,7 @@ namespace Assets.VehicleController
                 Debug.LogError("CarVisualsEssentials is not assigned");
                 return;
             }
-            _axleArray= _carVisualsEssentials.GetAxleArray();
+            _axleArray = _carVisualsEssentials.GetAxleArray();
 
             _currentCarStats = _carVisualsEssentials.GetCurrentCarStats();
             _rigidbody = _carVisualsEssentials.GetRigidbody();
@@ -226,11 +234,9 @@ namespace Assets.VehicleController
 
         private void OnDestroy()
         {
-            if(_enableAntiLagEffect)
+            if (_enableAntiLagEffect)
                 _antiLagEffect.OnDestroy();
 
-            if(_enableCollisionEffects)
-                _collisionEffects.OnDestroy();
         }
     }
 
@@ -258,7 +264,9 @@ namespace Assets.VehicleController
     {
         public VisualEffectAssetType.Type VisualEffectType;
         public ParticleSystem ParticleSystem;
+#if VISUAL_EFFECT_GRAPH_INSTALLED
         public VisualEffectAsset VFXAsset;
+#endif
     }
 
     [Serializable]
@@ -273,7 +281,7 @@ namespace Assets.VehicleController
     public class WingAeroParameters
     {
         public TrailRenderer[] TrailRendererArray;
-        public int MinSpeedMStoDisplay = 20;
+        public int MinSpeedToDisplay = 20;
         [Range(0, 1f)]
         public float MaxAlpha = 0.5f;
     }
@@ -290,23 +298,8 @@ namespace Assets.VehicleController
     {
         public EffectTypeParameters VisualEffect;
         public Transform[] ExhaustsPositionArray;
-        public AnimationCurve SizeOverLifeCurve;
-        [GradientUsageAttribute(true)]
+        [GradientUsageAttribute(true), Header("For ParticleSystem, change material properties instead")]
         public Gradient Gradient;
-    }
-
-    [Serializable]
-    public class CollisionEffectParameters
-    {
-        public EffectTypeParameters ContinousVisualEffect;
-        public float HorizontalOffset;
-        [Min(0.1f)]
-        public float SparksSpawnAreaHeight;
-        public EffectTypeParameters BurstVisualEffect;
-        [Min(0)]
-        public float BurstSparkCooldown = 0.5f;
-        public Light CollisionLight;
-        public CollisionHandler CollisionHandler;
     }
 
     [Serializable]

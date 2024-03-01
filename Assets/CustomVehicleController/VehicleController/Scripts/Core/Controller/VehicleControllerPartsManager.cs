@@ -40,8 +40,8 @@ namespace Assets.VehicleController
         }
 
         public void ManageCarParts(float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
-        bool handbrakeInput, float steerAngle, float steerSpeed, TransmissionType transmissionType, 
-        DrivetrainType drivetrainType, int suspensionSimulationPrecision)
+        bool handbrakeInput, float maxSteerAngle, float steerSpeed, TransmissionType transmissionType,
+        DrivetrainType drivetrainType, int suspensionSimulationPrecision, LayerMask ignoreLayers)
         {
             UpdateDriveWheels(drivetrainType);
 
@@ -51,14 +51,16 @@ namespace Assets.VehicleController
             _engine.Accelerate(_driveAxleArray, gasInput, breakInput, nitroBoostInput, _currentCarStats.EngineRPM);
 
             _breaks.Break(gasInput, breakInput, handbrakeInput);
-            _handling.SteerWheels(horizontalInput, steerAngle, steerSpeed);
+            _handling.SteerWheels(horizontalInput, maxSteerAngle, steerSpeed);
             _transmission.HandleGearChanges(transmissionType, _driveAxleArray);
-            ManageWheelsPhysics(suspensionSimulationPrecision);
+            ManageWheelsPhysics(suspensionSimulationPrecision, ignoreLayers);
         }
+
+        public void AddNitro(float amount) => _engine.AddNitro(amount);
 
         private void UpdateDriveWheels(DrivetrainType drivetrainType)
         {
-            switch(drivetrainType)
+            switch (drivetrainType)
             {
                 case DrivetrainType.RWD:
                     _driveAxleArray = _rearAxleArray;
@@ -67,7 +69,7 @@ namespace Assets.VehicleController
                     _driveAxleArray = _frontAxleArray;
                     break;
                 default:
-                    _driveAxleArray = _axleArray; 
+                    _driveAxleArray = _axleArray;
                     break;
             }
         }
@@ -84,13 +86,13 @@ namespace Assets.VehicleController
                 _transmission.ShiftDownManually();
         }
 
-        public void ManageWheelsPhysics(int suspensionSimulationPrecision)
+        public void ManageWheelsPhysics(int suspensionSimulationPrecision, LayerMask ignoreLayers)
         {
             float dist = GetDistanceToGroundFromCoG();
             int size = _axleArray.Length;
             for (int i = 0; i < size; i++)
             {
-                _axleArray[i].HandleVehicleAxle(_currentCarStats.SpeedInMsPerS, _currentCarStats.SpeedPercent, _currentCarStats.AccelerationForce, dist, suspensionSimulationPrecision);
+                _axleArray[i].HandleVehicleAxle(_currentCarStats.SpeedInMsPerS, _currentCarStats.SpeedPercent, _currentCarStats.AccelerationForce, dist, suspensionSimulationPrecision, ignoreLayers);
             }
         }
         private float GetDistanceToGroundFromCoG()

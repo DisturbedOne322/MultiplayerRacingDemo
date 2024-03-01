@@ -40,7 +40,7 @@ namespace Assets.VehicleController
         {
             _tireTrailArray[id].emitting = display;
 
-            if(display)
+            if (display)
                 _tireTrailArray[id].transform.position = _wheelMeshesArray[id].position - new Vector3(0, _radiusArray[id] - _parameters.VerticalOffset, 0);
         }
     }

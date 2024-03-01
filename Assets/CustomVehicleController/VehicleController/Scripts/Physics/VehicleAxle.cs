@@ -14,47 +14,47 @@ namespace Assets.VehicleController
         private HalfShaft _rightHalfShaft;
         public HalfShaft RightHalfShaft { get => _rightHalfShaft; }
 
-        private VehicleStats _vehicleStats;
+        private VehiclePartsSetWrapper _partsPresetWrapper;
         private Rigidbody _rigidbody;
 
         private bool _front = true;
 
-        public void InitializeAxle(VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
+        public void InitializeAxle(VehiclePartsSetWrapper partsPresetWrapper, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
-            _vehicleStats = vehicleStats;
+            _partsPresetWrapper = partsPresetWrapper;
             _rigidbody = rb;
             _front = front;
 
-            InitializeHalfShaft(_leftHalfShaft, vehicleStats, rb, wheelBaseLen, axelLen, front);
-            InitializeHalfShaft(_rightHalfShaft, vehicleStats, rb, wheelBaseLen, axelLen, front);
+            InitializeHalfShaft(_leftHalfShaft, partsPresetWrapper, rb, wheelBaseLen, axelLen, front);
+            InitializeHalfShaft(_rightHalfShaft, partsPresetWrapper, rb, wheelBaseLen, axelLen, front);
         }
 
-        private void InitializeHalfShaft(HalfShaft halfShaft, VehicleStats vehicleStats, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
+        private void InitializeHalfShaft(HalfShaft halfShaft, VehiclePartsSetWrapper partsPreset, Rigidbody rb, float wheelBaseLen, float axelLen, bool front)
         {
-            halfShaft.WheelController.Initialize(halfShaft.Suspension, halfShaft.WheelVisualTransform, vehicleStats, rb, wheelBaseLen, axelLen, front);
-            halfShaft.Suspension.Initialize(vehicleStats, front, _leftHalfShaft.WheelController.WheelRadius, _leftHalfShaft.WheelVisualTransform);
+            halfShaft.WheelController.Initialize(halfShaft.Suspension, halfShaft.WheelVisualTransform, partsPreset, rb, wheelBaseLen, axelLen, front);
+            halfShaft.Suspension.Initialize(partsPreset, front, _leftHalfShaft.WheelController.WheelRadius);
         }
 
-        public void HandleVehicleAxle(float speed, float speedPercent, float acceleration, float distanceToGround, int suspensionSimulationPrecision)
+        public void HandleVehicleAxle(float speed, float speedPercent, float acceleration, float distanceToGround, int suspensionSimulationPrecision, LayerMask ignoreLayers)
         {
             _leftHalfShaft.WheelController.ControlWheel(speed, speedPercent, acceleration, distanceToGround);
             _rightHalfShaft.WheelController.ControlWheel(speed, speedPercent, acceleration, distanceToGround);
-            HandleSuspension(suspensionSimulationPrecision);
+            HandleSuspension(suspensionSimulationPrecision, ignoreLayers);
         }
 
-        private void HandleSuspension(int suspensionSimulationPrecision)
+        private void HandleSuspension(int suspensionSimulationPrecision, LayerMask ignoreLayer)
         {
             float leftTravel = 1;
             float rightTravel = 1;
 
-            _leftHalfShaft.Suspension.CalculateSpringForceAndHitPoint(suspensionSimulationPrecision);
+            _leftHalfShaft.Suspension.CalculateSpringForceAndHitPoint(suspensionSimulationPrecision, ignoreLayer);
             if (_leftHalfShaft.Suspension.HitInfo.Hit)
             {
                 leftTravel = _leftHalfShaft.Suspension.HitInfo.Distance / _leftHalfShaft.Suspension.SpringRestLength;
                 ApplySuspension(_leftHalfShaft.Suspension.GetSuspForce(), _leftHalfShaft.Suspension.HitInfo.HitNormal, _leftHalfShaft.Suspension.HitInfo.Position);
             }
 
-            _rightHalfShaft.Suspension.CalculateSpringForceAndHitPoint(suspensionSimulationPrecision);
+            _rightHalfShaft.Suspension.CalculateSpringForceAndHitPoint(suspensionSimulationPrecision, ignoreLayer);
             if (_rightHalfShaft.Suspension.HitInfo.Hit)
             {
                 rightTravel = _rightHalfShaft.Suspension.HitInfo.Distance / _rightHalfShaft.Suspension.SpringRestLength;
@@ -63,7 +63,7 @@ namespace Assets.VehicleController
 
             if (_leftHalfShaft.Suspension.HitInfo.Hit && _rightHalfShaft.Suspension.HitInfo.Hit)
             {
-                float antiRoll = _front ? _vehicleStats.FrontSuspensionSO.AntiRollForce : _vehicleStats.RearSuspensionSO.AntiRollForce;
+                float antiRoll = _front ? _partsPresetWrapper.FrontSuspension.AntiRollForce : _partsPresetWrapper.RearSuspension.AntiRollForce;
                 float antiRollForce = (leftTravel - rightTravel) * antiRoll;
 
                 ApplySuspension(-antiRollForce, _leftHalfShaft.Suspension.HitInfo.HitNormal, _leftHalfShaft.Suspension.HitInfo.Position);
@@ -100,7 +100,7 @@ namespace Assets.VehicleController
         public void ApplyHandbrake(bool enabled, float gasInput, float traction)
         {
             _leftHalfShaft.WheelController.ApplyHandbrake(enabled, gasInput, traction);
-            _rightHalfShaft.WheelController.ApplyHandbrake(enabled, gasInput, traction);    
+            _rightHalfShaft.WheelController.ApplyHandbrake(enabled, gasInput, traction);
         }
 
         public WheelController[] ExtractWheelControllerArray()
@@ -138,7 +138,7 @@ namespace Assets.VehicleController
         public static WheelController[] ExtractVehicleWheelControllerArray(VehicleAxle[] axleArray)
         {
             WheelController[] wheelControllers = new WheelController[0];
-            for(int i = 0; i <  axleArray.Length; i++)
+            for (int i = 0; i < axleArray.Length; i++)
             {
                 wheelControllers = wheelControllers.Concat(axleArray[i].ExtractWheelControllerArray()).ToArray();
             }
@@ -173,6 +173,11 @@ namespace Assets.VehicleController
                 suspensionArray = suspensionArray.Concat(axleArray[i].ExtractSuspensionArray()).ToArray();
             }
             return suspensionArray;
+        }
+
+        public static VehicleAxle[] CombineFrontAndRearAxles(VehicleAxle[] frontAxles, VehicleAxle[] rearAxles)
+        {
+            return frontAxles.Concat(rearAxles).ToArray();
         }
 
         public void SetLeftHalfShaft(WheelController wheelController, Transform wheelVisualTransform, Transform steerParentTransform)

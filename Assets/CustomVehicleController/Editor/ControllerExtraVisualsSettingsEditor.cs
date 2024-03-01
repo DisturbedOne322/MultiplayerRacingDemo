@@ -2,6 +2,8 @@ using Assets.VehicleController;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+
 
 namespace Assets.VehicleControllerEditor
 {
@@ -19,8 +21,6 @@ namespace Assets.VehicleControllerEditor
         #endregion
 
         #region field names
-        private const string PARTICLE_SYSTEM_FIELD_NAME = "SmokeParticlesObjectField";
-        private const string TRAIL_RENDERER_FIELD_NAME = "TireTrailRendererObjectField";
         private const string FORWARD_SLIP_FIELD_NAME = "ForwardSlipThresholdField";
         private const string SIDEWAYS_SLIP_FIELD_NAME = "SidewaysSlipThresholdField";
         private const string AERIAL_CONTROLS_TOGGLE_NAME = "AerialControlsToggle";
@@ -29,13 +29,8 @@ namespace Assets.VehicleControllerEditor
 
         #region values changed during play mode
 
-        private ParticleSystem _smokeParticleSystemPlayMode;
-        private TrailRenderer _trailRendererPlayMode;
         private float _forwardSlipPlayMode;
         private float _sidewaysSlipPlayMode;
-
-        private bool _autoFlipPlayMode;
-        private float _flipDelayPlayMode;
 
         private bool _aerialControlsPlayMode;
         private float _aerialSensitivityPlayMode;
@@ -49,16 +44,16 @@ namespace Assets.VehicleControllerEditor
         }
         public void PasteStats(SerializedObject controller)
         {
-            controller.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue = _forwardSlipPlayMode;
-            controller.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue = _sidewaysSlipPlayMode;
+            controller.FindProperty("_forwardSlippingThreshold").floatValue = _forwardSlipPlayMode;
+            controller.FindProperty("_sidewaysSlippingThreshold").floatValue = _sidewaysSlipPlayMode;
             controller.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)).boolValue = _aerialControlsPlayMode;
             controller.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue = _aerialSensitivityPlayMode;
         }
 
         public void CopyStats(SerializedObject serializedObject)
         {
-            _forwardSlipPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue;
-            _sidewaysSlipPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue;
+            _forwardSlipPlayMode = serializedObject.FindProperty("_forwardSlippingThreshold").floatValue;
+            _sidewaysSlipPlayMode = serializedObject.FindProperty("_sidewaysSlippingThreshold").floatValue;
 
             _aerialControlsPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)).boolValue;
             _aerialSensitivityPlayMode = serializedObject.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue;
@@ -73,7 +68,7 @@ namespace Assets.VehicleControllerEditor
                 SerializedObject serializedObject = _editor.GetSerializedController();
                 if (serializedObject != null)
                 {
-                    serializedObject.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue = _forwardSlipField.value;
+                    serializedObject.FindProperty("_forwardSlippingThreshold").floatValue = _forwardSlipField.value;
                     _editor.SaveController();
                 }
             });
@@ -85,7 +80,7 @@ namespace Assets.VehicleControllerEditor
                 SerializedObject serializedObject = _editor.GetSerializedController();
                 if (serializedObject != null)
                 {
-                    serializedObject.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue = _sidewaysSlipField.value;
+                    serializedObject.FindProperty("_sidewaysSlippingThreshold").floatValue = _sidewaysSlipField.value;
                     _editor.SaveController();
                 }
             });
@@ -116,11 +111,17 @@ namespace Assets.VehicleControllerEditor
 
         public void SetVehicleController(SerializedObject vehicleController)
         {
+            if (vehicleController == null)
+                return;
+
+            if (vehicleController.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)) == null)
+                return;
+
             _aerialControlsToggle.value = vehicleController == null ? true : vehicleController.FindProperty(nameof(CustomVehicleController.AerialControlsEnabled)).boolValue;
             _aerialSensitivityField.value = vehicleController == null ? 7500 : vehicleController.FindProperty(nameof(CustomVehicleController.AerialControlsSensitivity)).floatValue;
 
-            _forwardSlipField.value = vehicleController == null ? 0.1f : vehicleController.FindProperty(nameof(CustomVehicleController.ForwardSlippingThreshold)).floatValue;
-            _sidewaysSlipField.value = vehicleController == null ? 0.3f : vehicleController.FindProperty(nameof(CustomVehicleController.SidewaysSlippingThreshold)).floatValue;
+            _forwardSlipField.value = vehicleController == null ? 0.1f : vehicleController.FindProperty("_forwardSlippingThreshold").floatValue;
+            _sidewaysSlipField.value = vehicleController == null ? 0.3f : vehicleController.FindProperty("_sidewaysSlippingThreshold").floatValue;
         }
     }
 

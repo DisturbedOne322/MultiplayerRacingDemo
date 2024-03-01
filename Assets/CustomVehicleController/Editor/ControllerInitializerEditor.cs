@@ -160,17 +160,14 @@ namespace Assets.VehicleControllerEditor
 
             if (PrefabUtility.GetPrefabAssetType(_mainEditor.GetController().gameObject) != PrefabAssetType.NotAPrefab)
             {
-                HandleWarningWindow(_mainEditor.GetController().gameObject);
+                _warningWindow.style.display = DisplayStyle.Flex;
                 return;
             }
 
             InitializeController();
         }
 
-        private void HandleWarningWindow(GameObject selectedGO)
-        {
-            _warningWindow.style.display = DisplayStyle.Flex;
-        }
+
         private void UnpackPrefab(GameObject selectedGO)
         {
             GameObject rootGO = selectedGO.transform.root.gameObject;
@@ -195,8 +192,6 @@ namespace Assets.VehicleControllerEditor
             _addComponentMenu.style.display = DisplayStyle.None;
 
             _mainEditor.RequestUpdate();
-
-
             Undo.CollapseUndoOperations(undoID);
         }
 
@@ -219,19 +214,32 @@ namespace Assets.VehicleControllerEditor
                 _mainEditor.GetSerializedCarVisuals(), _mainEditor.GetController(), _bodyMeshField.value as MeshRenderer);
 
             DisplayControllerNotInitializedMessage(false);
+
+            _frontLeftWheelObjField.value = null;
+            _frontRightWheelObjField.value = null;
+            _rearLeftWheelObjField.value = null;
+            _rearRightWheelObjField.value = null;
         }
 
 
 
-        public void SetVehicleController(SerializedObject serializedObject)
+        public void SetVehicleController(CustomVehicleController controller)
         {
-            if (serializedObject != null)
+            if (controller != null)
             {
                 _addComponentMenu.style.display = DisplayStyle.None;
 
-                var axles = serializedObject.FindProperty("_vehicleAxles");
+                var frontAxleArray = new SerializedObject(controller).FindProperty("_frontAxles");
 
-                if (axles == null || axles.arraySize < 2)
+                if (frontAxleArray == null || frontAxleArray.arraySize < 1)
+                {
+                    DisplayControllerNotInitializedMessage(true);
+                    return;
+                }
+
+                var rearAxleArray = new SerializedObject(controller).FindProperty("_rearAxles");
+
+                if (rearAxleArray == null || rearAxleArray.arraySize < 1)
                 {
                     DisplayControllerNotInitializedMessage(true);
                     return;

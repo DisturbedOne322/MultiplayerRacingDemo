@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System.Collections;
 using UnityEngine;
 
 namespace Assets.VehicleController
@@ -7,7 +7,7 @@ namespace Assets.VehicleController
     {
         private int _currentGear = 0;
 
-        private VehicleStats _stats;
+        private VehiclePartsSetWrapper _partsPresetWrapper;
 
         private ShifterStates.ShifterState _shifterState;
 
@@ -15,18 +15,18 @@ namespace Assets.VehicleController
 
         public int GetCurrentGearID()
         {
-            if(_currentGear < _stats.TransmissionSO.GearRatiosList.Count)
+            if (_currentGear < _partsPresetWrapper.Transmission.GearRatiosList.Count)
                 return _currentGear;
 
-            return _stats.TransmissionSO.GearRatiosList.Count - 1;
+            return _partsPresetWrapper.Transmission.GearRatiosList.Count - 1;
         }
 
 
-        public int GetGearAmount() => _stats.TransmissionSO.GearRatiosList.Count;
+        public int GetGearAmount() => _partsPresetWrapper.Transmission.GearRatiosList.Count;
 
-        public void Initialize(IClutch clutch, VehicleStats stats)
+        public void Initialize(VehiclePartsSetWrapper partsPresetWrapper)
         {
-            _stats = stats;
+            _partsPresetWrapper = partsPresetWrapper;
         }
 
         public bool InNeutralGear() => _shifterState == ShifterStates.ShifterState.Neutral;
@@ -34,22 +34,26 @@ namespace Assets.VehicleController
         public bool InReverseGear() => _shifterState == ShifterStates.ShifterState.Reverse;
 
         public void SetInNeutral() => _shifterState = ShifterStates.ShifterState.Neutral;
+
         public bool TryChangeGear(int i, float delay)
         {
-            (bool success, int newGearID, ShifterStates.ShifterState newState) = WrapGear(_currentGear + i);
+            (bool success, int nextGearID, ShifterStates.ShifterState nextShifterState) = WrapGear(_currentGear + i);
             if (success)
             {
                 SetInNeutral();
-                Task.Delay((int)(delay * 1000)).ContinueWith(t => DelayGearSwitch(newGearID, newState));
+                _partsPresetWrapper.Owner.StartCoroutine(DelayGearSwitch(delay, nextGearID, nextShifterState));
             }
             return success;
         }
 
-        private void DelayGearSwitch(int newGearID, ShifterStates.ShifterState newState)
+        private IEnumerator DelayGearSwitch(float delay, int nextID, ShifterStates.ShifterState nextShifterState)
         {
-            _currentGear = newGearID;
-            _shifterState = newState;
+            yield return new WaitForSeconds(delay);
+
+            _currentGear = nextID;
+            _shifterState = nextShifterState;
         }
+
 
         private (bool, int, ShifterStates.ShifterState) WrapGear(int newGearID)
         {
@@ -68,8 +72,8 @@ namespace Assets.VehicleController
             if (_shifterState == ShifterStates.ShifterState.Reverse)
                 return (true, 0, ShifterStates.ShifterState.Drive);
 
-            if (newGearID >= _stats.TransmissionSO.GearRatiosList.Count)
-                return (false, _stats.TransmissionSO.GearRatiosList.Count - 1, ShifterStates.ShifterState.Drive);
+            if (newGearID >= _partsPresetWrapper.Transmission.GearRatiosList.Count)
+                return (false, _partsPresetWrapper.Transmission.GearRatiosList.Count - 1, ShifterStates.ShifterState.Drive);
 
             return (true, newGearID, ShifterStates.ShifterState.Drive);
         }

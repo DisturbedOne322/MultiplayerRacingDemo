@@ -2,7 +2,7 @@ namespace Assets.VehicleController
 {
     public interface IShifter
     {
-        public void Initialize(IClutch clutch, VehicleStats stats);
+        public void Initialize(VehiclePartsSetWrapper partsPresetWrapper);
         public bool TryChangeGear(int i, float delay);
         public bool InNeutralGear();
         public bool InReverseGear();

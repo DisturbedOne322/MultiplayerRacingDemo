@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Assets.VehicleController
 {
-    [CreateAssetMenu(fileName = "EngineSO", menuName = "CustomVehicleController/Engine")]
-    public class EngineSO : ScriptableObject
+    [CreateAssetMenu(fileName = "EngineSO", menuName = "CustomVehicleController/VehicleParts/Engine")]
+    public class EngineSO : ScriptableObject, IVehiclePart
     {
         public AnimationCurve TorqueCurve;
 
@@ -90,7 +90,7 @@ namespace Assets.VehicleController
             float maxEngineRPM = FindMaxRpm();
 
             float boost = 0;
-            if(ForcedInductionSO != null)
+            if (ForcedInductionSO != null)
             {
                 switch (ForcedInductionSO.ForcedInductionType)
                 {
@@ -112,14 +112,26 @@ namespace Assets.VehicleController
             return maxTorque * maxTorqueRPM / 5252 + boost;
         }
 
-#if UNITY_EDITOR
-    public event Action OnEngineStatsChanged;
+        public static EngineSO CreateDefaultEngineSO()
+        {
+            EngineSO defaultEngine = ScriptableObject.CreateInstance<EngineSO>();
+            defaultEngine.MaxSpeed = 300;
+            AnimationCurve torqueCurve = new();
+            torqueCurve.AddKey(1000f, 300);
+            torqueCurve.AddKey(8000f, 450);
+            torqueCurve.AddKey(9000f, 400);
+            defaultEngine.TorqueCurve = torqueCurve;
+            defaultEngine.name = "DefaultEngine";
+
+            return defaultEngine;
+        }
+
+        public event Action OnEngineStatsChanged;
 
         private void OnValidate()
         {
             OnEngineStatsChanged?.Invoke();
         }
-#endif
     }
 }
 

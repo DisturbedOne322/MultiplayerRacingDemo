@@ -23,7 +23,6 @@ namespace Assets.VehicleController
         [SerializeField]
         private Slider _boostSlider;
 
-
         private void Update()
         {
             _currentGearText.text = _vehicleController.GetCurrentCarStats().CurrentGear;

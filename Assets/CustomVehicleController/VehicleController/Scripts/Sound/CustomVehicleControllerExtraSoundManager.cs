@@ -123,39 +123,6 @@ namespace Assets.VehicleController
             _currentCarStats.OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;
         }
 
-        private void _currentCarStats_OnShiftedAntiLag()
-        {
-            RandomizeAntiLagPitchAndVolume();
-
-            if (_forcedInductionSoundSO.AntiLagMildSounds.Length > 0 && Time.time > lastAntiLag + _antiLagSoundCooldown)
-            {
-                _carEffectsAudioSource.PlayOneShot(_forcedInductionSoundSO.AntiLagMildSounds
-                    [Random.Range(0, _forcedInductionSoundSO.AntiLagMildSounds.Length)], _antiLagVolumeMultiplier);
-                lastAntiLag = Time.time;
-            }
-
-            if (_forcedInductionSoundSO.TurboFlutterMildSound.Length > 0)
-                _carEffectsAudioSource.PlayOneShot(_forcedInductionSoundSO.TurboFlutterMildSound[Random.Range(0, _forcedInductionSoundSO.TurboFlutterMildSound.Length)], _turboFlutterVolumeMultiplier);
-        }
-
-        private void _currentCarStats_OnAntiLag()
-        {
-            RandomizeAntiLagPitchAndVolume();
-            if (_forcedInductionSoundSO.AntiLagSound.Length > 0 && Time.time > lastAntiLag + _antiLagSoundCooldown)
-            {
-                _carEffectsAudioSource.PlayOneShot(_forcedInductionSoundSO.AntiLagSound[Random.Range(0, _forcedInductionSoundSO.AntiLagSound.Length)], _antiLagVolumeMultiplier);
-                lastAntiLag = Time.time;
-            }
-
-            if (_forcedInductionSoundSO.TurboFlutterSound.Length > 0)
-                _carEffectsAudioSource.PlayOneShot(_forcedInductionSoundSO.TurboFlutterSound[Random.Range(0, _forcedInductionSoundSO.TurboFlutterSound.Length)], _turboFlutterVolumeMultiplier);
-        }
-
-        private void RandomizeAntiLagPitchAndVolume()
-        {
-            _carEffectsAudioSource.volume = Random.Range(0.8f, 1.2f);
-            _carEffectsAudioSource.pitch = Random.Range(0.8f, 1.2f);
-        }
 
         private void InitializeForcedInductionSound()
         {
@@ -191,6 +158,9 @@ namespace Assets.VehicleController
             _carEffectsAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
             SetupAudioSource(_carEffectsAudioSource, false, false);
             _currentCarStats = _vehicleController.GetCurrentCarStats();
+
+            if (!IsOwner)
+                return;
 
             if (_currentCarStats == null)
                 return;
@@ -241,16 +211,101 @@ namespace Assets.VehicleController
                 source.outputAudioMixerGroup = _vehicleSoundAudioMixerGroup;
         }
 
+        private void _currentCarStats_OnShiftedAntiLag()
+        {
+            RandomizeAntiLagPitchAndVolume();
+
+            if (_forcedInductionSoundSO.AntiLagMildSounds.Length > 0 && Time.time > lastAntiLag + _antiLagSoundCooldown)
+            {
+                PlayEffectOnServer(EffectType.AntiLagMild);
+                lastAntiLag = Time.time;
+            }
+
+            if (_forcedInductionSoundSO.TurboFlutterMildSound.Length > 0)
+                PlayEffectOnServer(EffectType.Flutter);
+        }
+
+        private void _currentCarStats_OnAntiLag()
+        {
+            RandomizeAntiLagPitchAndVolume();
+            if (_forcedInductionSoundSO.AntiLagSound.Length > 0 && Time.time > lastAntiLag + _antiLagSoundCooldown)
+            {
+                PlayEffectOnServer(EffectType.AntiLag);
+                lastAntiLag = Time.time;
+            }
+
+            if (_forcedInductionSoundSO.TurboFlutterSound.Length > 0)
+                PlayEffectOnServer(EffectType.Flutter);
+        }
+
+
+        private void RandomizeAntiLagPitchAndVolume()
+        {
+            _carEffectsAudioSource.volume = Random.Range(0.8f, 1.2f);
+            _carEffectsAudioSource.pitch = Random.Range(0.8f, 1.2f);
+        }
+
+        private enum EffectType
+        {
+            AntiLag,
+            AntiLagMild,
+            Flutter
+        }
+
+        private void PlayEffectOnServer(EffectType type)
+        {
+            PlayEffect(type);
+            PlayEffectServerRpc(type);
+        }
+
+        private void PlayEffect(EffectType type)
+        {
+            switch (type)
+            {
+                case EffectType.AntiLag:
+                    _carEffectsAudioSource.PlayOneShot(
+                        _forcedInductionSoundSO.AntiLagSound[
+                            Random.Range(0, _forcedInductionSoundSO.AntiLagSound.Length)], 
+                        _antiLagVolumeMultiplier);
+                    break;
+                case EffectType.AntiLagMild:
+                    _carEffectsAudioSource.PlayOneShot(_forcedInductionSoundSO.AntiLagMildSounds
+                    [Random.Range(0, _forcedInductionSoundSO.AntiLagMildSounds.Length)], _antiLagVolumeMultiplier);
+                    break;
+                case EffectType.Flutter:
+                    _carEffectsAudioSource.PlayOneShot(
+                        _forcedInductionSoundSO.TurboFlutterSound[
+                            Random.Range(0, _forcedInductionSoundSO.TurboFlutterSound.Length)], 
+                        _turboFlutterVolumeMultiplier);
+                    break;
+            }
+        }
+
+        [ServerRpc]
+        private void PlayEffectServerRpc(EffectType type)
+        {
+            PlayEffectClientRpc(type);
+        }
+
+        [ClientRpc]
+        private void PlayEffectClientRpc(EffectType type)
+        {
+            PlayEffect(type);
+        }
+
         private void Update()
         {
             if (_forcedInductionSoundInitialized)
                 HandleForcedInductionSound();
             if (_tireSlipSoundInitialized)
                 HandleTireSlipSound();
-            if (_windNoiseSoundInitialized)
-                HandleWindNoise();
             if (_nitroEffectsInitialized)
                 HandleNitroSound();
+
+            UpdateAudioSourceSettings(_carEffectsAudioSource);
+
+            if (_windNoiseSoundInitialized)
+                HandleWindNoise();
         }
 
         private void UpdateAudioSourceSettings(AudioSource audioSource)
@@ -339,7 +394,6 @@ namespace Assets.VehicleController
                 if (!_windNoiseAudioSource.isPlaying)
                     _windNoiseAudioSource.Play();
                 _windNoiseAudioSource.volume = volume;
-
             }
         }
 

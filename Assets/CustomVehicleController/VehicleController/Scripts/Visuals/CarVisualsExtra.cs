@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -6,7 +7,7 @@ namespace Assets.VehicleController
 {
     [AddComponentMenu("CustomVehicleController/Visuals/Car Visuals Extra"),
     HelpURL("https://distubredone322.gitbook.io/custom-vehicle-controller/guides/extra/adding-visual-effects")]
-    public class CarVisualsExtra : MonoBehaviour
+    public class CarVisualsExtra : NetworkBehaviour
     {
         [SerializeField]
         private CarVisualsEssentials _carVisualsEssentials;
@@ -234,9 +235,11 @@ namespace Assets.VehicleController
 
         private void OnDestroy()
         {
+            if (!IsOwner)
+                return;
+
             if (_enableAntiLagEffect)
                 _antiLagEffect.OnDestroy();
-
         }
     }
 

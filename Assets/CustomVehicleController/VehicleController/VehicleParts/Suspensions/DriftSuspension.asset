@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DriftSuspension
   m_EditorClassIdentifier: 
   SpringRestDistance: 0.31
-  SpringTravelLength: 0.22
+  SpringTravelLength: 0.12
   SpringStiffness: 80000
   SpringDampingStiffness: 2000
   AntiRollForce: 45000

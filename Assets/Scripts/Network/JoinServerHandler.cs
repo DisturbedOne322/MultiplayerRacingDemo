@@ -14,8 +14,8 @@ public class JoinServerHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _hostButton.onClick.AddListener(() => { NetworkManager.Singleton.StartHost(); });
-        _clientButton.onClick.AddListener(() => { NetworkManager.Singleton.StartClient(); });
-       
+        _hostButton.onClick.AddListener(() => { NetworkManager.Singleton.StartHost(); gameObject.SetActive(false); });
+        _clientButton.onClick.AddListener(() => { NetworkManager.Singleton.StartClient(); gameObject.SetActive(false); });
+      
     }
 }

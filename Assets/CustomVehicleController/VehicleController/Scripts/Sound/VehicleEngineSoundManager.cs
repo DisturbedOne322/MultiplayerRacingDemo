@@ -31,21 +31,22 @@ namespace Assets.VehicleController
         private float _dopplerLevel = 1;
 
         [SerializeField, Range(0, 360)]
-        private int _spread = 0;
+        private int _spread = 180;
 
         [SerializeField]
         private AudioRolloffMode _volumeRolloff;
 
         [SerializeField]
-        private float _minDistance = 1;
+        private float _minDistance = 25;
         [SerializeField]
-        private float _maxDistance = 500;
+        private float _maxDistance = 60;
 
         private float _minRPM;
 
         private GameObject _engineAudioHolder;
         private bool _engineSoundInitialized = false;
 
+        private NetworkVariable<float> _engineRPM = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private float _lastRPM = 0;
 
         private void Start()
@@ -64,7 +65,6 @@ namespace Assets.VehicleController
             if (!IsOwner)
             {
                 _3DSound = true;
-                _spatialBlend = 1;
             }
 
             _vehicleController.VehiclePartsSetWrapper.OnPartsChanged += VehiclePartsPresetWrapper_OnPartsChanged;
@@ -83,6 +83,9 @@ namespace Assets.VehicleController
 
         private void Update()
         {
+            if (IsOwner)         
+                _engineRPM.Value = _vehicleController.GetCurrentCarStats().EngineRPM;
+            
             if (_engineSoundInitialized)
                 HandleEngineSound();
         }
@@ -156,13 +159,15 @@ namespace Assets.VehicleController
         private void HandleEngineSound()
         {
             int size = _engineAudioSources.Length;
+            float engineRPM = _engineRPM.Value;
+
             for (int i = 0; i < size; i++)
             {
-                float rpmDifference = (i + 1) * _engineSoundsSO.RPMStep - _vehicleController.GetCurrentCarStats().EngineRPM + _minRPM - 5;
+                float rpmDifference = (i + 1) * _engineSoundsSO.RPMStep - engineRPM + _minRPM - 5;
                 if (rpmDifference <= _engineSoundsSO.RPMStep * 2 && rpmDifference >= -_engineSoundsSO.RPMStep * 2)
                 {
                     _engineAudioSources[i].volume = _engineSoundsSO.RPMStep / Mathf.Abs(rpmDifference);
-                    _engineAudioSources[i].pitch = (_vehicleController.GetCurrentCarStats().EngineRPM) /
+                    _engineAudioSources[i].pitch = (engineRPM) /
                         ((i + 2) * _engineSoundsSO.RPMStep) * EngineSoundPitch;
 
                     UpdateAudioSourceSettings(_engineAudioSources[i]);
@@ -171,11 +176,11 @@ namespace Assets.VehicleController
                     _engineAudioSources[i].volume = 0;
             }
 
-            float rpmChangeRate = Mathf.Abs(_lastRPM - _vehicleController.GetCurrentCarStats().EngineRPM) / Time.deltaTime;
-            _lastRPM = _vehicleController.GetCurrentCarStats().EngineRPM;
+            float rpmChangeRate = Mathf.Abs(_lastRPM - engineRPM) / Time.deltaTime;
+            _lastRPM = engineRPM;
 
             //if the rpm changes too quickly, enable all audio sources to avoid audio cracking sound
-            if (rpmChangeRate > size * _engineSoundsSO.RPMStep)
+            if (rpmChangeRate / 2 > size * _engineSoundsSO.RPMStep)
             {
                 for (int i = 0; i < size; i++)
                 {

@@ -39,14 +39,14 @@ namespace Assets.VehicleController
         [SerializeField]
         private float _minDistance = 25;
         [SerializeField]
-        private float _maxDistance = 60;
+        private float _maxDistance = 100;
 
         private float _minRPM;
 
         private GameObject _engineAudioHolder;
         private bool _engineSoundInitialized = false;
 
-        private NetworkVariable<float> _engineRPM = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<float> _engineRPMNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private float _lastRPM = 0;
 
         private void Start()
@@ -84,7 +84,7 @@ namespace Assets.VehicleController
         private void Update()
         {
             if (IsOwner)         
-                _engineRPM.Value = _vehicleController.GetCurrentCarStats().EngineRPM;
+                _engineRPMNetVar.Value = _vehicleController.GetCurrentCarStats().EngineRPM;
             
             if (_engineSoundInitialized)
                 HandleEngineSound();
@@ -159,7 +159,7 @@ namespace Assets.VehicleController
         private void HandleEngineSound()
         {
             int size = _engineAudioSources.Length;
-            float engineRPM = _engineRPM.Value;
+            float engineRPM = _engineRPMNetVar.Value;
 
             for (int i = 0; i < size; i++)
             {

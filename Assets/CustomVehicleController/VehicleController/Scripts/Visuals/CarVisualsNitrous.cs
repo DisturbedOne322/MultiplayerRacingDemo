@@ -53,29 +53,29 @@ namespace Assets.VehicleController
         }
 
 
-        private void HandleNitroVFX()
+        private void HandleNitroVFX(float nitroIntensity, float sidewaysForce, bool accelerating)
         {
             for (int i = 0; i < _nitroVFXArray.Length; i++)
             {
-                if (_currentCarStats.NitroIntensity == 0 || !_currentCarStats.Accelerating)
+                if (nitroIntensity == 0 || !accelerating)
                     _nitroVFXArray[i].SetFloat("spawnRate", 0);
                 else
                 {
                     _nitroVFXArray[i].SetGradient("color", _parameters.Gradient);
-                    _nitroVFXArray[i].SetFloat("spawnRate", _currentCarStats.NitroIntensity < 1 ? Random.Range(0, SPAWN_AMOUNT_MAX_VFX / 4) : SPAWN_AMOUNT_MAX_VFX);
-                    _nitroVFXArray[i].SetFloat("sideVelocity", _currentCarStats.SidewaysForce / -10);
-                    _nitroVFXArray[i].SetFloat("forwardVelocity", _currentCarStats.NitroIntensity < 1 ? 0 : -2);
+                    _nitroVFXArray[i].SetFloat("spawnRate", nitroIntensity < 1 ? Random.Range(0, SPAWN_AMOUNT_MAX_VFX / 4) : SPAWN_AMOUNT_MAX_VFX);
+                    _nitroVFXArray[i].SetFloat("sideVelocity", sidewaysForce / -10);
+                    _nitroVFXArray[i].SetFloat("forwardVelocity", nitroIntensity < 1 ? 0 : -2);
                 }
             }
         }
 
 #endif
 
-        public void HandleNitroEffect()
+        public void HandleNitroEffect(float nitroIntensity, float sidewaysForce, bool accelerating)
         {
 #if VISUAL_EFFECT_GRAPH_INSTALLED
             if (_parameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.VisualEffect)
-                HandleNitroVFX();
+                HandleNitroVFX(nitroIntensity, sidewaysForce, accelerating);
 #endif
             if (_parameters.VisualEffect.VisualEffectType == VisualEffectAssetType.Type.ParticleSystem)
                 HandleNitroPS();

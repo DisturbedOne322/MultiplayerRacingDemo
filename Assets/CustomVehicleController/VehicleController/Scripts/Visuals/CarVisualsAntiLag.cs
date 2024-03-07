@@ -55,7 +55,6 @@ namespace Assets.VehicleController
             }
         }
 #if VISUAL_EFFECT_GRAPH_INSTALLED
-
         private void InitializeVFX()
         {
             if (_antiLagParameters.VisualEffect.VFXAsset == null)
@@ -82,6 +81,11 @@ namespace Assets.VehicleController
             if (_currentCarStats.NitroBoosting)
                 return;
 
+            _carVisualsExtra.RequestShiftedAntiLagServerRpc();
+        }
+
+        public void PlayShiftedAntiLag()
+        {
             int size = _antiLagParameters.ExhaustsPositionArray.Length;
             for (int i = 0; i < size; i++)
             {
@@ -93,6 +97,12 @@ namespace Assets.VehicleController
         {
             if (_currentCarStats.NitroBoosting)
                 return;
+
+            _carVisualsExtra.RequestAntiLagServerRpc();
+        }
+
+        public void PlayAntiLag()
+        {
 
             int size = _antiLagParameters.ExhaustsPositionArray.Length;
             for (int i = 0; i < size; i++)

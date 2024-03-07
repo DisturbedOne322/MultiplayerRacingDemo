@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Drift
   m_EditorClassIdentifier: 
   Engine: {fileID: 11400000, guid: 2b220c2568dcb9d49bc3cb179240ac4b, type: 2}
-  Nitrous: {fileID: 11400000, guid: 937035f1e052c3a40b4f202c974b211d, type: 2}
+  Nitrous: {fileID: 11400000, guid: 630a5d1f78e3a304f8f552355eb85a3b, type: 2}
   Transmission: {fileID: 11400000, guid: 9f6f604eebe8534459b9d5e5cd3292cd, type: 2}
   FrontTires: {fileID: 11400000, guid: c1d98659477ab57469f1234be5cd5ded, type: 2}
   RearTires: {fileID: 11400000, guid: c1d98659477ab57469f1234be5cd5ded, type: 2}

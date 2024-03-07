@@ -856,6 +856,53 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!1 &2593747594824972395
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9203879209227791789}
+  - component: {fileID: 6312281877354513313}
+  m_Layer: 0
+  m_Name: OwnerObjects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9203879209227791789
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2593747594824972395}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.647143, y: 1.6404389, z: -2.941819}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 926575981533153550}
+  - {fileID: 5854425921465737348}
+  - {fileID: 7449169196633110534}
+  m_Father: {fileID: 7881100980394613927}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6312281877354513313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2593747594824972395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa9bb649171026b4380c4339fc60212a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2849314212122094103
 GameObject:
   m_ObjectHideFlags: 0
@@ -1330,7 +1377,6 @@ GameObject:
   - component: {fileID: 5854425921465737348}
   - component: {fileID: 9034372156857171914}
   - component: {fileID: 7168184779464546111}
-  - component: {fileID: 8400986051227114975}
   - component: {fileID: 4382381359730211118}
   m_Layer: 0
   m_Name: Virtual Camera
@@ -1348,13 +1394,12 @@ Transform:
   m_GameObject: {fileID: 3691066773181094066}
   serializedVersion: 2
   m_LocalRotation: {x: 0.03447294, y: -0.000000017196156, z: 5.931546e-10, w: 0.9994056}
-  m_LocalPosition: {x: 0, y: 1, z: -3.33}
+  m_LocalPosition: {x: 3.647143, y: -0.6404389, z: -0.38818097}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4176986567138224712}
-  - {fileID: 926575981533153550}
-  m_Father: {fileID: 7881100980394613927}
+  m_Father: {fileID: 9203879209227791789}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &9034372156857171914
 MonoBehaviour:
@@ -1411,18 +1456,6 @@ MonoBehaviour:
   AutoEnableInputs: 1
   XYAxis: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   ZAxis: {fileID: 0}
---- !u!114 &8400986051227114975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3691066773181094066}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa9bb649171026b4380c4339fc60212a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4382381359730211118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1554,8 +1587,9 @@ GameObject:
   - component: {fileID: 8760632278588190667}
   - component: {fileID: 1796029684668589696}
   - component: {fileID: 6436456507194155073}
-  - component: {fileID: 1560186473200426758}
-  m_Layer: 3
+  - component: {fileID: 668135661314400266}
+  - component: {fileID: 2615339792186912078}
+  m_Layer: 0
   m_Name: Muscle car 2.Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1642,8 +1676,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1560186473200426758
-MeshCollider:
+--- !u!65 &668135661314400266
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1660,10 +1694,30 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -4659521791525755576, guid: f44bd3dd4f824da429444f74af0f4201, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.06, y: 0.12843996, z: 0.018853843}
+  m_Center: {x: 0, y: -0.0041952343, z: 0.010068102}
+--- !u!65 &2615339792186912078
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4585613734754266138}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.05, y: 0.041888777, z: 0.01342693}
+  m_Center: {x: 0, y: 0.007920118, z: 0.026264621}
 --- !u!1 &4916499525456465390
 GameObject:
   m_ObjectHideFlags: 0
@@ -1756,12 +1810,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5396251320321151045}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03447296, y: -0.000000017196156, z: 5.931549e-10, w: 0.9994056}
-  m_LocalPosition: {x: 0, y: -1.4685013, z: 3.4393616}
+  m_LocalRotation: {x: -0.000000022351742, y: -0.000000034412764, z: -5.551115e-17,
+    w: 1}
+  m_LocalPosition: {x: 3.647143, y: -2.3424387, z: 2.9418192}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5854425921465737348}
+  m_Father: {fileID: 9203879209227791789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8984036743252605369
 MonoBehaviour:
@@ -2664,8 +2719,7 @@ Transform:
   - {fileID: 4712840942578530989}
   - {fileID: 3632762289104158761}
   - {fileID: 957472626362987564}
-  - {fileID: 5854425921465737348}
-  - {fileID: 7449169196633110534}
+  - {fileID: 9203879209227791789}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &6201346528543949278
@@ -2752,7 +2806,7 @@ MonoBehaviour:
   _suspensionSimulationPrecision: 5
   _ignoreLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   _frontAxles:
   - {fileID: 7316353570554373219}
   _rearAxles:
@@ -2792,13 +2846,14 @@ MonoBehaviour:
   _nitroMaxVolume: 0.5
   _reverbZone: {fileID: 5566132312974817300}
   _reverbDuringNitroPreset: 26
-  _3DSound: 1
+  _3DSound: 0
   _spatialBlend: 1
   _dopplerLevel: 1
   _spread: 180
   _volumeRolloff: 0
-  _minDistance: 25
-  _maxDistance: 100
+  _minDistance: 5
+  _maxDistance: 33
+  playing: 0
 --- !u!114 &194665997322722275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2943,13 +2998,13 @@ MonoBehaviour:
   _vehicleSoundAudioMixerGroup: {fileID: 5968836965800969409, guid: 43f964548b1973d41bc54ae5454ec382,
     type: 2}
   EngineSoundPitch: 1
-  _3DSound: 1
+  _3DSound: 0
   _spatialBlend: 1
   _dopplerLevel: 1
   _spread: 180
   _volumeRolloff: 0
-  _minDistance: 25
-  _maxDistance: 100
+  _minDistance: 5
+  _maxDistance: 33
 --- !u!167 &5566132312974817300
 AudioReverbZone:
   m_ObjectHideFlags: 0
@@ -3414,7 +3469,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 7881100980394613927}
+    m_TransformParent: {fileID: 9203879209227791789}
     m_Modifications:
     - target: {fileID: 824178941617280940, guid: 1929cf1c14e53c64693f32bb051e7185,
         type: 3}

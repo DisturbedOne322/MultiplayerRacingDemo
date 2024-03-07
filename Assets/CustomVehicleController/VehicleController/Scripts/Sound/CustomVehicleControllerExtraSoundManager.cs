@@ -80,9 +80,9 @@ namespace Assets.VehicleController
         private AudioRolloffMode _volumeRolloff;
 
         [SerializeField]
-        private float _minDistance = 1;
+        private float _minDistance = 25;
         [SerializeField]
-        private float _maxDistance = 500;
+        private float _maxDistance = 100;
 
         private bool _forcedInductionSoundInitialized = false;
         private bool _tireSlipSoundInitialized = false;
@@ -92,6 +92,10 @@ namespace Assets.VehicleController
         private bool _nitroStartSoundExists = false;
 
         private GameObject _effectAudioSourceHolder;
+
+        private NetworkVariable<float> _tireSlipVolumeNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<float> _nitroStartVolumeNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<float> _nitroContVolumeNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         private void Start()
         {
@@ -122,7 +126,6 @@ namespace Assets.VehicleController
             _currentCarStats.OnAntiLag -= _currentCarStats_OnAntiLag;
             _currentCarStats.OnShiftedAntiLag -= _currentCarStats_OnShiftedAntiLag;
         }
-
 
         private void InitializeForcedInductionSound()
         {
@@ -254,7 +257,6 @@ namespace Assets.VehicleController
 
         private void PlayEffectOnServer(EffectType type)
         {
-            PlayEffect(type);
             PlayEffectServerRpc(type);
         }
 
@@ -304,6 +306,9 @@ namespace Assets.VehicleController
 
             UpdateAudioSourceSettings(_carEffectsAudioSource);
 
+            if (!IsOwner)
+                return;
+
             if (_windNoiseSoundInitialized)
                 HandleWindNoise();
         }
@@ -343,37 +348,43 @@ namespace Assets.VehicleController
 
         private void HandleTireSlipSound()
         {
-            if (!_vehicleController.GetCurrentCarStats().DriveWheelsGrounded)
+            if(IsOwner)
             {
-                _tireSlipAudioSource.volume = 0;
-                if (_tireSlipAudioSource.isPlaying)
-                    _tireSlipAudioSource.Stop();
-
-                return;
-            }
-
-            UpdateAudioSourceSettings(_tireSlipAudioSource);
-
-            if (_vehicleController.GetCurrentCarStats().IsCarSlipping)
-            {
-                if (!_tireSlipAudioSource.isPlaying)
+                if (!_vehicleController.GetCurrentCarStats().DriveWheelsGrounded)
                 {
-                    _tireSlipAudioSource.Play();
-                }
-                _tireSlipAudioSource.volume += Time.deltaTime * _maxTireSlipVolume / (_tireVolumeIncreaseTime);
-            }
-            else
-            {
-                if (!_tireSlipAudioSource.isPlaying)
+                    _tireSlipVolumeNetVar.Value = 0;
+                    _tireSlipAudioSource.volume = _tireSlipVolumeNetVar.Value;
+                    if (_tireSlipAudioSource.isPlaying)
+                        _tireSlipAudioSource.Stop();
+
                     return;
+                }
 
-                _tireSlipAudioSource.volume -= Time.deltaTime / (_tireVolumeIncreaseTime / 3);
+                UpdateAudioSourceSettings(_tireSlipAudioSource);
 
-                if (_tireSlipAudioSource.volume < 0.01f)
-                    _tireSlipAudioSource.Stop();
+                if (_vehicleController.GetCurrentCarStats().IsCarSlipping)
+                {
+                    if (!_tireSlipAudioSource.isPlaying)
+                        _tireSlipAudioSource.Play();
+
+                    _tireSlipVolumeNetVar.Value += Time.deltaTime * _maxTireSlipVolume / (_tireVolumeIncreaseTime);
+                }
+                else
+                {
+                    if (!_tireSlipAudioSource.isPlaying)
+                        return;
+
+                    _tireSlipVolumeNetVar.Value -= Time.deltaTime / (_tireVolumeIncreaseTime / 3);
+
+                    if (_tireSlipAudioSource.volume < 0.01f)
+                        _tireSlipAudioSource.Stop();
+                }
+
+                _tireSlipVolumeNetVar.Value = Mathf.Clamp(_tireSlipVolumeNetVar.Value, 0, _maxTireSlipVolume);
             }
-
-            _tireSlipAudioSource.volume = Mathf.Clamp(_tireSlipAudioSource.volume, 0, _maxTireSlipVolume);
+            
+            _tireSlipAudioSource.volume = _tireSlipVolumeNetVar.Value;
+            StartStopAudioSourceFromVolume(_tireSlipAudioSource);
         }
 
         private void HandleWindNoise()
@@ -396,55 +407,72 @@ namespace Assets.VehicleController
                 _windNoiseAudioSource.volume = volume;
             }
         }
-
+        public bool playing;
         private void HandleNitroSound()
         {
             UpdateAudioSourceSettings(_nitroContinuousAudioSource);
             UpdateAudioSourceSettings(_nitroStartAudioSource);
 
-            if (_currentCarStats.NitroBoosting)
+            if(IsOwner)
             {
-                if (_boostingTime == 0)
+                if (_currentCarStats.NitroBoosting)
                 {
-                    _nitroContinuousAudioSource.volume = 0;
-                    _nitroContinuousAudioSource.Play();
+                    if (_boostingTime == 0)
+                    {
+                        _nitroContVolumeNetVar.Value = 0;
+
+                        if (_nitroStartSoundExists)
+                        {
+                            _nitroStartVolumeNetVar.Value = _nitroMaxVolume;
+                            _nitroStartAudioSource.Play();
+                        }
+                    }
+
+                    _boostingTime += Time.deltaTime;
+
+                    if (_reverbZone != null && _boostingTime > _nitroVolumeGainSpeedInSeconds)
+                        _reverbZone.reverbPreset = _reverbDuringNitroPreset;
+
+                    if (_nitroVolumeGainSpeedInSeconds == 0)
+                        _nitroContVolumeNetVar.Value = _nitroMaxVolume;
+                    else if (_nitroContVolumeNetVar.Value < _nitroMaxVolume)
+                        _nitroContVolumeNetVar.Value += Time.deltaTime * _nitroMaxVolume / _nitroVolumeGainSpeedInSeconds;
+                }
+                else
+                {
+                    if (_reverbZone != null)
+                        _reverbZone.reverbPreset = AudioReverbPreset.Off;
+
+                    _boostingTime = 0;
+
+                    _nitroContVolumeNetVar.Value -= Time.deltaTime * 4;
 
                     if (_nitroStartSoundExists)
-                    {
-                        _nitroStartAudioSource.volume = _nitroMaxVolume;
-                        _nitroStartAudioSource.Play();
-                    }
+                        _nitroStartVolumeNetVar.Value -= Time.deltaTime * 4;
                 }
 
-                _boostingTime += Time.deltaTime;
+                _nitroContVolumeNetVar.Value = Mathf.Clamp(_nitroContVolumeNetVar.Value, 0, _nitroMaxVolume);
+                _nitroStartVolumeNetVar.Value = Mathf.Clamp(_nitroStartVolumeNetVar.Value, 0, _nitroMaxVolume);
+            }
 
-                if (_reverbZone != null && _boostingTime > _nitroVolumeGainSpeedInSeconds)
-                    _reverbZone.reverbPreset = _reverbDuringNitroPreset;
+            _nitroContinuousAudioSource.volume = _nitroContVolumeNetVar.Value;
+            _nitroStartAudioSource.volume = _nitroStartVolumeNetVar.Value;
 
-                if (_nitroVolumeGainSpeedInSeconds == 0)
-                    _nitroContinuousAudioSource.volume = _nitroMaxVolume;
-                else if (_nitroContinuousAudioSource.volume < _nitroMaxVolume)
-                    _nitroContinuousAudioSource.volume += Time.deltaTime * _nitroMaxVolume / _nitroVolumeGainSpeedInSeconds;
+            StartStopAudioSourceFromVolume(_nitroContinuousAudioSource);
+            playing = _nitroContinuousAudioSource.isPlaying;
+        }
+
+        private void StartStopAudioSourceFromVolume(AudioSource audioSource)
+        {
+            if(audioSource.volume == 0)
+            {
+                if (audioSource.isPlaying)
+                    audioSource.Stop();
             }
             else
             {
-                if (_reverbZone != null)
-                    _reverbZone.reverbPreset = AudioReverbPreset.Off;
-
-                _boostingTime = 0;
-
-                _nitroContinuousAudioSource.volume -= Time.deltaTime * 4;
-
-                if (_nitroStartSoundExists)
-                    _nitroStartAudioSource.volume -= Time.deltaTime * 4;
-
-                if (_nitroStartSoundExists && _nitroStartAudioSource.volume == 0)
-                    if (_nitroStartAudioSource.isPlaying)
-                        _nitroStartAudioSource.Stop();
-
-                if (_nitroContinuousAudioSource.volume == 0)
-                    if (_nitroContinuousAudioSource.isPlaying)
-                        _nitroContinuousAudioSource.Stop();
+                if (!audioSource.isPlaying)
+                    audioSource.Play();
             }
         }
     }

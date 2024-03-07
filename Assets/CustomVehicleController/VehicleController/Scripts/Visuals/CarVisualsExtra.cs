@@ -79,6 +79,37 @@ namespace Assets.VehicleController
         //a custom property drawer will draw this as a black line and in the custom editor this property will be drawn after every field
         public Separator Separator;
 
+        private NetworkVariable<float> _nitroIntensityNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<float> _sidewaysForceNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<bool> _accelNetVar = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        private NetworkVariable<float> _speedNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        private NetworkVariable<Vector3> _rbVelocityNetVar = new NetworkVariable<Vector3>(Vector3.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        private NetworkVariable<NetworkShouldWheelsEmit> _networkShouldWheelsEmit = new NetworkVariable<NetworkShouldWheelsEmit>(
+            new NetworkShouldWheelsEmit {
+                FrontLeft = false, FrontRight = false, RearLeft = false, RearRight = false}, 
+            NetworkVariableReadPermission.Everyone, 
+            NetworkVariableWritePermission.Owner);
+
+        private struct NetworkShouldWheelsEmit : INetworkSerializable
+        {
+            public bool FrontLeft;
+            public bool FrontRight;
+            public bool RearLeft;
+            public bool RearRight;
+
+
+            public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+            {
+                serializer.SerializeValue(ref FrontLeft);
+                serializer.SerializeValue(ref FrontRight);
+                serializer.SerializeValue(ref RearLeft);
+                serializer.SerializeValue(ref RearRight);
+            }
+        }
+
         private void Start()
         {
             if (_currentCarStats == null)
@@ -110,17 +141,23 @@ namespace Assets.VehicleController
 
         private void LateUpdate()
         {
+            UpdateNetworkVariables();
+
             if (_enableTireSmoke || _enableTireTrails)
                 ShouldEmitWheelEffects();
 
+            if (_enableNitroEffect)
+                _nitroEffect.HandleNitroEffect(_nitroIntensityNetVar.Value, _sidewaysForceNetVar.Value, _accelNetVar.Value);
+
             if (_enableTireSmoke)
                 DisplaySmokeEffects();
+
             if (_enableTireTrails)
                 DisplaySkidMarksEffects();
 
-            if (_enableNitroEffect)
-                _nitroEffect.HandleNitroEffect();
-
+            if (!IsOwner)
+                return;
+            
             if (_enableBodyAeroEffect)
                 _bodyWindEffect.HandleSpeedEffect(_currentCarStats.SpeedInMsPerS, _rigidbody.velocity);
 
@@ -129,6 +166,18 @@ namespace Assets.VehicleController
 
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect.HandleRearLights(_currentCarStats.Braking);
+        }
+
+        private void UpdateNetworkVariables()
+        {
+            if (!IsOwner)
+                return;
+
+            _nitroIntensityNetVar.Value = _currentCarStats.NitroIntensity;
+            _sidewaysForceNetVar.Value = _currentCarStats.SidewaysForce;
+            _accelNetVar.Value = _currentCarStats.Accelerating;
+            _speedNetVar.Value = _currentCarStats.SpeedInMsPerS;
+            _rbVelocityNetVar.Value = _rigidbody.velocity;
         }
 
         private void TryInstantiateExtraEffects()
@@ -157,67 +206,113 @@ namespace Assets.VehicleController
 
         private void ShouldEmitWheelEffects()
         {
-            for (int i = 0; i < _axleArray.Length * 2; i++)
-            {
-                if (_currentCarStats.WheelSlipArray[i])
-                {
-                    _shouldEmitArray[i] = true;
-                    _lastStopEmitTimeArray[i] = Time.time;
-                }
-                else
-                {
-                    _shouldEmitArray[i] = false;
-                }
-            }
+            //for (int i = 0; i < _axleArray.Length * 2; i++)
+            //{
+            //    if (_currentCarStats.WheelSlipArray[i])
+            //    {
+            //        _shouldEmitArray[i] = true;
+            //        _lastStopEmitTimeArray[i] = Time.time;
+            //    }
+            //    else
+            //    {
+            //        _shouldEmitArray[i] = false;
+            //    }
+            //}
+
+            if (!IsOwner)
+                return;
+
+
+            bool frontLeft = _wheelControllerArray[0].HasContactWithGround && _currentCarStats.WheelSlipArray[0];
+            if (frontLeft)
+                _lastStopEmitTimeArray[0] = Time.time;
+            else
+                frontLeft = Time.time < _lastStopEmitTimeArray[0] + DELAY_BEFORE_DISABLING_EFFECTS;
+
+            bool frontRight = _wheelControllerArray[1].HasContactWithGround && _currentCarStats.WheelSlipArray[1];
+            if (frontRight)
+                _lastStopEmitTimeArray[1] = Time.time;
+            else
+                frontRight = Time.time < _lastStopEmitTimeArray[1] + DELAY_BEFORE_DISABLING_EFFECTS;
+
+            bool rearLeft = _wheelControllerArray[2].HasContactWithGround && _currentCarStats.WheelSlipArray[2];
+            if (rearLeft)
+                _lastStopEmitTimeArray[2] = Time.time;
+            else
+                rearLeft = Time.time < _lastStopEmitTimeArray[2] + DELAY_BEFORE_DISABLING_EFFECTS;
+
+            bool rearRight = _wheelControllerArray[3].HasContactWithGround && _currentCarStats.WheelSlipArray[3];
+            if (rearRight)
+                _lastStopEmitTimeArray[3] = Time.time;
+            else
+                rearRight = Time.time < _lastStopEmitTimeArray[3] + DELAY_BEFORE_DISABLING_EFFECTS;
+
+            _networkShouldWheelsEmit.Value = new NetworkShouldWheelsEmit {
+                FrontLeft = frontLeft,
+                FrontRight = frontRight,
+                RearLeft = rearLeft,
+                RearRight = rearRight,
+            };
         }
 
         private void DisplaySmokeEffects()
         {
-            Vector3 velocityNormalized = _rigidbody.velocity.normalized;
-            for (int i = 0; i < _wheelMeshesArray.Length; i++)
-            {
-                if (!_wheelControllerArray[i].HasContactWithGround)
-                {
-                    _tireSmoke.HandleSmokeEffects(false, i,
-                        velocityNormalized, _currentCarStats.SpeedInMsPerS);
-                    continue;
-                }
+            //Vector3 velocityNormalized = _rigidbody.velocity.normalized;
+            //for (int i = 0; i < _wheelMeshesArray.Length; i++)
+            //{
+            //    if (!_wheelControllerArray[i].HasContactWithGround)
+            //    {
+            //        _tireSmoke.HandleSmokeEffects(false, i,
+            //            velocityNormalized, _currentCarStats.SpeedInMsPerS);
+            //        continue;
+            //    }
 
-                if (_shouldEmitArray[i])
-                {
-                    _tireSmoke.HandleSmokeEffects(true, i,
-                        velocityNormalized, _currentCarStats.SpeedInMsPerS);
-                }
-                else
-                {
-                    bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-                    _tireSmoke.HandleSmokeEffects(display, i,
-                        velocityNormalized, _currentCarStats.SpeedInMsPerS);
-                }
-            }
+            //    if (_shouldEmitArray[i])
+            //    {
+            //        _tireSmoke.HandleSmokeEffects(true, i,
+            //            velocityNormalized, _currentCarStats.SpeedInMsPerS);
+            //    }
+            //    else
+            //    {
+            //        bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
+            //        _tireSmoke.HandleSmokeEffects(display, i,
+            //            velocityNormalized, _currentCarStats.SpeedInMsPerS);
+            //    }
+            //}
+
+
+            _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.FrontLeft, 0, _rbVelocityNetVar.Value, _speedNetVar.Value);
+            _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.FrontRight, 1, _rbVelocityNetVar.Value, _speedNetVar.Value);
+            _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.RearLeft, 2, _rbVelocityNetVar.Value, _speedNetVar.Value);
+            _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.RearRight, 3, _rbVelocityNetVar.Value, _speedNetVar.Value);
         }
 
         private void DisplaySkidMarksEffects()
         {
-            for (int i = 0; i < _wheelMeshesArray.Length; i++)
-            {
-                if (!_wheelControllerArray[i].HasContactWithGround)
-                {
-                    _tireTrails.DisplayTireTrail(false, i);
-                    continue;
-                }
+            //for (int i = 0; i < _wheelMeshesArray.Length; i++)
+            //{
+            //    if (!_wheelControllerArray[i].HasContactWithGround)
+            //    {
+            //        _tireTrails.DisplayTireTrail(false, i);
+            //        continue;
+            //    }
 
-                if (_shouldEmitArray[i])
-                {
-                    _tireTrails.DisplayTireTrail(true, i);
+            //    if (_shouldEmitArray[i])
+            //    {
+            //        _tireTrails.DisplayTireTrail(true, i);
 
-                }
-                else
-                {
-                    bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-                    _tireTrails.DisplayTireTrail(display, i);
-                }
-            }
+            //    }
+            //    else
+            //    {
+            //        bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
+            //        _tireTrails.DisplayTireTrail(display, i);
+            //    }
+            //}
+
+            _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.FrontLeft, 0);
+            _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.FrontRight, 1);
+            _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.RearLeft, 2);
+            _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.RearRight, 3);
         }
 
         public void CopyValuesFromEssentials()
@@ -231,6 +326,30 @@ namespace Assets.VehicleController
 
             _currentCarStats = _carVisualsEssentials.GetCurrentCarStats();
             _rigidbody = _carVisualsEssentials.GetRigidbody();
+        }
+
+        [ServerRpc]
+        public void RequestAntiLagServerRpc()
+        {
+            PlayAntiLagClientRpc();
+        }
+
+        [ClientRpc]
+        private void PlayAntiLagClientRpc()
+        {
+            _antiLagEffect.PlayAntiLag();
+        }
+
+        [ServerRpc]
+        public void RequestShiftedAntiLagServerRpc()
+        {
+            PlayShiftedAntiLagClientRpc();
+        }
+
+        [ClientRpc]
+        private void PlayShiftedAntiLagClientRpc()
+        {
+            _antiLagEffect.PlayShiftedAntiLag();
         }
 
         private void OnDestroy()

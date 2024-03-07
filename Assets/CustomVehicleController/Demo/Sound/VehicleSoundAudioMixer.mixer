@@ -1,5 +1,47 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!244 &-8440246348251292846
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 098cb33838dddb74792980bac0e6c22a
+  m_EffectName: SFX Reverb
+  m_MixLevel: 5856c5eb8cdb6ad428b5e4bfe0410a34
+  m_Parameters:
+  - m_ParameterName: Dry Level
+    m_GUID: 835a29045b4caa14d8b889eea27baa05
+  - m_ParameterName: Room
+    m_GUID: fc006f06e01bf18478e770823df8d233
+  - m_ParameterName: Room HF
+    m_GUID: a2bec0ee3a6691b46895dc6bdb1aaca6
+  - m_ParameterName: Decay Time
+    m_GUID: 959e8f1bb4870ff41976c05cde748a2d
+  - m_ParameterName: Decay HF Ratio
+    m_GUID: b838130956c1d9a4e8f9983c0f3f464f
+  - m_ParameterName: Reflections
+    m_GUID: c01cb826f936a8b439db569091f9c414
+  - m_ParameterName: Reflect Delay
+    m_GUID: 4b4bd9e6cb479944d885e8457775d134
+  - m_ParameterName: Reverb
+    m_GUID: 7edf110bb88025344980e2e76581e817
+  - m_ParameterName: Reverb Delay
+    m_GUID: 63bbacb4473f27c4ea9cc72c2ef05735
+  - m_ParameterName: Diffusion
+    m_GUID: 5b8632cd30fbcc64d80c93fa6513147a
+  - m_ParameterName: Density
+    m_GUID: fefbfb60b19651a46ae757cd4c6013a4
+  - m_ParameterName: HF Reference
+    m_GUID: e17b31ffa3b991a42bce52d0a3eee90f
+  - m_ParameterName: Room LF
+    m_GUID: cb26983fb7af9884a9dba42c17101ee3
+  - m_ParameterName: LF Reference
+    m_GUID: ea4a266939e3a3c4c9420f003b3d30eb
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-7533305767001347525
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -84,9 +126,11 @@ AudioMixerSnapshotController:
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 57285f04b144e944a86b601db657f6f3
   m_FloatValues:
+    24f61950b1beb4d4091bfbd9159b1c08: 0
     a5f0eb50ca982dc4ca5c3352cea19e87: 0
     b300ea327bde77e4bb79c549dc1f4568: -13.595257
     904299091e61e4d4a9b342c6e272c933: 0
+    5e94952b7dd78eb49b3f26d035dee886: 0
   m_TransitionOverrides: {}
 --- !u!244 &2427501786692542341
 AudioMixerEffectController:

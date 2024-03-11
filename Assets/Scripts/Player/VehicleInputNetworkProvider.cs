@@ -12,11 +12,41 @@ public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerI
     private bool _handbrakeInput;
     private bool _nitroInput;
 
+    private NetworkVariable<bool> _inputEnabledNetVar = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    private void Awake()
+    {
+        _inputEnabledNetVar.OnValueChanged += (bool oldValue, bool newValue) => 
+        { 
+            if(!newValue)
+            {
+                _horizontalInput = 0;
+                _handbrakeInput = _nitroInput = false;
+                GetComponent<CustomVehicleController>().TransmissionType = TransmissionType.Manual;
+            }
+            else
+            {
+                GetComponent<CustomVehicleController>().TransmissionType = TransmissionType.Automatic;
+            }
+        };
+    }
+
+    public void EnableInput(bool enable)
+    {
+        _inputEnabledNetVar.Value = enable;
+    }
+
     private void Update()
     {
         _gasInput = Input.GetKey(KeyCode.W) ? 1 : 0;
-        _brakeInput = Input.GetKey(KeyCode.S) ? 1 : 0;
 
+        if (!_inputEnabledNetVar.Value)
+        {
+            _brakeInput = _gasInput == 0 ? 0 : 1;
+            return;
+        }
+
+        _brakeInput = Input.GetKey(KeyCode.S) ? 1 : 0;
         float horizInput = 0;
         if (Input.GetKey(KeyCode.A))
             horizInput -= 1;

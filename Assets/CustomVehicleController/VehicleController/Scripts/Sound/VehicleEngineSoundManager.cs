@@ -62,10 +62,8 @@ namespace Assets.VehicleController
                 return;
             }
 
-            if (!IsOwner)
-            {
-                _3DSound = true;
-            }
+
+            _3DSound = !IsOwner;
 
             _vehicleController.VehiclePartsSetWrapper.OnPartsChanged += VehiclePartsPresetWrapper_OnPartsChanged;
             InitializeEngineSound();
@@ -173,14 +171,14 @@ namespace Assets.VehicleController
                     UpdateAudioSourceSettings(_engineAudioSources[i]);
                 }
                 else
-                    _engineAudioSources[i].volume = 0;
+                    _engineAudioSources[i].volume *= 0.9f;
             }
 
             float rpmChangeRate = Mathf.Abs(_lastRPM - engineRPM) / Time.deltaTime;
             _lastRPM = engineRPM;
 
             //if the rpm changes too quickly, enable all audio sources to avoid audio cracking sound
-            if (rpmChangeRate / 2 > size * _engineSoundsSO.RPMStep)
+            if (rpmChangeRate > size * _engineSoundsSO.RPMStep)
             {
                 for (int i = 0; i < size; i++)
                 {
@@ -193,6 +191,9 @@ namespace Assets.VehicleController
             //to prepare for audio source change.
             for (int i = 0; i < size; i++)
             {
+                if (_engineAudioSources[i].volume < 0.1f)
+                    _engineAudioSources[i].volume = 0;
+
                 if (i - 1 >= 0)
                     if (_engineAudioSources[i].volume == 0 && _engineAudioSources[i - 1].volume != 0)
                     {

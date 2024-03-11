@@ -62,14 +62,8 @@ namespace Assets.VehicleController
             {
                 _tireSmokeVFXArray[id].Play();
                 _tireSmokeVFXArray[id].SetVector3("position", _wheelMeshes[id].position - new Vector3(0, _radiusArray[id] - _effectParameters.VerticalOffset, 0));
-                if (speed < 1)
-                {
-                    _tireSmokeVFXArray[id].SetVector3("velocity", -_transform.forward);
-                }
-                else
-                {
-                    _tireSmokeVFXArray[id].SetVector3("velocity", -rbVelocityNorm);
-                }
+
+                _tireSmokeVFXArray[id].SetVector3("velocity", -_transform.forward);
             }
             else
             {

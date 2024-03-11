@@ -74,7 +74,6 @@ namespace Assets.VehicleController
 
         private const float DELAY_BEFORE_DISABLING_EFFECTS = 0.33f;
         private float[] _lastStopEmitTimeArray;
-        private bool[] _shouldEmitArray;
 
         //a custom property drawer will draw this as a black line and in the custom editor this property will be drawn after every field
         public Separator Separator;
@@ -82,6 +81,7 @@ namespace Assets.VehicleController
         private NetworkVariable<float> _nitroIntensityNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private NetworkVariable<float> _sidewaysForceNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private NetworkVariable<bool> _accelNetVar = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private NetworkVariable<bool> _brakingNetVar = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         private NetworkVariable<float> _speedNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -121,7 +121,6 @@ namespace Assets.VehicleController
             }
 
             _lastStopEmitTimeArray = new float[_axleArray.Length * 2];
-            _shouldEmitArray = new bool[_axleArray.Length * 2];
 
             _wheelControllerArray = VehicleAxle.ExtractVehicleWheelControllerArray(_axleArray);
             _wheelMeshesArray = VehicleAxle.ExtractVehicleWheelVisualTransformArray(_axleArray);
@@ -155,17 +154,17 @@ namespace Assets.VehicleController
             if (_enableTireTrails)
                 DisplaySkidMarksEffects();
 
+            if (_enableBrakeLightsEffect)
+                _brakeLightsEffect.HandleRearLights(_brakingNetVar.Value);
+
             if (!IsOwner)
                 return;
-            
-            if (_enableBodyAeroEffect)
-                _bodyWindEffect.HandleSpeedEffect(_currentCarStats.SpeedInMsPerS, _rigidbody.velocity);
 
+            if (_enableBodyAeroEffect)
+                _bodyWindEffect.HandleSpeedEffect(_speedNetVar.Value, _rbVelocityNetVar.Value);
+            
             if (_enableWingAeroEffect)
                 _wingAeroEffect.HandleWingAeroEffect();
-
-            if (_enableBrakeLightsEffect)
-                _brakeLightsEffect.HandleRearLights(_currentCarStats.Braking);
         }
 
         private void UpdateNetworkVariables()
@@ -178,6 +177,7 @@ namespace Assets.VehicleController
             _accelNetVar.Value = _currentCarStats.Accelerating;
             _speedNetVar.Value = _currentCarStats.SpeedInMsPerS;
             _rbVelocityNetVar.Value = _rigidbody.velocity;
+            _brakingNetVar.Value = _currentCarStats.Braking;
         }
 
         private void TryInstantiateExtraEffects()
@@ -197,6 +197,9 @@ namespace Assets.VehicleController
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect = new(_brakeLightsParameters);
 
+            if (!IsOwner)
+                return;
+
             if (_enableBodyAeroEffect)
                 _bodyWindEffect = new(_bodyEffectParameters, transform);
 
@@ -206,22 +209,8 @@ namespace Assets.VehicleController
 
         private void ShouldEmitWheelEffects()
         {
-            //for (int i = 0; i < _axleArray.Length * 2; i++)
-            //{
-            //    if (_currentCarStats.WheelSlipArray[i])
-            //    {
-            //        _shouldEmitArray[i] = true;
-            //        _lastStopEmitTimeArray[i] = Time.time;
-            //    }
-            //    else
-            //    {
-            //        _shouldEmitArray[i] = false;
-            //    }
-            //}
-
             if (!IsOwner)
                 return;
-
 
             bool frontLeft = _wheelControllerArray[0].HasContactWithGround && _currentCarStats.WheelSlipArray[0];
             if (frontLeft)
@@ -257,30 +246,6 @@ namespace Assets.VehicleController
 
         private void DisplaySmokeEffects()
         {
-            //Vector3 velocityNormalized = _rigidbody.velocity.normalized;
-            //for (int i = 0; i < _wheelMeshesArray.Length; i++)
-            //{
-            //    if (!_wheelControllerArray[i].HasContactWithGround)
-            //    {
-            //        _tireSmoke.HandleSmokeEffects(false, i,
-            //            velocityNormalized, _currentCarStats.SpeedInMsPerS);
-            //        continue;
-            //    }
-
-            //    if (_shouldEmitArray[i])
-            //    {
-            //        _tireSmoke.HandleSmokeEffects(true, i,
-            //            velocityNormalized, _currentCarStats.SpeedInMsPerS);
-            //    }
-            //    else
-            //    {
-            //        bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-            //        _tireSmoke.HandleSmokeEffects(display, i,
-            //            velocityNormalized, _currentCarStats.SpeedInMsPerS);
-            //    }
-            //}
-
-
             _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.FrontLeft, 0, _rbVelocityNetVar.Value, _speedNetVar.Value);
             _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.FrontRight, 1, _rbVelocityNetVar.Value, _speedNetVar.Value);
             _tireSmoke.HandleSmokeEffects(_networkShouldWheelsEmit.Value.RearLeft, 2, _rbVelocityNetVar.Value, _speedNetVar.Value);
@@ -289,26 +254,6 @@ namespace Assets.VehicleController
 
         private void DisplaySkidMarksEffects()
         {
-            //for (int i = 0; i < _wheelMeshesArray.Length; i++)
-            //{
-            //    if (!_wheelControllerArray[i].HasContactWithGround)
-            //    {
-            //        _tireTrails.DisplayTireTrail(false, i);
-            //        continue;
-            //    }
-
-            //    if (_shouldEmitArray[i])
-            //    {
-            //        _tireTrails.DisplayTireTrail(true, i);
-
-            //    }
-            //    else
-            //    {
-            //        bool display = Time.time < _lastStopEmitTimeArray[i] + DELAY_BEFORE_DISABLING_EFFECTS;
-            //        _tireTrails.DisplayTireTrail(display, i);
-            //    }
-            //}
-
             _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.FrontLeft, 0);
             _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.FrontRight, 1);
             _tireTrails.DisplayTireTrail(_networkShouldWheelsEmit.Value.RearLeft, 2);

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.UI;
+using Unity.Netcode.Components;
 
 namespace Assets.VehicleController
 {
@@ -120,12 +120,12 @@ namespace Assets.VehicleController
         [SerializeField]
         private Separator Separator;
 
-
+       
         private void Awake()
         {
             Initialize();
         }
-
+       
         private void Initialize()
         {
             if (_rigidbody == null)

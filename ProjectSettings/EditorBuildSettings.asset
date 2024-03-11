@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Models/Cars/Low Poly Cars (Free)/Demo/Demo Scene.unity
+    path: Assets/Scenes/MainMenuScene.unity
+    guid: 1d47506b497da774aafbfd2db7e5225f
+  - enabled: 1
+    path: Assets/Scenes/GameplayScene.unity
     guid: 39cd66ce3699d5d449430093b8ad7aa0
   m_configObjects: {}

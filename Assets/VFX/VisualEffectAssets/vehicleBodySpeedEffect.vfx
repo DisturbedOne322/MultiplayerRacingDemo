@@ -19,8 +19,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 933
     y: -392
-    width: 1275
-    height: 2413
+    width: 1276
+    height: 2394
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -471,7 +471,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614655}
   - {fileID: 8926484042661614671}
   dataType: 0
-  capacity: 1000
+  capacity: 10000
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 1
@@ -1105,7 +1105,7 @@ MonoBehaviour:
   zTestMode: 0
   useAlphaClipping: 0
   generateMotionVector: 0
-  excludeFromTAA: 0
+  excludeFromTUAndAA: 0
   sortingPriority: 0
   m_SubOutputs: []
   colorMapping: 0

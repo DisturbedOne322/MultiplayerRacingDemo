@@ -45,6 +45,8 @@ public class SpeedometerUI : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsOwner)
+            return;
         CurrentCarStats currentCarStats = _vehicleController.GetCurrentCarStats();
 
         _speedString.Clear();

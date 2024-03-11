@@ -99,11 +99,7 @@ namespace Assets.VehicleController
 
         private void Start()
         {
-            if (!IsOwner)
-            {
-                _3DSound = true;
-                _spatialBlend = 1;
-            }
+            _3DSound = !IsOwner;
 
             _effectAudioSourceHolder = new GameObject("Car Sound Effects");
             _effectAudioSourceHolder.transform.parent = this.transform;
@@ -348,7 +344,10 @@ namespace Assets.VehicleController
 
         private void HandleTireSlipSound()
         {
-            if(IsOwner)
+            UpdateAudioSourceSettings(_tireSlipAudioSource);
+
+
+            if (IsOwner)
             {
                 if (!_vehicleController.GetCurrentCarStats().DriveWheelsGrounded)
                 {
@@ -359,8 +358,6 @@ namespace Assets.VehicleController
 
                     return;
                 }
-
-                UpdateAudioSourceSettings(_tireSlipAudioSource);
 
                 if (_vehicleController.GetCurrentCarStats().IsCarSlipping)
                 {

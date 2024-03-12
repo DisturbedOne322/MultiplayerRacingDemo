@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -11,6 +12,8 @@ using MyLobby = Unity.Services.Lobbies.Models.Lobby;
 
 public class Lobby : MonoBehaviour
 {
+    public static Lobby Instance { get; private set; }
+
     [SerializeField]
     private Button _createLobbyButton;
 
@@ -26,95 +29,28 @@ public class Lobby : MonoBehaviour
     [SerializeField]
     private TMP_InputField _lobbyCodeInputField;
 
-    [SerializeField]
-    private TMP_InputField _playerNameField;
-
-    private MyLobby _createdLobby;
+    private MyLobby _hostedLobby;
+    public MyLobby HostedLobby { get => _hostedLobby;}
     private MyLobby _joinedLobby;
-
-    private float _pingTimerMax = 15;
-    private float _pingTimer = 15;
-
-    private float _updateTimer = 1.1f;
-    private float _updateTimerMax = 1.1f;
+    public MyLobby JoinedLobby { get => _joinedLobby; }
 
     private void Awake()
     {
-        _createLobbyButton.onClick.AddListener(() => { CreateLobby(); });
-        _findLobbiesButton.onClick.AddListener(() => { FindLobbies(); });
-        _quickJoinButton.onClick.AddListener(() => { QuickJoin(); });
-        _joinByCodeButton.onClick.AddListener(() => { JoinByCode(_lobbyCodeInputField.text); });
+        if (Instance == null)
+            Instance = this;
     }
 
-    private void Update()
+    public void UpdateJoinedLobby(MyLobby updatedLobby)
     {
-        PingServer();
-        UpdateLobbyData();
+        _joinedLobby = updatedLobby;
+
+        if (_joinedLobby.HostId == AuthenticationService.Instance.PlayerId)
+            _hostedLobby = _joinedLobby;
+        else
+            _hostedLobby = null;
     }
 
-    private async void PingServer()
-    {
-        if (_createdLobby == null)
-            return;
-        _pingTimer -= Time.unscaledDeltaTime;
-        if (_pingTimer < 0)
-        {
-            _pingTimer = _pingTimerMax;
-            Debug.Log("Ping");
-            await LobbyService.Instance.SendHeartbeatPingAsync(_createdLobby.Id);
-        }
-    }
-
-    private async void UpdateLobbyData()
-    {
-        if (_joinedLobby == null)
-            return;
-
-        _updateTimer -= Time.unscaledDeltaTime;
-        if (_updateTimer < 0)
-        {
-            _updateTimer = _updateTimerMax;
-            _joinedLobby = await LobbyService.Instance.GetLobbyAsync(_joinedLobby.Id);
-        }
-    }
-
-    private Player CreatePlayer()
-    {
-        return new Player
-        {
-            Data = new Dictionary<string, PlayerDataObject>
-            {
-                { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, GetVerifiedPlayerName()) }
-            }
-        };
-    }
-
-    private string GetVerifiedPlayerName()
-    {
-        string name = _playerNameField.text;
-        if (name == "")
-            name = "Player" + Random.Range(10, 99);
-
-        if (char.IsNumber(name[0]))
-            name = "Player" + Random.Range(10, 99);
-
-        return name;
-    }
-
-    // Start is called before the first frame update
-    private async void Start()
-    {
-        await UnityServices.InitializeAsync();
-
-        AuthenticationService.Instance.SignedIn += () =>
-        {
-            Debug.Log("Signed in as " + AuthenticationService.Instance.PlayerId);
-        };
-
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-    }
-
-    private async void CreateLobby()
+    public async void CreateLobby()
     {
         try
         {
@@ -124,81 +60,101 @@ public class Lobby : MonoBehaviour
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
             {
                 IsPrivate = false,
-                Player = CreatePlayer(),
+                Player = Authenticate.Instance.GetPlayer(),
             };
             
-            _joinedLobby = _createdLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
-            Debug.Log("Created Lobby " + _createdLobby.Name + " " + _createdLobby.LobbyCode);
+            _joinedLobby = _hostedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
+            Debug.Log("Created Lobby " + _hostedLobby.Name + " " + _hostedLobby.LobbyCode);
         }
-        catch (LobbyServiceException ex)
+        catch (LobbyServiceException e)
         {
-            Debug.Log(ex);
+            Debug.Log(e);
         }
     }
 
-    private async void QuickJoin()
+    public async void QuickJoin()
     {
         try
         {
             QuickJoinLobbyOptions quickJoinLobbyOptions = new QuickJoinLobbyOptions
             {
-                Player = CreatePlayer(),
+                Player = Authenticate.Instance.GetPlayer(),
             };
 
             _joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync(quickJoinLobbyOptions);
         }
-        catch (LobbyServiceException ex)
+        catch (LobbyServiceException e)
         {
-            Debug.Log(ex);
+            Debug.Log(e);
         }
     }
 
-    private async void JoinByCode(string code)
+    public async void JoinByCode(string code)
     {
         try
         {
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
             {
-                Player = CreatePlayer(),           
+                Player = Authenticate.Instance.GetPlayer()           
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(code, joinLobbyByCodeOptions);
             Debug.Log("Joined by code " + code);
         }
-        catch (LobbyServiceException ex)
+        catch (LobbyServiceException e)
         {
-            Debug.Log(ex);
+            Debug.Log(e);
         }
     }
 
-    private async void FindLobbies()
+    public async void JoinByID(string id)
+    {
+        try
+        {
+            JoinLobbyByIdOptions joinLobbyByCodeOptions = new JoinLobbyByIdOptions
+            {
+                Player = Authenticate.Instance.GetPlayer(),                
+            };
+
+            _joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(id, joinLobbyByCodeOptions);
+            Debug.Log("Joined by id " + id);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public async void LeaveLobby()
+    {
+        if (JoinedLobby == null)
+            return;
+
+        try
+        {
+            string playerId = AuthenticationService.Instance.PlayerId;
+            await LobbyService.Instance.RemovePlayerAsync(JoinedLobby.Id, playerId);
+            _hostedLobby = _joinedLobby = null;
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public async Task<List<MyLobby>> FindLobbies()
     {
         try
         {
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
 
             Debug.Log("Lobbies found : " + queryResponse.Results.Count);
-            foreach (var result in queryResponse.Results)
-            {
-                Debug.Log(result.Name + " " + result.LobbyCode + " " + result.Players.Count);
-                PrintPlayers();
-            }
+            return queryResponse.Results;   
         }
-        catch (LobbyServiceException ex)
+        catch (LobbyServiceException e)
         {
-            Debug.Log(ex);
-        }
-    }
-
-    
-    private void PrintPlayers()
-    {
-        if (_joinedLobby == null)
-            return;
-
-        foreach(var player in _joinedLobby.Players)
-        {
-            Debug.Log(player.Id + " " + player.Data["PlayerName"].Value);
+            Debug.Log(e);
+            return null;
         }
     }
 }

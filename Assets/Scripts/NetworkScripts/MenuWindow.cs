@@ -9,7 +9,13 @@ public class MenuWindow : MonoBehaviour
 
     public Transform Get() => _nextWindow;
 
-    public void GoToNextWindow() => MenuHandler.Instance.AddMenu(Get());
+    public void GoToNextWindow()
+    {
+        if (Get() == null)
+            return;
+
+        MenuHandler.Instance.AddMenu(Get());
+    }
 
     public void GoToPrevWindow() => MenuHandler.Instance.RemoveLastMenu();
 }

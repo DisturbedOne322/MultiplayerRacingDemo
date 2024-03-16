@@ -20,13 +20,37 @@ public class Authenticate : MonoBehaviour
 
     private Player _player;
 
-    public Player GetPlayer() => _player;
+    private float _lastUpdateTime = 0;
+    private float _updateCD = 1.05f;
+
+    public Player GetPlayer()
+    {
+        return _player;
+    }
+
+    public void ResetReadyStatus()
+    {
+        _player.Data["Ready"].Value = "False";
+    }
+
+    public void SwitchReadyStatus()
+    {
+        if (_lastUpdateTime + _updateCD > Time.time)
+            return;
+
+        if (_player.Data["Ready"].Value == "True")
+            _player.Data["Ready"].Value = "False";
+        else
+            _player.Data["Ready"].Value = "True";
+
+        Lobby.Instance.UpdatePlayerStatus(_player.Data["Ready"].Value);
+        _lastUpdateTime = Time.time;
+    }
 
     [SerializeField]
     private MenuWindow _nextWindow;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         _loginButton.onClick.AddListener(() => {
             TryAuthenticate();
@@ -47,6 +71,7 @@ public class Authenticate : MonoBehaviour
     {
         try
         {
+            _loginButton.interactable = false;
             _player = CreatePlayer();
 
             if(_authenticated)
@@ -64,9 +89,11 @@ public class Authenticate : MonoBehaviour
             };
 
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            _loginButton.interactable = true;
         }
         catch (LobbyServiceException e)
         {
+            _loginButton.interactable = true;
             Debug.Log(e);
         }
     }
@@ -78,7 +105,8 @@ public class Authenticate : MonoBehaviour
         {
             Data = new Dictionary<string, PlayerDataObject>
             {
-                { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, GetVerifiedPlayerName()) }
+                { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, GetVerifiedPlayerName()) },
+                { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "False" )},
             }
         };
     }

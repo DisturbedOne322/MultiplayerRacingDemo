@@ -1,81 +1,65 @@
 using System.Threading.Tasks;
-using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class JoinServerHandler : MonoBehaviour
 {
     private UnityTransport _unityTransport;
 
-    private const int MAX_PLAYERS = 4;
+    private int _playersOnServer;
+    public int PlayersOnServer => _playersOnServer;
 
-    [SerializeField]
-    private Button _hostButton;
-    [SerializeField]
-    private Button _clientButton;
-
-    [SerializeField]
-    private TMP_InputField _inputField;
-    [SerializeField]
-    private TextMeshProUGUI _joinCode;
-
-    private async void Awake()
+    private void Awake()
     {
         _unityTransport = GameObject.FindObjectOfType<UnityTransport>();
-
-        EnableButtons(false);
-
-         await Authenticate();
-
-        EnableButtons(true);
     }
 
-    private void EnableButtons(bool enable)
+    public void SetPlayersAmount(int amount) => _playersOnServer = amount;
+
+    public async Task<string> HostGame(int maxPlayers)
     {
-        _hostButton.gameObject.SetActive(enable);
-        _clientButton.gameObject.SetActive(enable);
+        try
+        {
+            Allocation a = await RelayService.Instance.CreateAllocationAsync(maxPlayers);
+            string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
+
+            _unityTransport.SetHostRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData);
+            NetworkManager.Singleton.StartHost();
+            Debug.Log("successfully created server " + joinCode);
+            return joinCode;
+        }
+        catch(RelayServiceException ex)
+        {
+            Debug.Log(ex);
+            return "";
+        }
     }
 
-    private async void CreateGame()
+    public async Task<bool> JoinGame(string joinCode)
     {
-        EnableButtons(false);
+        if (joinCode == "")
+            return false;
+        try
+        {
+            JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-        Allocation a = await RelayService.Instance.CreateAllocationAsync(MAX_PLAYERS);
-        _joinCode.text = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
-
-        _unityTransport.SetHostRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData);
-        NetworkManager.Singleton.StartHost();
+            _unityTransport.SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
+            NetworkManager.Singleton.StartClient();
+            return true;
+        }
+        catch(RelayServiceException ex)
+        {
+            Debug.Log(ex);
+            return false;
+        }
     }
 
-    private async void JoinGame()
+    public void LeaveServer()
     {
-        if (_inputField.text == "")
-            return;
+        NetworkManager.Singleton.Shutdown();
 
-        EnableButtons(false);
-        JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(_inputField.text);
-
-        _unityTransport.SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
-
-        NetworkManager.Singleton.StartClient();
-    }
-
-    private static async Task Authenticate()
-    {
-        await UnityServices.InitializeAsync();
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        _hostButton.onClick.AddListener(() => { CreateGame(); });
-        _clientButton.onClick.AddListener(() => { JoinGame(); });
     }
 }

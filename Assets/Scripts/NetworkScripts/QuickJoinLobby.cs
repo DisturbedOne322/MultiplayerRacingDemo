@@ -1,23 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Services.Lobbies;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuickJoinLobby : MonoBehaviour
 {
     [SerializeField]
     private MenuWindow _menuWindow;
 
-    public void QuickJoin()
+    [SerializeField]
+    private Button _quickJoinButton;
+
+    private void Awake()
+    {
+        _quickJoinButton.onClick.AddListener(() => {
+            QuickJoin();
+        });
+    }
+
+    public async void QuickJoin()
     {
         try
         {
-            Lobby.Instance.QuickJoin();
-            _menuWindow.GoToNextWindow();
+            _quickJoinButton.interactable = false;
+            bool success = await Lobby.Instance.QuickJoin();
+            _quickJoinButton.interactable = true;
+            if (success)
+                _menuWindow.GoToNextWindow();
+            else
+                Debug.Log("error");
         }
         catch(LobbyServiceException ex)
         {
             Debug.LogException(ex);
+            _quickJoinButton.interactable = true;
         }
     }
 }

@@ -128,6 +128,9 @@ namespace Assets.VehicleController
        
         private void Initialize()
         {
+            if (!IsOwner)
+                _suspensionSimulationPrecision = 1;
+
             if (_rigidbody == null)
                 _rigidbody = GetComponent<Rigidbody>();
 
@@ -164,6 +167,9 @@ namespace Assets.VehicleController
         }
         private void Update()
         {
+            if (!IsOwner)
+                return;
+
             _statsManager.ManageStats(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetHandbrakeInput(),
                             _sidewaysSlippingThreshold, _forwardSlippingThreshold, DrivetrainType);
 
@@ -180,12 +186,12 @@ namespace Assets.VehicleController
 
         private void FixedUpdate()
         {
-            _partsManager.ManageCarParts(_inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetNitroBoostInput(),
+            _partsManager.ManageCarParts(IsOwner, _inputProvider.GetGasInput(), _inputProvider.GetBrakeInput(), _inputProvider.GetNitroBoostInput(),
                 _inputProvider.GetHorizontalInput(), _inputProvider.GetHandbrakeInput(),
                 _steerAngle, _steerSpeed, TransmissionType, DrivetrainType, _suspensionSimulationPrecision, _ignoreLayers);
 
             _partsManager.PerformAirControls(AerialControlsEnabled, AerialControlsSensitivity,
-                _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());
+                _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());          
         }
 
         public Transform GetCenterOfMass() => _centerOfMass;

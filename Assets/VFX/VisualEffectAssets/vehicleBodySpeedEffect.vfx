@@ -97,7 +97,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0.01
+      m_SerializableObject: 0.015
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -1540,7 +1540,7 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661614850}
       inputSlot: {fileID: 8926484042661615228}
-    position: {x: 1225, y: 1559}
+    position: {x: 1206.4, y: 1545.6001}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661614850
@@ -3628,7 +3628,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0.01
+      m_SerializableObject: 0.015
     m_Space: 2147483647
   m_Property:
     name: o
@@ -4422,7 +4422,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 80
+      m_SerializableObject: 100
     m_Space: 2147483647
   m_Property:
     name: b

@@ -8,6 +8,12 @@ public class FinishLine : NetworkBehaviour
 {
     private NetworkVariable<bool> _playerFinished = new NetworkVariable<bool>();
 
+    private void Awake()
+    {
+        if (NetworkManager.Singleton.IsServer)
+            NetworkObject.Spawn();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (!IsOwner)

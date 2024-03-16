@@ -39,10 +39,15 @@ namespace Assets.VehicleController
             _centerOfGeometry = centerOfGeometry;
         }
 
-        public void ManageCarParts(float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
+        public void ManageCarParts(bool fullSim, float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
         bool handbrakeInput, float maxSteerAngle, float steerSpeed, TransmissionType transmissionType,
         DrivetrainType drivetrainType, int suspensionSimulationPrecision, LayerMask ignoreLayers)
         {
+            ManageWheelsPhysics(suspensionSimulationPrecision, ignoreLayers);
+
+            if (!fullSim)
+                return;
+            
             UpdateDriveWheels(drivetrainType);
 
             _body.AddDownforce();
@@ -53,7 +58,6 @@ namespace Assets.VehicleController
             _breaks.Break(gasInput, breakInput, handbrakeInput);
             _handling.SteerWheels(horizontalInput, maxSteerAngle, steerSpeed);
             _transmission.HandleGearChanges(transmissionType, _driveAxleArray);
-            ManageWheelsPhysics(suspensionSimulationPrecision, ignoreLayers);
         }
 
         public void AddNitro(float amount) => _engine.AddNitro(amount);

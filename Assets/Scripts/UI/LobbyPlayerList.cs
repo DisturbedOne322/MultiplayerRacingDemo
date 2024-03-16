@@ -1,10 +1,11 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LobbyPlayerList : MonoBehaviour
 {
@@ -14,9 +15,20 @@ public class LobbyPlayerList : MonoBehaviour
     private Transform _contentParent;
 
     [SerializeField]
+    private MenuWindow _menuWindow;
+
+    [SerializeField]
+    private TextMeshProUGUI _lobbyName;
+    [SerializeField]
     private TextMeshProUGUI _joinCode;
     [SerializeField]
     private TextMeshProUGUI _playersNumText;
+
+    [SerializeField]
+    private Button _startGameButton;
+
+    [SerializeField]
+    private Button _readyButton;
 
     private float _pingTimerMax = 15;
     private float _pingTimer = 15;
@@ -24,15 +36,45 @@ public class LobbyPlayerList : MonoBehaviour
     private float _updateTimer = 0f;
     private float _updateTimerMax = 2f;
 
+    private void Awake()
+    {
+        _startGameButton.onClick.AddListener(() => {
+            if (!Lobby.Instance.CheckEveryoneReady())
+                return;
+
+            _startGameButton.interactable = false;
+            Lobby.Instance.StartGame();
+        });
+
+        Lobby.Instance.OnKicked += Instance_OnKicked;
+    }
+
+    private void Instance_OnKicked()
+    {
+        _updateTimer = _updateTimerMax;
+        _menuWindow.GoToPrevWindow();
+    }
+
     private void OnEnable()
     {
+        _updateTimer = 0;
         UpdateLobbyData();
     }
+
 
     private void Update()
     {
         PingServer();
         UpdateLobbyData();
+    }
+
+    private void DisplayStartGameButtonForHost()
+    {
+        if (Lobby.Instance.JoinedLobby == null)
+            return;
+
+        _startGameButton.gameObject.SetActive(Lobby.Instance.JoinedLobby.HostId == AuthenticationService.Instance.PlayerId);
+        _readyButton.gameObject.SetActive(!_startGameButton.gameObject.activeSelf);
     }
 
     public void FindPlayers()
@@ -49,14 +91,17 @@ public class LobbyPlayerList : MonoBehaviour
             GameObject playerInfo = Instantiate(_playerInfoPrefab);
             PlayerDisplayInfo displayInfo = playerInfo.GetComponent<PlayerDisplayInfo>();
 
-            displayInfo.SetPlayerInfo(playersInLobby[i].Data["PlayerName"].Value, false);
+            displayInfo.SetPlayerInfo(playersInLobby[i]);
 
-            displayInfo.transform.SetParent(_contentParent);
+            displayInfo.transform.SetParent(_contentParent, false);
         }
     }
 
     private void ClearLobbyList()
     {
+        if (_contentParent == null)
+            return;
+
         Transform[] children = _contentParent.GetComponentsInChildren<Transform>();
         for (int i = 1; i < children.Length; i++)
         {
@@ -87,10 +132,21 @@ public class LobbyPlayerList : MonoBehaviour
         {
             _updateTimer = _updateTimerMax;
             Lobby.Instance.UpdateJoinedLobby(await LobbyService.Instance.GetLobbyAsync(Lobby.Instance.JoinedLobby.Id));
+
+            if (Lobby.Instance.JoinedLobby.Data["GameStarted"].Value == "True")
+                return;
+
             FindPlayers();
             UpdateCode();
             UpdatePlayersNum();
+            DisplayStartGameButtonForHost();
+            UpdateLobbyName();
         }
+    }
+
+    private void UpdateLobbyName()
+    {
+        _lobbyName.text = Lobby.Instance.JoinedLobby.Name;
     }
 
     private void UpdateCode()

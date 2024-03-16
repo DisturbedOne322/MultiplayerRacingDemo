@@ -4,24 +4,23 @@ namespace Assets.VehicleController
 {
     public class CarVisualsWingAeroEffect
     {
-        private CurrentCarStats _currentCarStats;
+        //private CurrentCarStats _currentCarStats;
         private WingAeroParameters _parameters;
 
         private int _size;
 
-        public CarVisualsWingAeroEffect(WingAeroParameters parameters, CurrentCarStats currentCarStats)
+        public CarVisualsWingAeroEffect(WingAeroParameters parameters)
         {
             _parameters = parameters;
             _size = _parameters.TrailRendererArray.Length;
-            _currentCarStats = currentCarStats;
 
             if (parameters.TrailRendererArray.Length == 0)
                 Debug.LogWarning("You have Wing Wind Effect, but TrailRenderer is not assigned");
         }
 
-        public void HandleWingAeroEffect()
+        public void HandleWingAeroEffect(float speed, float speedPercent)
         {
-            if (_currentCarStats.SpeedInMsPerS < _parameters.MinSpeedToDisplay)
+            if (speed < _parameters.MinSpeedToDisplay)
             {
                 for (int i = 0; i < _size; i++)
                 {
@@ -36,7 +35,7 @@ namespace Assets.VehicleController
                     _parameters.TrailRendererArray[i].emitting = true;
 
                 Color currentColor = _parameters.TrailRendererArray[i].startColor;
-                currentColor.a = _parameters.MaxAlpha * _currentCarStats.SpeedPercent;
+                currentColor.a = _parameters.MaxAlpha * speedPercent;
                 _parameters.TrailRendererArray[i].startColor = currentColor;
             }
         }

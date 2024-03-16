@@ -157,14 +157,11 @@ namespace Assets.VehicleController
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect.HandleRearLights(_brakingNetVar.Value);
 
-            if (!IsOwner)
-                return;
-
             if (_enableBodyAeroEffect)
                 _bodyWindEffect.HandleSpeedEffect(_speedNetVar.Value, _rbVelocityNetVar.Value);
             
             if (_enableWingAeroEffect)
-                _wingAeroEffect.HandleWingAeroEffect();
+                _wingAeroEffect.HandleWingAeroEffect(_speedNetVar.Value, _speedNetVar.Value / 100);
         }
 
         private void UpdateNetworkVariables()
@@ -197,14 +194,11 @@ namespace Assets.VehicleController
             if (_enableBrakeLightsEffect)
                 _brakeLightsEffect = new(_brakeLightsParameters);
 
-            if (!IsOwner)
-                return;
-
             if (_enableBodyAeroEffect)
                 _bodyWindEffect = new(_bodyEffectParameters, transform);
 
             if (_enableWingAeroEffect)
-                _wingAeroEffect = new(_wingAeroParameters, _currentCarStats);
+                _wingAeroEffect = new(_wingAeroParameters);
         }
 
         private void ShouldEmitWheelEffects()

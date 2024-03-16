@@ -120,7 +120,7 @@ namespace Assets.VehicleController
 
             RechargeNitro();
 
-            if (_currentCarStats.NitroPercentLeft < _partsPresetWrapper.Nitrous.MinAmountPercentToUse)
+            if (_currentCarStats.NitroPercentLeft <= _partsPresetWrapper.Nitrous.MinAmountPercentToUse)
                 _playerStartedOneShotBoost = false;
 
             return 0;

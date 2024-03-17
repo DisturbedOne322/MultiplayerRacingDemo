@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenuScene.unity
     guid: 1d47506b497da774aafbfd2db7e5225f
   - enabled: 1
-    path: Assets/Scenes/GameplayScene.unity
-    guid: 39cd66ce3699d5d449430093b8ad7aa0
+    path: Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/CityScene.unity
+    guid: 3dd6985d248a2724291b46a30456112a
   m_configObjects: {}

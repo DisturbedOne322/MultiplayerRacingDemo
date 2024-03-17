@@ -11,7 +11,8 @@ public class CameraSpeedEffects : MonoBehaviour
     private CinemachineBasicMultiChannelPerlin _noise;
     private CinemachineTransposer _transposer;
 
-    private float _zOffset = -3.2f;
+    [SerializeField]
+    private float _zOffset = -4f;
 
     [SerializeField]
     private VisualEffect _animeSpeedEffect;
@@ -36,9 +37,9 @@ public class CameraSpeedEffects : MonoBehaviour
     private float _maxEffectSpeed = 100;
 
     [SerializeField]
-    private float _defaultFOV = 45f;
+    private float _defaultFOV = 50f;
     [SerializeField]
-    private float _minFov = 37f;
+    private float _minFov = 40f;
     [SerializeField]
     private float _fovGainFromAccel = 20f;
     [SerializeField]
@@ -55,7 +56,7 @@ public class CameraSpeedEffects : MonoBehaviour
     private float _maxAmp = 1.5f;
 
     private float _smDampVelocity;
-    private float _smDampTime = 0.1f;
+    private float _smDampTime = 0.15f;
 
     private bool _lookingBack = false;
 
@@ -82,7 +83,7 @@ public class CameraSpeedEffects : MonoBehaviour
             return;
 
         float speed = currentCarStats.SpeedInMsPerS;
-        float nitroIntensity = currentCarStats.NitroIntensity == 1 ? 1 : 0;
+        float nitroIntensity = currentCarStats.NitroIntensity == 1 && currentCarStats.Accelerating ? 1 : 0;
         float speedPercent = Mathf.Clamp01(speed / _maxEffectSpeed);
         bool nitroBoosting = currentCarStats.NitroBoosting;
 
@@ -108,7 +109,7 @@ public class CameraSpeedEffects : MonoBehaviour
 
         float targetFOV = _defaultFOV + _fovGainFromAccel * accelForce + _fovGainFromSpeed * speedPercent + _nitroFOV * _fovGainFromBoost;
 
-        if(targetFOV < _minFov)
+        if (targetFOV < _minFov)
             targetFOV = _minFov;
 
         _camera.m_Lens.FieldOfView = Mathf.SmoothDamp(_camera.m_Lens.FieldOfView, targetFOV, ref _smDampVelocity, _smDampTime);

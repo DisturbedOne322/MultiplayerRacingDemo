@@ -79,7 +79,7 @@ namespace Assets.VehicleController
         [ServerRpc]
         private void SpawnPlayerServerRpc(ulong playerId)
         {
-            GameObject player = Instantiate(_vehiclePrefab, _racePositionArray[_playersSpawned].position, Quaternion.Euler(_racePositionArray[_playersSpawned].forward));
+            GameObject player = Instantiate(_vehiclePrefab, _racePositionArray[_playersSpawned].position, _racePositionArray[_playersSpawned].rotation);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId);
             player.GetComponent<VehicleInputNetworkProvider>().EnableInput(false);
             _playersSpawned++;

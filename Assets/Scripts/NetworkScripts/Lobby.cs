@@ -74,7 +74,7 @@ public class Lobby : MonoBehaviour
 
     private void LoadScene()
     {
-        NetworkManager.Singleton.SceneManager.LoadScene("GameplayScene", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene("CityScene", LoadSceneMode.Single);
     }
 
     public async void UpdatePlayerStatus(string newStatus)

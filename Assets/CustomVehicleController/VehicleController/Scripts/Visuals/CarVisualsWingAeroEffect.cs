@@ -35,7 +35,7 @@ namespace Assets.VehicleController
                     _parameters.TrailRendererArray[i].emitting = true;
 
                 Color currentColor = _parameters.TrailRendererArray[i].startColor;
-                currentColor.a = _parameters.MaxAlpha * speedPercent;
+                currentColor.a = _parameters.MaxAlpha * ((speed - _parameters.MinSpeedToDisplay) / _parameters.MinSpeedToDisplay);
                 _parameters.TrailRendererArray[i].startColor = currentColor;
             }
         }

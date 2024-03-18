@@ -120,7 +120,7 @@ namespace Assets.VehicleController
 
             RechargeNitro();
 
-            if (_currentCarStats.NitroPercentLeft <= _partsPresetWrapper.Nitrous.MinAmountPercentToUse)
+            if (_currentCarStats.NitroPercentLeft < _partsPresetWrapper.Nitrous.MinAmountPercentToUse)
                 _playerStartedOneShotBoost = false;
 
             return 0;
@@ -173,9 +173,13 @@ namespace Assets.VehicleController
             else
                 _effectStrength = 1;
             _effectStrength = Mathf.Clamp01(_effectStrength);
-
+            
             _boostAmountLeft -= _partsPresetWrapper.Nitrous.BoostIntensity * _effectStrength * Time.deltaTime;
-            return _partsPresetWrapper.Nitrous.BoostIntensity * _effectStrength;
+
+            if (_partsPresetWrapper.Nitrous.BoostDuringWarmUp)
+                return _partsPresetWrapper.Nitrous.BoostIntensity * _effectStrength;
+            else
+                return _effectStrength == 1 ? _partsPresetWrapper.Nitrous.BoostIntensity : 0;
         }
 
         private bool ManageContinuousNitroDepletion(bool enabled)

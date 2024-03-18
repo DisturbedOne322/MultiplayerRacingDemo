@@ -934,6 +934,7 @@ MonoBehaviour:
   _boostNeedle: {fileID: 3680915715084856521}
   _nitroSlider: {fileID: 3231899861531125531}
   _bootleLeftText: {fileID: 614661288874869036}
+  _gearText: {fileID: 0}
 --- !u!1 &5491883440563109909
 GameObject:
   m_ObjectHideFlags: 0

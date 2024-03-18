@@ -427,7 +427,7 @@ namespace Assets.VehicleController
 
                     _boostingTime += Time.deltaTime;
 
-                    if (_reverbZone != null && _boostingTime > _nitroVolumeGainSpeedInSeconds)
+                    if (_reverbZone != null && _currentCarStats.NitroIntensity == 1)
                         _reverbZone.reverbPreset = _reverbDuringNitroPreset;
 
                     if (_nitroVolumeGainSpeedInSeconds == 0)

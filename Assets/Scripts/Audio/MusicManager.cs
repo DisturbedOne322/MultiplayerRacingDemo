@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MusicManager : MonoBehaviour
 {
     [SerializeField]
-    private AudioClip[] _musicArray;
+    private TrackDataSO[] _musicTracksArray;
 
     [SerializeField]
     private AudioSource _audioSource;
+
+    [SerializeField]
+    private MusicTrackUI _musicTrackUI;
 
     private bool _changingSong = false;
     private float _songFadeOutTime = 1f;
@@ -28,11 +32,11 @@ public class MusicManager : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Alpha1))
         { 
-            if(!_changingSong)
+            if(!_changingSong && _musicTrackUI.Hidden)
                 StartCoroutine(ChangeSong());
         }
 
-        if(!_changingSong && Time.realtimeSinceStartup >= _nextSongTime)
+        if(!_changingSong && _musicTrackUI.Hidden && Time.realtimeSinceStartup >= _nextSongTime)
             StartCoroutine(ChangeSong());
     }
 
@@ -40,17 +44,19 @@ public class MusicManager : MonoBehaviour
     {
         _changingSong = true;
 
-        while(_audioSource.volume > 0)
+        _songID++;
+        _musicTrackUI.UpdateAndShowData(_musicTracksArray[_songID % _musicTracksArray.Length]);
+
+        while (_audioSource.volume > 0)
         {
             _audioSource.volume -= Time.deltaTime / _songFadeOutTime;
             yield return null;
         }
-
-        _songID++;
-
-        _audioSource.clip = _musicArray[_songID % _musicArray.Length];
-        UpdateNextSongTime();
+        _audioSource.clip = _musicTracksArray[_songID % _musicTracksArray.Length].MusicTrack;
         _audioSource.Play();
+
+        UpdateNextSongTime();
+
         while (_audioSource.volume < 1)
         {
             _audioSource.volume += Time.deltaTime / _songFadeIn;

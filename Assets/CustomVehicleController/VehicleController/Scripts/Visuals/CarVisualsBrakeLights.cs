@@ -8,8 +8,6 @@ namespace Assets.VehicleController
         private Material _defaultMaterial;
         private Color _defaultColor;
 
-        private int _brakeLightMaterialIndex = 2;
-
         public CarVisualsBrakeLights(BrakeLightsParameters parameters)
         {
             _parameters = parameters;
@@ -20,14 +18,27 @@ namespace Assets.VehicleController
                 return;
             }
 
-            Material[] materials = _parameters.RearLightMeshes[0].materials;
-            _defaultMaterial = new Material(materials[_brakeLightMaterialIndex]);
-            materials[_brakeLightMaterialIndex] = _defaultMaterial;
-            _defaultColor = _defaultMaterial.color;
-
-            for (int i = 0; i < parameters.RearLightMeshes.Length; i++)
+            if(_parameters.MaterialAtSpecificIndex)
             {
-                parameters.RearLightMeshes[i].materials = materials;
+                Material[] materials = _parameters.RearLightMeshes[0].materials;
+                _defaultMaterial = new Material(materials[_parameters.MaterialIndex]);
+                materials[_parameters.MaterialIndex] = _defaultMaterial;
+                _defaultColor = _defaultMaterial.color;
+
+                for (int i = 0; i < parameters.RearLightMeshes.Length; i++)
+                {
+                    parameters.RearLightMeshes[i].materials = materials;
+                }
+            }
+            else
+            {
+                _defaultMaterial = new Material(_parameters.RearLightMeshes[0].material);
+                _defaultColor = _defaultMaterial.color;
+
+                for (int i = 0; i < parameters.RearLightMeshes.Length; i++)
+                {
+                    parameters.RearLightMeshes[i].material = _defaultMaterial;
+                }
             }
         }
 

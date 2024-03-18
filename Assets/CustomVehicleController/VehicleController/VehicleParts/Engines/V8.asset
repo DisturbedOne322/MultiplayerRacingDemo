@@ -18,26 +18,26 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 750
       value: 440.49982
-      inSlope: 0.11504537
-      outSlope: 0.11504537
+      inSlope: 0.13739778
+      outSlope: 0.13739778
       tangentMode: 35
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 3016.9312
-      value: 701.29974
+      value: 751.9711
       inSlope: 0.027533945
-      outSlope: 0.019512838
+      outSlope: 0.033388726
       tangentMode: 1
       weightedMode: 0
       inWeight: 0.2513133
-      outWeight: 0.23101816
+      outWeight: 0.3090442
     - serializedVersion: 3
-      time: 5028.097
-      value: 538.27814
-      inSlope: -0.08105826
-      outSlope: -0.08105826
+      time: 5005.931
+      value: 706.81726
+      inSlope: -0.022701794
+      outSlope: -0.022701794
       tangentMode: 33
       weightedMode: 0
       inWeight: 0.33333334
@@ -46,4 +46,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   ForcedInductionSO: {fileID: 11400000, guid: e4a2b7d89c2d5844eb3579210bbae9f8, type: 2}
-  MaxSpeed: 290
+  MaxSpeed: 350

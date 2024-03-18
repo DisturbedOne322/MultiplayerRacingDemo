@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7350a9fbb26cca148a211550ea1942d4, type: 3}
   m_Name: OneShotNitrousPro
   m_EditorClassIdentifier: 
-  BoostAmount: 6000
+  BoostAmount: 8000
   BottlesAmount: 2
   BoostIntensity: 3000
-  BoostWarmUpTime: 0.15
+  BoostWarmUpTime: 0.66
   RechargeRate: 6000
-  RechargeDelay: 2
-  MinAmountPercentToUse: 0
+  RechargeDelay: 3
+  MinAmountPercentToUse: 1
   BoostType: 1

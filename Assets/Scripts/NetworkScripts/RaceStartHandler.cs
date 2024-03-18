@@ -16,7 +16,7 @@ namespace Assets.VehicleController
 
         [SerializeField]
         private TextMeshProUGUI _countdownText;
-        private const float COUNTDOWN_TIME_MAX = 3.49f;
+        private const float COUNTDOWN_TIME_MAX = 3.25f;
 
         private bool _waitingForPlayers = true;
         private NetworkVariable<float> _countdownTimeNetVar = new NetworkVariable<float>(COUNTDOWN_TIME_MAX, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);

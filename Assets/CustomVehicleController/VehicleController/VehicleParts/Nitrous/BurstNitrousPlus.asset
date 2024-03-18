@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7350a9fbb26cca148a211550ea1942d4, type: 3}
   m_Name: BurstNitrousPlus
   m_EditorClassIdentifier: 
-  BoostAmount: 50000
+  BoostAmount: 30000
   BottlesAmount: 1
-  BoostIntensity: 7000
+  BoostIntensity: 3500
   BoostWarmUpTime: 2
+  BoostDuringWarmUp: 0
   RechargeRate: 50000
-  RechargeDelay: 5
+  RechargeDelay: 10
   MinAmountPercentToUse: 1
   BoostType: 1

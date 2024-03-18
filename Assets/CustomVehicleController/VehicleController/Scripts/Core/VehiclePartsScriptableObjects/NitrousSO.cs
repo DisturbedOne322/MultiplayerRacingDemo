@@ -13,6 +13,7 @@ namespace Assets.VehicleController
         public float BoostIntensity;
         [Min(0)]
         public float BoostWarmUpTime;
+        public bool BoostDuringWarmUp;
         [Min(0)]
         public float RechargeRate;
         [Min(0)]

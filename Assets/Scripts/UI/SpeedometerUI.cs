@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SpeedometerUI : NetworkBehaviour
+public class SpeedometerUI : MonoBehaviour
 {
     [SerializeField]
     private CustomVehicleController _vehicleController;
@@ -31,22 +31,14 @@ public class SpeedometerUI : NetworkBehaviour
 
     private StringBuilder _speedString;
 
-    public override void OnNetworkSpawn()
+    private void Awake()
     {
-        if (IsOwner)
-        {
-            _speedString = new StringBuilder();
-            return;
-        }
-
-        gameObject.SetActive(false);
+        _speedString = new StringBuilder();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!IsOwner)
-            return;
         CurrentCarStats currentCarStats = _vehicleController.GetCurrentCarStats();
 
         _speedString.Clear();

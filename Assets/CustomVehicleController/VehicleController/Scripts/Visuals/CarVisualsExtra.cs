@@ -336,6 +336,8 @@ namespace Assets.VehicleController
         public MeshRenderer[] RearLightMeshes;
         [ColorUsageAttribute(true, true)]
         public Color BrakeColor;
+        public bool MaterialAtSpecificIndex;
+        public int MaterialIndex;
     }
 
     [Serializable]

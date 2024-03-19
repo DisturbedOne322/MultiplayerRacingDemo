@@ -17,7 +17,7 @@ public class MusicTrackUI : MonoBehaviour
     private float _widthOffsetMax = 30;
 
     private float _smDampTime = 0.8f;
-    private float _holdTime = 0.5f;
+    private float _holdTime = 1.5f;
     private float _smDampVelocity;
 
     public bool Hidden = true;

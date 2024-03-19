@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Riverside88_lights
+    second: {fileID: 2100000, guid: 3f025ef057385c249abc77c80404e1ce, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: UCB_BOTTOM
     second: {fileID: 2100000, guid: 40fc687a16dd912439cd076fef9326a8, type: 2}
   materials:

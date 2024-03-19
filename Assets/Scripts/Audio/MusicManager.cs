@@ -15,8 +15,8 @@ public class MusicManager : MonoBehaviour
     private MusicTrackUI _musicTrackUI;
 
     private bool _changingSong = false;
-    private float _songFadeOutTime = 1f;
-    private float _songFadeIn = 1f;
+    private float _songFadeOutTime = 0.75f;
+    private float _songFadeIn = 2f;
 
     private float _nextSongTime;
 
@@ -24,6 +24,7 @@ public class MusicManager : MonoBehaviour
 
     private void Awake()
     {
+        _songID = (uint)Random.Range(0, _musicTracksArray.Length);
         StartCoroutine(ChangeSong());
     }
 

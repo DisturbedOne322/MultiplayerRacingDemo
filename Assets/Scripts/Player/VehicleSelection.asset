@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 456979b658d8a1b4ba8961bce826e08e, type: 3}
+  m_Name: VehicleSelection
+  m_EditorClassIdentifier: 
+  Vehicles:
+  - {fileID: 1065174776359836299, guid: fc946db4107ed3949b96672c6ef3f69c, type: 3}
+  - {fileID: 1808434878433812894, guid: 7c549d40250c92341b3543a3846dbc9c, type: 3}
+  - {fileID: 6453726170192464864, guid: b29fbe3b2ae224441b4d1ee38f73ba6a, type: 3}

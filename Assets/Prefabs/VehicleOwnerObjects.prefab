@@ -259,6 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1112733548bbdfb4b9e6b0a5a0f7b48a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _zOffset: -4
   _animeSpeedEffect: {fileID: 3396903446296114747}
   _localVolume: {fileID: 8564959298264944320}
   _customVehicleController: {fileID: 0}
@@ -607,6 +608,56 @@ PrefabInstance:
     - target: {fileID: 3281578016719805691, guid: 1929cf1c14e53c64693f32bb051e7185,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4617355983152256915, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.94897616
+      objectReference: {fileID: 0}
+    - target: {fileID: 4617355983152256915, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.31534803
+      objectReference: {fileID: 0}
+    - target: {fileID: 4617355983152256915, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -36.764
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -24
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722513007922927394, guid: 1929cf1c14e53c64693f32bb051e7185,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5388162619998710983, guid: 1929cf1c14e53c64693f32bb051e7185,

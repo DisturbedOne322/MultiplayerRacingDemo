@@ -99,8 +99,6 @@ namespace Assets.VehicleController
 
         private void Start()
         {
-            _3DSound = !IsOwner;
-
             _effectAudioSourceHolder = new GameObject("Car Sound Effects");
             _effectAudioSourceHolder.transform.parent = this.transform;
             _effectAudioSourceHolder.transform.localPosition = Vector3.zero;
@@ -110,6 +108,13 @@ namespace Assets.VehicleController
             InitializeCarEffectSound();
             InitializedWindNoise();
             InitializeNitroSound();
+        }
+
+
+        public override void OnNetworkSpawn()
+        {
+            _3DSound = !IsOwner;
+            _spatialBlend = _3DSound ? 1 : 0;
         }
 
         private void OnDestroy()
@@ -404,7 +409,6 @@ namespace Assets.VehicleController
                 _windNoiseAudioSource.volume = volume;
             }
         }
-        public bool playing;
         private void HandleNitroSound()
         {
             UpdateAudioSourceSettings(_nitroContinuousAudioSource);
@@ -456,7 +460,6 @@ namespace Assets.VehicleController
             _nitroStartAudioSource.volume = _nitroStartVolumeNetVar.Value;
 
             StartStopAudioSourceFromVolume(_nitroContinuousAudioSource);
-            playing = _nitroContinuousAudioSource.isPlaying;
         }
 
         private void StartStopAudioSourceFromVolume(AudioSource audioSource)

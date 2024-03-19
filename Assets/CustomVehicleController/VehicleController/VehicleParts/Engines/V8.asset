@@ -17,16 +17,16 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 750
-      value: 440.49982
-      inSlope: 0.13739778
-      outSlope: 0.13739778
+      value: 611.86346
+      inSlope: 0.10094339
+      outSlope: 0.10094339
       tangentMode: 35
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 3016.9312
-      value: 751.9711
+      time: 3004.4768
+      value: 839.438
       inSlope: 0.027533945
       outSlope: 0.033388726
       tangentMode: 1
@@ -34,10 +34,10 @@ MonoBehaviour:
       inWeight: 0.2513133
       outWeight: 0.3090442
     - serializedVersion: 3
-      time: 5005.931
-      value: 706.81726
-      inSlope: -0.022701794
-      outSlope: -0.022701794
+      time: 5018.3853
+      value: 817.48956
+      inSlope: -0.010898422
+      outSlope: -0.010898422
       tangentMode: 33
       weightedMode: 0
       inWeight: 0.33333334
@@ -46,4 +46,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   ForcedInductionSO: {fileID: 11400000, guid: e4a2b7d89c2d5844eb3579210bbae9f8, type: 2}
-  MaxSpeed: 350
+  MaxSpeed: 400

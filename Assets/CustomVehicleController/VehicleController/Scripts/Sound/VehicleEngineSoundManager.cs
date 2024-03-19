@@ -63,10 +63,15 @@ namespace Assets.VehicleController
             }
 
 
-            _3DSound = !IsOwner;
 
             _vehicleController.VehiclePartsSetWrapper.OnPartsChanged += VehiclePartsPresetWrapper_OnPartsChanged;
             InitializeEngineSound();
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            _3DSound = !IsOwner;
+            _spatialBlend = _3DSound ? 1 : 0;
         }
 
         private void OnDestroy()

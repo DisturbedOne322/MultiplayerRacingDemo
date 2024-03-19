@@ -16,24 +16,34 @@ namespace Assets.VehicleController
 
         [SerializeField]
         private TextMeshProUGUI _countdownText;
-        private const float COUNTDOWN_TIME_MAX = 3.25f;
+        private const float COUNTDOWN_TIME_MAX = 3f;
 
         private bool _waitingForPlayers = true;
         private NetworkVariable<float> _countdownTimeNetVar = new NetworkVariable<float>(COUNTDOWN_TIME_MAX, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+        private JoinServerHandler _joinServerHandler;
+        [SerializeField]
+        private VehicleSelectionSO _vehicleSelectionSO;
 
         public override void OnNetworkSpawn()
         {
-            RequestSpawnServerRpc(NetworkManager.Singleton.LocalClientId);
+            _joinServerHandler = GameObject.FindObjectOfType<JoinServerHandler>();
+
+            NetworkManager.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
+
             if (IsServer)
-                _expectedPlayers = GameObject.FindObjectOfType<JoinServerHandler>().PlayersOnServer;
+                _expectedPlayers = _joinServerHandler.PlayersOnServer;
         }
 
+        private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, System.Collections.Generic.List<ulong> clientsCompleted, System.Collections.Generic.List<ulong> clientsTimedOut)
+        {
+             RequestSpawnServerRpc(NetworkManager.Singleton.LocalClientId, _joinServerHandler.VehicleSelectionIndex);
+        }
 
         [ServerRpc(RequireOwnership = false)]
-        private void RequestSpawnServerRpc(ulong id)
+        private void RequestSpawnServerRpc(ulong id, int vehicleID)
         {
-            SpawnClientOnLoad(id);
+            SpawnClientOnLoad(id, vehicleID);
         }
 
         private void Update()
@@ -57,9 +67,9 @@ namespace Assets.VehicleController
                 _countdownTimeNetVar.Value -= Time.deltaTime;
         }
 
-        private void SpawnClientOnLoad(ulong clientID)
+        private void SpawnClientOnLoad(ulong clientID, int vehicleID)
         {
-            SpawnPlayerServerRpc(clientID);
+            SpawnPlayerServerRpc(clientID, vehicleID);
             if (_playersSpawned >= _expectedPlayers)
             {
                 Invoke("EnableInputOnClients", COUNTDOWN_TIME_MAX);
@@ -77,9 +87,9 @@ namespace Assets.VehicleController
         }
 
         [ServerRpc]
-        private void SpawnPlayerServerRpc(ulong playerId)
+        private void SpawnPlayerServerRpc(ulong playerId, int vehicleID)
         {
-            GameObject player = Instantiate(_vehiclePrefab, _racePositionArray[_playersSpawned].position, _racePositionArray[_playersSpawned].rotation);
+            GameObject player = Instantiate(_vehicleSelectionSO.Vehicles[vehicleID], _racePositionArray[_playersSpawned].position, _racePositionArray[_playersSpawned].rotation);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(playerId);
             player.GetComponent<VehicleInputNetworkProvider>().EnableInput(false);
             _playersSpawned++;

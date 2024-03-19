@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
   m_Name: DriftSuspension
   m_EditorClassIdentifier: 
-  SpringRestDistance: 0.4
+  SpringRestDistance: 0.42
   SpringTravelLength: 0.3
   SpringStiffness: 80000
   SpringDampingStiffness: 2000

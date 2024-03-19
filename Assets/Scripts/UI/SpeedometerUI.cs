@@ -14,7 +14,7 @@ public class SpeedometerUI : MonoBehaviour
     private TextMeshProUGUI _speedText;
     [SerializeField]
     private GameObject _rpmNeedle;
-    private const float MAX_RPM_NEEDLE_ANGLE = -225f;
+    private const float MAX_RPM_NEEDLE_ANGLE = -204f;
 
     [SerializeField]
     private GameObject _boostNeedle;

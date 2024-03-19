@@ -12,9 +12,16 @@ public class JoinServerHandler : MonoBehaviour
     private int _playersOnServer;
     public int PlayersOnServer => _playersOnServer;
 
+    private int _vehicleSelectionIndex = 0;
+    public int VehicleSelectionIndex => _vehicleSelectionIndex;
+
     private void Awake()
     {
         _unityTransport = GameObject.FindObjectOfType<UnityTransport>();
+        VehicleSelectionInLobby.OnVehicleSelectionChanged += (int index) =>
+        {
+            _vehicleSelectionIndex = index;
+        };
     }
 
     public void SetPlayersAmount(int amount) => _playersOnServer = amount;
@@ -60,6 +67,5 @@ public class JoinServerHandler : MonoBehaviour
     public void LeaveServer()
     {
         NetworkManager.Singleton.Shutdown();
-
     }
 }

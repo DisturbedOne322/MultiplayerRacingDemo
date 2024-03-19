@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82044c98410c19146b7592afd1d240e9, type: 3}
   m_Name: HeavyDriftBody
   m_EditorClassIdentifier: 
-  Mass: 1700
+  Mass: 1735
   ForwardDrag: 0.05
   Downforce: 30
-  CorneringResistanceStrength: 15
+  CorneringResistanceStrength: 20
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: -0.0000002081506
-      value: 0.14324951
-      inSlope: 0.09249897
-      outSlope: 0.09249897
+      value: 0.07342529
+      inSlope: -0.10004049
+      outSlope: -0.10004049
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.07101968
+      outWeight: 0.16062193
     - serializedVersion: 3
       time: 1
       value: 1

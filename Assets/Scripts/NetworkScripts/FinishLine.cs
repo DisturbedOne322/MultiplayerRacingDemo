@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
@@ -6,36 +5,43 @@ using UnityEngine;
 
 public class FinishLine : NetworkBehaviour
 {
-    private NetworkVariable<bool> _playerFinished = new NetworkVariable<bool>();
+    private List<ulong> _finishedClientIdList;
+    private JoinServerHandler _joinServerHandler;
 
-    private void Awake()
+
+    public override void OnNetworkSpawn()
     {
-        if (NetworkManager.Singleton.IsServer)
-            NetworkObject.Spawn();
+        if(IsServer)
+            _finishedClientIdList = new List<ulong>();
+        
+        _joinServerHandler = GameObject.FindObjectOfType<JoinServerHandler>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!IsOwner)
+        if (!other.gameObject.transform.root.CompareTag("Player"))
             return;
-        if (!other.gameObject.CompareTag("Player"))
+
+        if (other.gameObject.transform.root.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
             return;
-        if (_playerFinished.Value)
-            return;
-        FixedString64Bytes playerWin = new FixedString64Bytes(other.gameObject.transform.root.name);
-        WritePlayerNameServerRpc(playerWin);
+
+        WritePlayerNameServerRpc(NetworkManager.Singleton.LocalClientId, new FixedString64Bytes(_joinServerHandler.LocalPlayerName));
     }
 
-    [ServerRpc]
-    private void WritePlayerNameServerRpc(FixedString64Bytes name)
+
+    [ServerRpc(RequireOwnership = false)]
+    private void WritePlayerNameServerRpc(ulong clientID, FixedString64Bytes playerName)
     {
-        _playerFinished.Value = true;
-        DisplayWinnerClientRpc(name);
+        if (_finishedClientIdList.Contains(clientID))
+            return;
+
+        _finishedClientIdList.Add(clientID);
+        DisplayWinnerClientRpc(playerName, _finishedClientIdList.Count);
     }
 
     [ClientRpc]
-    private void DisplayWinnerClientRpc(FixedString64Bytes name)
+    private void DisplayWinnerClientRpc(FixedString64Bytes name, int position)
     {
-        Debug.Log(name);    
+        Debug.Log($"Player {name} finished at position {position}");    
     }
 }

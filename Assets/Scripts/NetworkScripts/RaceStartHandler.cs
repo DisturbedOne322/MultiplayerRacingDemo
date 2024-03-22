@@ -1,7 +1,8 @@
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
- 
+using UnityEngine.SceneManagement;
+
 namespace Assets.VehicleController
 {
     public class RaceStartHandler : NetworkBehaviour
@@ -48,6 +49,13 @@ namespace Assets.VehicleController
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                NetworkManager.Singleton.Shutdown();
+                SceneManager.LoadScene("MainMenuScene");
+            }
+
+
             if (_countdownTimeNetVar.Value < 0)
             {
                 _countdownText.gameObject.SetActive(false);

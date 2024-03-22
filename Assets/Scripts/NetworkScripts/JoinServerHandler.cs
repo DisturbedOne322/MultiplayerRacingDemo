@@ -4,6 +4,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class JoinServerHandler : MonoBehaviour
 {
@@ -15,13 +16,40 @@ public class JoinServerHandler : MonoBehaviour
     private int _vehicleSelectionIndex = 0;
     public int VehicleSelectionIndex => _vehicleSelectionIndex;
 
+    private string _localPlayerName = "";
+    public string LocalPlayerName => _localPlayerName;
+
+    public void SetLocalPlayerName(string localPlayerName) => _localPlayerName = localPlayerName;
+
     private void Awake()
     {
         _unityTransport = GameObject.FindObjectOfType<UnityTransport>();
-        VehicleSelectionInLobby.OnVehicleSelectionChanged += (int index) =>
+    }
+
+    private void Start()
+    {
+        NetworkManager.Singleton.RunInBackground = true;
+        NetworkManager.Singleton.OnClientDisconnectCallback += Singleton_OnClientDisconnectCallback;
+        VehicleSelectionInLobby.OnVehicleSelectionChanged += UpdateSelection;
+    }
+
+
+    private void UpdateSelection(int index)
+    {
+        _vehicleSelectionIndex = index;
+    }
+
+    private void Singleton_OnClientDisconnectCallback(ulong id)
+    {
+        if (NetworkManager.Singleton.IsClient)
         {
-            _vehicleSelectionIndex = index;
-        };
+            //host
+            if (id == 0)
+            {
+                NetworkManager.Singleton.Shutdown();
+                SceneManager.LoadScene("MainMenuScene");
+            }
+        }
     }
 
     public void SetPlayersAmount(int amount) => _playersOnServer = amount;

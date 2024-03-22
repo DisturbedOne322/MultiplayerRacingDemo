@@ -59,6 +59,19 @@ public class Lobby : MonoBehaviour
         return true;
     }
 
+    public bool CheckIsPlayerReady(string playerId)
+    {
+        for(int i = 0; i < JoinedLobby.Players.Count; i++)
+        {
+            if (JoinedLobby.Players[i].Id != playerId)
+                continue;
+
+            return JoinedLobby.Players[i].Data["Ready"].Value == "True";
+        }
+
+        return false;
+    }
+
     public async void StartGame()
     {
         UpdateLobbyOptions updateLobbyOptions = new UpdateLobbyOptions();
@@ -112,6 +125,7 @@ public class Lobby : MonoBehaviour
         try
         {
             string lobbyName = "Lobby" + $"{UnityEngine.Random.Range(0,99999) : 00000}";
+
             Authenticate.Instance.ResetReadyStatus();
             string joinCode = await _joinServerHandler.HostGame(maxPlayers);
 
@@ -151,6 +165,7 @@ public class Lobby : MonoBehaviour
                 Data = new Dictionary<string, DataObject>
                 {
                     { "JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode) },
+                    {"GameStarted", new DataObject(DataObject.VisibilityOptions.Member, "False") },
                 },
             };
             

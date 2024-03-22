@@ -61,7 +61,7 @@ public class LobbyListBrowser : MonoBehaviour
             LobbyDisplayInfo displayInfo = lobbyInfo.GetComponent<LobbyDisplayInfo>();
             displayInfo.SetLobbyInfo(foundLobbies[i].Name, foundLobbies[i].Players.Count, foundLobbies[i].MaxPlayers, foundLobbies[i].Id);
 
-            lobbyInfo.transform.SetParent(_contentParent);
+            lobbyInfo.transform.SetParent(_contentParent, false);
         }
     }
 

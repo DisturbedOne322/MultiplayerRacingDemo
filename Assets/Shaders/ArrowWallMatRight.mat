@@ -52,7 +52,7 @@ Material:
     - _ScrollSpeed: -0.5
     - _xScale: 3
     m_Colors:
-    - _Color: {r: 3.9999995, g: 3.3259325, b: 0, a: 0}
+    - _Color: {r: 5.3403134, g: 5.3403134, b: 5.3403134, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &8881818147625183479
 MonoBehaviour:

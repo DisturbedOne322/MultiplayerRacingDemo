@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82044c98410c19146b7592afd1d240e9, type: 3}
   m_Name: StiffBody
   m_EditorClassIdentifier: 
-  Mass: 1000
+  Mass: 1291
   ForwardDrag: 0.03
   Downforce: 50
   CorneringResistanceStrength: 30

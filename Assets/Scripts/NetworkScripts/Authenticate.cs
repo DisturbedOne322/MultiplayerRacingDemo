@@ -15,8 +15,10 @@ public class Authenticate : MonoBehaviour
     [SerializeField]
     private Button _loginButton;
 
+    [SerializeField]
+    private JoinServerHandler _joinServerHandler;
+
     public static Authenticate Instance { get; private set; }
-    private bool _authenticated = false;
 
     private Player _player;
 
@@ -74,17 +76,18 @@ public class Authenticate : MonoBehaviour
             _loginButton.interactable = false;
             _player = CreatePlayer();
 
-            if(_authenticated)
+            _joinServerHandler.SetLocalPlayerName(_player.Data["PlayerName"].Value);
+
+            await UnityServices.InitializeAsync();
+
+            if (AuthenticationService.Instance.IsAuthorized)
             {
                 MenuHandler.Instance.AddMenu(_nextWindow.Get());
                 return;
             }
 
-            await UnityServices.InitializeAsync();
-
             AuthenticationService.Instance.SignedIn += () =>
             {
-                _authenticated = true;
                 MenuHandler.Instance.AddMenu(_nextWindow.Get());
             };
 

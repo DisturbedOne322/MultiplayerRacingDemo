@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +25,13 @@ public class VehicleSelectionInLobby : MonoBehaviour
 
     private void Awake()
     {
+        _vehicleIndex = 0;
+        OnVehicleSelectionChanged?.Invoke(_vehicleIndex);
         _nextButton.onClick.AddListener(() => {
+
+            if (Lobby.Instance.CheckIsPlayerReady(AuthenticationService.Instance.PlayerId))
+                return;
+
             _vehicleModels[_vehicleIndex].SetActive(false);
             _vehicleIndex++;
 

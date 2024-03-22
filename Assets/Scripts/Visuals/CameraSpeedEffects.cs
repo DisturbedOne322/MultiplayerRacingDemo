@@ -11,8 +11,7 @@ public class CameraSpeedEffects : MonoBehaviour
     private CinemachineBasicMultiChannelPerlin _noise;
     private CinemachineTransposer _transposer;
 
-    [SerializeField]
-    private float _zOffset = -4f;
+    public float Zoffset = -4f;
 
     [SerializeField]
     private VisualEffect _animeSpeedEffect;
@@ -51,14 +50,21 @@ public class CameraSpeedEffects : MonoBehaviour
     private float _nitroFOV = 0;
 
     [SerializeField]
-    private float _maxFreq = 3.5f;
+    private float _maxFreq = 2.5f;
     [SerializeField]
-    private float _maxAmp = 1.5f;
+    private float _maxAmp = 0.75f;
 
-    private float _smDampVelocity;
+    private float _fovSmDampVelocity;
     private float _smDampTime = 0.15f;
 
     private bool _lookingBack = false;
+
+    private float _collisionOffset;
+
+    public void SetOffsetFromCollider(float offset)
+    {
+        _collisionOffset = offset;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -75,8 +81,7 @@ public class CameraSpeedEffects : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _lookingBack = Input.GetKey(KeyCode.C);
-
+        ManageCameraOffset();
         CurrentCarStats currentCarStats = _customVehicleController.GetCurrentCarStats();
 
         if (currentCarStats == null)
@@ -86,8 +91,6 @@ public class CameraSpeedEffects : MonoBehaviour
         float nitroIntensity = currentCarStats.NitroIntensity == 1 && currentCarStats.Accelerating ? 1 : 0;
         float speedPercent = Mathf.Clamp01(speed / _maxEffectSpeed);
         bool nitroBoosting = currentCarStats.NitroBoosting;
-
-        _transposer.m_FollowOffset = new Vector3(_transposer.m_FollowOffset.x, _transposer.m_FollowOffset.y, _lookingBack ? -_zOffset : _zOffset);
 
         _chromaticAberration.intensity.value = nitroIntensity;
 
@@ -112,9 +115,24 @@ public class CameraSpeedEffects : MonoBehaviour
         if (targetFOV < _minFov)
             targetFOV = _minFov;
 
-        _camera.m_Lens.FieldOfView = Mathf.SmoothDamp(_camera.m_Lens.FieldOfView, targetFOV, ref _smDampVelocity, _smDampTime);
+        _camera.m_Lens.FieldOfView = Mathf.SmoothDamp(_camera.m_Lens.FieldOfView, targetFOV, ref _fovSmDampVelocity, _smDampTime);
 
         HandleAnimeSpeedEffect(currentCarStats.SpeedInMsPerS, currentCarStats.NitroIntensity == 1);
+    }
+
+    private void ManageCameraOffset()
+    {
+        _lookingBack = Input.GetKey(KeyCode.C);
+
+        Vector3 offset = new Vector3(_transposer.m_FollowOffset.x, _transposer.m_FollowOffset.y, 0);
+
+
+        if(_lookingBack)
+            offset.z = -Zoffset;
+        else
+            offset.z = Zoffset + _collisionOffset;
+
+        _transposer.m_FollowOffset = offset;
     }
 
     private void HandleAnimeSpeedEffect(float speed, bool boosting)

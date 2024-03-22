@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MusicManager : MonoBehaviour
 {
+    [SerializeField]
+    private TrackDataSO[] _mainMenuTracksArray;
     [SerializeField]
     private TrackDataSO[] _musicTracksArray;
 
@@ -21,13 +26,17 @@ public class MusicManager : MonoBehaviour
     private float _nextSongTime;
 
     private uint _songID = 0;
+    [SerializeField]
+    private AudioMixer _audioMixer;
+    private float _currentVolume = 0.7f;
 
     private void Awake()
     {
         _songID = (uint)Random.Range(0, _musicTracksArray.Length);
         StartCoroutine(ChangeSong());
+        _audioMixer.SetFloat("AudioVolume", Mathf.Log(_currentVolume) * 20);
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -39,6 +48,20 @@ public class MusicManager : MonoBehaviour
 
         if(!_changingSong && _musicTrackUI.Hidden && Time.realtimeSinceStartup >= _nextSongTime)
             StartCoroutine(ChangeSong());
+
+        HandleAudio();
+    }
+
+    private void HandleAudio()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+            _currentVolume -= 0.1f;
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+            _currentVolume += 0.1f;
+
+        _currentVolume = Mathf.Clamp(_currentVolume, 0.001f, 1);
+        _audioMixer.SetFloat("AudioVolume", Mathf.Log(_currentVolume) * 20);
     }
 
     private IEnumerator ChangeSong()

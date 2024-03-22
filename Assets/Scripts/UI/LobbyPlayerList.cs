@@ -117,7 +117,6 @@ public class LobbyPlayerList : MonoBehaviour
         if (_pingTimer < 0)
         {
             _pingTimer = _pingTimerMax;
-            Debug.Log("Ping");
             await LobbyService.Instance.SendHeartbeatPingAsync(Lobby.Instance.HostedLobby.Id);
         }
     }

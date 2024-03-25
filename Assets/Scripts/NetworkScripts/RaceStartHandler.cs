@@ -1,12 +1,20 @@
+using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Splines;
 
 namespace Assets.VehicleController
 {
     public class RaceStartHandler : NetworkBehaviour
     {
+        public static event Action<SplineContainer> OnRaceStart;
+        [SerializeField]
+        private SplineContainer _raceLayout;
+
+        private bool _raceStarted = false;
+
         [SerializeField]
         private GameObject _vehiclePrefab;
 
@@ -58,7 +66,15 @@ namespace Assets.VehicleController
 
             if (_countdownTimeNetVar.Value < 0)
             {
+                if (_raceStarted)
+                    return;
+
+                _raceStarted = true;
+
+                OnRaceStart?.Invoke(_raceLayout);
+
                 _countdownText.gameObject.SetActive(false);
+
                 return;
             }
 

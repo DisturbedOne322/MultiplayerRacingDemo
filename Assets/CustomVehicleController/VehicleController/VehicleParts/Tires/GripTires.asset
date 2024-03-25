@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc67437ccb139e4389c97c1d1f48a18, type: 3}
   m_Name: GripTires
   m_EditorClassIdentifier: 
-  SteeringStiffness: 43
+  SteeringStiffness: 50
   SidewaysGripCurve:
     serializedVersion: 2
     m_Curve:

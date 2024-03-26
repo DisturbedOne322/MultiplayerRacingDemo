@@ -13,9 +13,9 @@ public class TrafficSystem : NetworkBehaviour
     [SerializeField]
     private GameObject[] _trafficVehiclePrefabArray;
 
-    private int _maxDistanceToReset = 500;
-    private int _resetDistanceMin = 500;
-    private int _resetDistanceMax = 600;
+    private int _maxDistanceToReset = 400;
+    private int _resetDistanceMin = 400;
+    private int _resetDistanceMax = 500;
 
     private float _trafficSpeed = 25;
 

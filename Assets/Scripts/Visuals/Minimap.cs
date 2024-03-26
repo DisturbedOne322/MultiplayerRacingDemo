@@ -12,9 +12,9 @@ public class Minimap : NetworkBehaviour
     private Transform _followTransform;
 
     [SerializeField]
-    private float _minSize = 150;
+    private float _minSize = 200;
     [SerializeField]
-    private float _maxSize = 350;
+    private float _maxSize = 600;
 
     [SerializeField]
     private float _verticalOffset = 100;
@@ -37,7 +37,7 @@ public class Minimap : NetworkBehaviour
 
         transform.position = _followTransform.position + new Vector3(0, _verticalOffset, 0);
 
-        float size = _minSize + _vehicleController.GetCurrentCarStats().SpeedInMsPerS * 2;
+        float size = _minSize + _vehicleController.GetCurrentCarStats().SpeedInMsPerS * 4;
         if(size > _maxSize)
             size = _maxSize;
 

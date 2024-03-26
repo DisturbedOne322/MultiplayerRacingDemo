@@ -37,12 +37,8 @@ public class SpeedometerUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _gearText;
 
-    private StringBuilder _speedString;
-
     private void Awake()
     {
-        _speedString = new StringBuilder();
-
         float excessRPM = _speedometerMaxRPM - _engineMaxRPM;
         int excessive500RPMImages = ((int)excessRPM) / 500;
         for(int i = 0; i <  excessive500RPMImages; i++)
@@ -55,10 +51,7 @@ public class SpeedometerUI : MonoBehaviour
     void Update()
     {
         CurrentCarStats currentCarStats = _vehicleController.GetCurrentCarStats();
-
-        _speedString.Clear();
-        _speedString.Append((int)Mathf.Abs(currentCarStats.SpeedInKMperH));
-        _speedText.SetText(_speedString);
+        _speedText.SetText(((int)Mathf.Abs(currentCarStats.SpeedInKMperH)).ToString());
 
         float speedoMeterRpmMultiplier = _engineMaxRPM / _speedometerMaxRPM;
 

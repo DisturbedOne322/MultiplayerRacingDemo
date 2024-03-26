@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 5
+    m_Value: 4
   scatter:
     m_OverrideState: 1
     m_Value: 0.5
@@ -30,7 +30,7 @@ MonoBehaviour:
     m_Value: 1
   tint:
     m_OverrideState: 0
-    m_Value: {r: 0.5072459, g: 0.48867923, b: 1, a: 1}
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
   highQualityFiltering:
     m_OverrideState: 1
     m_Value: 1
@@ -123,7 +123,32 @@ MonoBehaviour:
   - {fileID: -365111652682292598}
   - {fileID: -1115799911970001426}
   - {fileID: 4959413693756872768}
-  - {fileID: 7006563430733460129}
+  - {fileID: 331151770988877645}
+--- !u!114 &331151770988877645
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccf1aba9553839d41ae37dd52e9ebcce, type: 3}
+  m_Name: MotionBlur
+  m_EditorClassIdentifier: 
+  active: 1
+  mode:
+    m_OverrideState: 1
+    m_Value: 1
+  quality:
+    m_OverrideState: 1
+    m_Value: 2
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.15
+  clamp:
+    m_OverrideState: 1
+    m_Value: 0.01
 --- !u!114 &523955633372629443
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -171,28 +196,6 @@ MonoBehaviour:
   saturation:
     m_OverrideState: 1
     m_Value: 24
---- !u!114 &7006563430733460129
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5485954d14dfb9a4c8ead8edb0ded5b1, type: 3}
-  m_Name: LiftGammaGain
-  m_EditorClassIdentifier: 
-  active: 1
-  lift:
-    m_OverrideState: 0
-    m_Value: {x: 1, y: 1, z: 1, w: 0}
-  gamma:
-    m_OverrideState: 0
-    m_Value: {x: 1, y: 1, z: 1, w: 0}
-  gain:
-    m_OverrideState: 1
-    m_Value: {x: 0.99268657, y: 0.6439369, z: 1, w: 0}
 --- !u!114 &8961565318193584247
 MonoBehaviour:
   m_ObjectHideFlags: 3

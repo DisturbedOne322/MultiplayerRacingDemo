@@ -34,6 +34,6 @@ public class NetworkCollisionHandler : NetworkBehaviour
     private void HandleCollisionClientRpc(Vector3 force)
     {
 
-        _rb.AddForce(-_rb.velocity / 10, ForceMode.Impulse);      
+        _rb.AddForce(-_rb.linearVelocity / 10, ForceMode.Impulse);      
     }
 }

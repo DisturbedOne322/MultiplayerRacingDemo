@@ -10,23 +10,21 @@ public class CameraOffsetFromCollision : MonoBehaviour
     private float _offset = 0;
     private float _effectSpeed = 3;
     private bool _obstacleDetected = false;
+    private float _lastCollTime = 0;
+    private float _delay = 0.33f;
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Ignore"))
             return;
 
-        _obstacleDetected = true;
+        _lastCollTime = Time.time;
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        _obstacleDetected = false;
-    }
 
     private void Update()
     {
-        if(_obstacleDetected)
+        if(_lastCollTime + _delay > Time.time)
         {
             _offset += Time.deltaTime * _effectSpeed;
         }

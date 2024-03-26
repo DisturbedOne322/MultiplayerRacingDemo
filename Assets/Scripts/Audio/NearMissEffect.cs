@@ -34,7 +34,7 @@ public class NearMissEffect : MonoBehaviour
         if (otherRB == null)
             return;
 
-        Vector3 velocityDifference = _rb.velocity - otherRB.velocity;
+        Vector3 velocityDifference = _rb.linearVelocity - otherRB.linearVelocity;
         float sqrMagDifference = velocityDifference.sqrMagnitude;
 
         if (sqrMagDifference < _minSpeedSqr)

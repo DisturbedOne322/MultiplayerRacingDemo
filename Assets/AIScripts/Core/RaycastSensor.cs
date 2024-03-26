@@ -110,22 +110,22 @@ namespace Assets.Scripts.Core
                 {
                     if (raycastHitResults[i].collider.gameObject.TryGetComponent<Rigidbody>(out Rigidbody hitRB))
                     {
-                        Vector3 velocityDif = hitRB.velocity - _rb.velocity;
+                        Vector3 velocityDif = hitRB.linearVelocity - _rb.linearVelocity;
                         _hitInfoArray[i].velocityDifference = velocityDif.x * transform.forward.x
                                                               + velocityDif.z *
                                                               transform.forward.z;
                         
-                        _hitInfoArray[i].hitVelocity = hitRB.velocity;
+                        _hitInfoArray[i].hitVelocity = hitRB.linearVelocity;
                     }
                     else
                     {
-                        _hitInfoArray[i].velocityDifference = _rb.velocity.x * transform.forward.x + _rb.velocity.z * transform.forward.z;
+                        _hitInfoArray[i].velocityDifference = _rb.linearVelocity.x * transform.forward.x + _rb.linearVelocity.z * transform.forward.z;
                         _hitInfoArray[i].hitVelocity = Vector3.zero;
                     }
                 }
                 else
                 {
-                    _hitInfoArray[i].velocityDifference = _rb.velocity.x * transform.forward.x + _rb.velocity.z * transform.forward.z;
+                    _hitInfoArray[i].velocityDifference = _rb.linearVelocity.x * transform.forward.x + _rb.linearVelocity.z * transform.forward.z;
                     _hitInfoArray[i].hitVelocity = Vector3.zero;
                 }
             }
@@ -197,15 +197,15 @@ namespace Assets.Scripts.Core
 
             if (_closeColliderArray[colID].gameObject.TryGetComponent<Rigidbody>(out Rigidbody hitRB))
             {
-                Vector3 velocityDif = hitRB.velocity - _rb.velocity;
+                Vector3 velocityDif = hitRB.linearVelocity - _rb.linearVelocity;
                 _hitInfoArray[rayID].velocityDifference = velocityDif.x * transform.forward.x
                                                       + velocityDif.z *
                                                       transform.forward.z;
-                _hitInfoArray[rayID].hitVelocity = hitRB.velocity;
+                _hitInfoArray[rayID].hitVelocity = hitRB.linearVelocity;
             }
             else
             {
-                _hitInfoArray[rayID].velocityDifference = _rb.velocity.x * transform.forward.x + _rb.velocity.z * transform.forward.z;
+                _hitInfoArray[rayID].velocityDifference = _rb.linearVelocity.x * transform.forward.x + _rb.linearVelocity.z * transform.forward.z;
                 _hitInfoArray[rayID].hitVelocity = Vector3.zero;
             }
         }

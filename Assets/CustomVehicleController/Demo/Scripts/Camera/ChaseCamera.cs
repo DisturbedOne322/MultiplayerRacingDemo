@@ -220,7 +220,7 @@ namespace Assets.VehicleController
 
             if (!_vehicleController.GetCurrentCarStats().Reversing)
             {
-                float driftAngle = Vector3.SignedAngle(_vehicleController.transform.forward, _vehicleController.GetRigidbody().velocity.normalized, Vector3.up);
+                float driftAngle = Vector3.SignedAngle(_vehicleController.transform.forward, _vehicleController.GetRigidbody().linearVelocity.normalized, Vector3.up);
                 float sign = Mathf.Sign(driftAngle);
                 headingAngle -= sign * driftAngle * driftAngle * _alignWithDriftAngleMultiplier;
 

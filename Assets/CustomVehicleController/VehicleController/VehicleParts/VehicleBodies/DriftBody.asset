@@ -15,7 +15,7 @@ MonoBehaviour:
   Mass: 1500
   ForwardDrag: 0.05
   Downforce: 50
-  CorneringResistanceStrength: 25
+  CorneringResistanceStrength: 20
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:

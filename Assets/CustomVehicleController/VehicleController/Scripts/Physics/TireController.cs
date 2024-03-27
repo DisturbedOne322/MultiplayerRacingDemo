@@ -118,7 +118,7 @@ namespace Assets.VehicleController
             Vector3 tireWorldVel = _rb.GetPointVelocity(_transform.position);
 
             float steeringVel = Vector3.Dot(steeringDir, tireWorldVel);
-            _sidewaysDot = Vector3.Dot(_rb.velocity.normalized, steeringDir);
+            _sidewaysDot = Vector3.Dot(_rb.linearVelocity.normalized, steeringDir);
 
             if (_isFrontTire)
                 return CalculateTiresSidewaysForce(speed, speedPercent, steeringVel, steeringDir,

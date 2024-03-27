@@ -37,17 +37,17 @@ namespace Assets.VehicleController
             //lower effect at higher speed
             _handbrakeEffect += _currentCarStats.SpeedPercent * (1 - _handbrakeEffect);
             //and low speed when vehicle is moving perpendicularly
-            _handbrakeEffect += (1 - _currentCarStats.SpeedPercent) * Mathf.Abs(Vector3.Dot(_transform.right, _rb.velocity.normalized));
+            _handbrakeEffect += (1 - _currentCarStats.SpeedPercent) * Mathf.Abs(Vector3.Dot(_transform.right, _rb.linearVelocity.normalized));
             _handbrakeEffect = Mathf.Clamp01(_handbrakeEffect);
 
             //car control becoming stiffer and higher speed effect
-            _rb.angularDrag = _partsPresetWrapper.Body.CorneringResistanceCurve.Evaluate(_currentCarStats.SpeedPercent) *
+            _rb.angularDamping = _partsPresetWrapper.Body.CorneringResistanceCurve.Evaluate(_currentCarStats.SpeedPercent) *
                               _partsPresetWrapper.Body.CorneringResistanceStrength * _handbrakeEffect;
 
             if (_currentCarStats.InAir)
                 return;
 
-            float slipAngle = Vector3.SignedAngle(_transform.forward, _rb.velocity, _transform.up);
+            float slipAngle = Vector3.SignedAngle(_transform.forward, _rb.linearVelocity, _transform.up);
 
             ////in case of reversing
             if (slipAngle >= 90)

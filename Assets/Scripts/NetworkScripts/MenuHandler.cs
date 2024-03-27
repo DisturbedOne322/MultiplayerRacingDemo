@@ -8,12 +8,15 @@ public class MenuHandler : MonoBehaviour
 
     [SerializeField]
     private List<Transform> _menuHierarchyList;
+    [SerializeField]
+    private Transform _rootMenu;
 
-    private void Start()
+    private void Awake()
     {
         if (Instance == null)
             Instance = this;
     }
+
 
     private void Update()
     {
@@ -27,6 +30,13 @@ public class MenuHandler : MonoBehaviour
     public void GoBack()
     {
         RemoveLastMenu();
+    }
+
+    public void ResetMenuList()
+    {
+        RemoveLastMenu();
+        _menuHierarchyList.Clear();
+        AddMenu(_rootMenu);
     }
 
     public void AddMenu(Transform newMenu)

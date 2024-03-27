@@ -126,7 +126,7 @@ namespace Assets.VehicleController
             if (input == 0)
             {
                 if (!_currentCarStats.InAir && Mathf.Abs(_currentCarStats.SpeedInMsPerS) > ALIGN_MIN_SPEED)
-                    angle = Vector3.SignedAngle(transform.forward * Mathf.Sign(_currentCarStats.SpeedInMsPerS), _rigidBody.velocity, transform.up);
+                    angle = Vector3.SignedAngle(transform.forward * Mathf.Sign(_currentCarStats.SpeedInMsPerS), _rigidBody.linearVelocity, transform.up);
             }
             else
                 angle = maxSteerAngle * input;

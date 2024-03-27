@@ -9,6 +9,8 @@ public class MenuWindow : MonoBehaviour
 
     public Transform Get() => _nextWindow;
 
+   
+
     public void GoToNextWindow()
     {
         if (Get() == null)

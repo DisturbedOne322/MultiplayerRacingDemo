@@ -125,7 +125,7 @@ public class RaceProgressTracker : MonoBehaviour
             if(_state == AnimState.Anim || _state == AnimState.Start)
                 _state = AnimState.End;
 
-            if (_state == AnimState.End && _wrongWayText.fontSize <= 0)
+            if (_state == AnimState.End && _wrongWayText.fontSize < 0)
             {
                 _state = AnimState.Idle;
             }
@@ -134,24 +134,25 @@ public class RaceProgressTracker : MonoBehaviour
 
     private void UpdateFontSize()
     {
-        switch(_state)
+        float sizeChange = Time.deltaTime * _fontSizeChangePerSec * _animSpeed;
+        switch (_state)
         {
             case AnimState.Start:
-                _wrongWayText.fontSize += Time.deltaTime * _fontSizeChangePerSec * _animSpeed;
+                _wrongWayText.fontSize += sizeChange;
                 break;
             case AnimState.End:
-                _wrongWayText.fontSize -= Time.deltaTime * _fontSizeChangePerSec * _animSpeed;
+                _wrongWayText.fontSize -= sizeChange;
                 break;
             case AnimState.Anim:
                 if(_grow)
                 {
-                    _wrongWayText.fontSize += Time.deltaTime * _fontSizeChangePerSec * _animSpeed;
+                    _wrongWayText.fontSize += sizeChange;
                     if(_wrongWayText.fontSize >= _maxFontSize)
                         _grow = false;
                 }
                 else
                 {
-                    _wrongWayText.fontSize -= Time.deltaTime * _fontSizeChangePerSec * _animSpeed;
+                    _wrongWayText.fontSize -= sizeChange;
                     if (_wrongWayText.fontSize <= _minFontSize)
                         _grow = true;
                 }

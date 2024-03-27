@@ -41,9 +41,9 @@ namespace Assets.VehicleController
             brakeInput = _transmission.DetermineBrakeInput(gasInput, brakeInput);
 
             if (brakeInput != 0)
-                _rb.drag = (_partsPresetWrapper.Brakes.BrakesStrength / _partsPresetWrapper.Body.Mass / (Mathf.Abs(_currentCarStats.SpeedInMsPerS) + 1)) * brakeInput;
+                _rb.linearDamping = (_partsPresetWrapper.Brakes.BrakesStrength / _partsPresetWrapper.Body.Mass / (Mathf.Abs(_currentCarStats.SpeedInMsPerS) + 1)) * brakeInput;
             else
-                _rb.drag = _partsPresetWrapper.Body.ForwardDrag;
+                _rb.linearDamping = _partsPresetWrapper.Body.ForwardDrag;
 
             for (int i = 0; i < _axleCount; i++)
             {
@@ -60,13 +60,13 @@ namespace Assets.VehicleController
             float speedMultiplier = _currentCarStats.SpeedInMsPerS > 0 ? -1 : 1;
 
             if (engaged)
-                _rb.drag = _partsPresetWrapper.Brakes.BrakesStrength / 2 /
+                _rb.linearDamping = _partsPresetWrapper.Brakes.BrakesStrength / 2 /
                     (Mathf.Abs(_currentCarStats.SidewaysForce) + 1) /
                     (Mathf.Abs(_currentCarStats.AccelerationForce) + 1) /
                     _partsPresetWrapper.Body.Mass /
                     (Mathf.Abs(_currentCarStats.SpeedInMsPerS) + 1);
             else
-                _rb.drag = _partsPresetWrapper.Body.ForwardDrag;
+                _rb.linearDamping = _partsPresetWrapper.Body.ForwardDrag;
 
             if (Mathf.Abs(_currentCarStats.SpeedInMsPerS) < 1)
             {

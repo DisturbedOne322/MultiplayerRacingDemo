@@ -19,7 +19,7 @@ public class TrafficSystem : NetworkBehaviour
 
     private float _trafficSpeed = 25;
 
-    private List<SplineAnimate> _trafficVehiclePool;
+    private List<TrafficCar> _trafficVehiclePool;
     private int _vehiclesPerType = 2;
 
     private float _minDistanceBetweenCars = 30;
@@ -82,30 +82,23 @@ public class TrafficSystem : NetworkBehaviour
 
     private void Initialize()
     {
-        _trafficVehiclePool = new List<SplineAnimate>();
+        _trafficVehiclePool = new List<TrafficCar>();
         _roadLength = _roadSplines[1].CalculateLength();
 
         for (int i = 0; i < _trafficVehiclePrefabArray.Length; i++)
         {
             for (int v = 0; v < _vehiclesPerType; v++)
             {
-                GameObject trafficCar = Instantiate(_trafficVehiclePrefabArray[i]);
-
-                SplineAnimate splineAnimate = trafficCar.AddComponent<SplineAnimate>();
-                splineAnimate.Container = _roadSplines[UnityEngine.Random.Range(0, _roadSplines.Length)];
-
-                splineAnimate.ObjectUpAxis = SplineComponent.AlignAxis.ZAxis;
-                splineAnimate.ObjectForwardAxis = SplineComponent.AlignAxis.NegativeYAxis;
-
-                splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
-                splineAnimate.MaxSpeed = _trafficSpeed;
+                GameObject gameObject = Instantiate(_trafficVehiclePrefabArray[i]);
+                TrafficCar trafficCar = gameObject.GetComponent<TrafficCar>();
 
                 _currentStartDistance += UnityEngine.Random.Range(_minDistanceBetweenCars, _maxDistanceBetweenCars) * UnityEngine.Random.Range(1, 10);
                 _currentStartDistance %= _roadLength;
 
-                splineAnimate.StartOffset = _currentStartDistance / _roadLength;
+                trafficCar.Initialize(_roadSplines[UnityEngine.Random.Range(0, _roadSplines.Length)], _trafficSpeed, _currentStartDistance / _roadLength);
 
-                _trafficVehiclePool.Add(splineAnimate);
+                _trafficVehiclePool.Add(trafficCar);
+
                 trafficCar.GetComponent<NetworkObject>().Spawn();
             }
         }
@@ -184,14 +177,12 @@ public class TrafficSystem : NetworkBehaviour
         SplineUtility.GetNearestPoint(_roadSplines[1].Splines[0], _roadSplines[1].transform.InverseTransformPoint(pos), out float3 temp, out _playersTimeArray[playerIndex]);     
     }
 
-    private void ResetTrafficPosition(float playerTime, int lineIndex, int i)
+    private void ResetTrafficPosition(float playerTime, int lineIndex, int carIndex)
     {
-        _trafficVehiclePool[i].Container = _roadSplines[lineIndex];
-
         float addedDistanceFromNearestPoint = UnityEngine.Random.Range(_resetDistanceMin, _resetDistanceMax);
 
         //make some spawn before and some after the player
-        if (i % 2 == 0)
+        if (UnityEngine.Random.Range(0, 1f) > 0.5f)
             addedDistanceFromNearestPoint *= -1;
 
         float newNormTime = playerTime + addedDistanceFromNearestPoint / _roadLength;
@@ -202,9 +193,6 @@ public class TrafficSystem : NetworkBehaviour
         if (newNormTime > 1)
             newNormTime -= 1;
 
-        _trafficVehiclePool[i].StartOffset = newNormTime;
-        _trafficVehiclePool[i].Restart(true);
-
-        _trafficVehiclePool[i].Play();
+        _trafficVehiclePool[carIndex].ResetTrafficCar(_roadSplines[lineIndex], newNormTime);
     }
 }

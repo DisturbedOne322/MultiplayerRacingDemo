@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6221595935023762695}
   - component: {fileID: 8805636108512970606}
   - component: {fileID: 512624826333881153}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel_C003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,6 +58,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -94,7 +97,7 @@ GameObject:
   - component: {fileID: 6305090919744206720}
   - component: {fileID: 4106218795968359985}
   - component: {fileID: 7573217742112021309}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel_C
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +144,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -182,7 +188,8 @@ GameObject:
   - component: {fileID: 4006865891849266439}
   - component: {fileID: -7699478019182252798}
   - component: {fileID: 3308757588634421692}
-  m_Layer: 0
+  - component: {fileID: 1164487560896958929}
+  m_Layer: 7
   m_Name: Compact Body
   m_TagString: Traffic
   m_Icon: {fileID: 0}
@@ -234,6 +241,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -273,7 +283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1700063286
+  GlobalObjectIdHash: 431491853
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -293,6 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1
@@ -371,6 +383,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb2093a1001d71b408ad15ba2fbdcf93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _splineAnimate: {fileID: 1164487560896958929}
+  _rb: {fileID: -7699478019182252798}
+  _trafficLayer:
+    serializedVersion: 2
+    m_Bits: 136
+--- !u!114 &1164487560896958929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3420000722356631014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a074d529cf945029ef7cf40540c9df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Target: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_LoopMode: 1
+  m_Method: 0
+  m_Duration: 1
+  m_MaxSpeed: 10
+  m_EasingMode: 0
+  m_AlignmentMode: 1
+  m_ObjectForwardAxis: 2
+  m_ObjectUpAxis: 1
+  m_StartOffset: 0
 --- !u!1 &3792377748955694011
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,7 +422,7 @@ GameObject:
   - component: {fileID: 7415573094459693987}
   - component: {fileID: 1797304066162659960}
   - component: {fileID: 4466096381735660832}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel_C001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -429,6 +469,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -465,7 +508,7 @@ GameObject:
   - component: {fileID: 5249224517049564142}
   - component: {fileID: 2078296506782814555}
   - component: {fileID: 1349517777716352501}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -495,9 +538,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4110387744422358911}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 11
   m_Type: 2
-  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
   m_Range: 0.2
@@ -547,8 +589,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!114 &1349517777716352501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -583,7 +629,7 @@ GameObject:
   - component: {fileID: 7562578549111734037}
   - component: {fileID: 8004223285601109139}
   - component: {fileID: 8990552635290116326}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point Light (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -613,9 +659,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4112469202464513837}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 11
   m_Type: 2
-  m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 2
   m_Range: 0.2
@@ -665,8 +710,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!114 &8990552635290116326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,7 +750,7 @@ GameObject:
   - component: {fileID: 3099030100798305496}
   - component: {fileID: 489247876534325896}
   - component: {fileID: 6588669894333821533}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel_C002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -748,6 +797,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -782,7 +834,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3238371166876537722}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: C
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -819,7 +871,7 @@ GameObject:
   - component: {fileID: 6120670918480191748}
   - component: {fileID: 8648003190056235412}
   - component: {fileID: 6661663273604725432}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point Light (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -849,9 +901,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5528162502433287173}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 11
   m_Type: 2
-  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
   m_Range: 0.2
@@ -901,8 +952,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!114 &6661663273604725432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -937,7 +992,7 @@ GameObject:
   - component: {fileID: 6646150924337104892}
   - component: {fileID: 8440557399615171010}
   - component: {fileID: 2637448789818358395}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point Light (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -967,9 +1022,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8863308384134563829}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 11
   m_Type: 2
-  m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 2
   m_Range: 0.2
@@ -1019,8 +1073,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!114 &2637448789818358395
 MonoBehaviour:
   m_ObjectHideFlags: 0

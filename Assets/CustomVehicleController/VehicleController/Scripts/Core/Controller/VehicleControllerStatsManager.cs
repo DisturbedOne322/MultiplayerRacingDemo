@@ -94,7 +94,7 @@ namespace Assets.VehicleController
         public void ManageStats(float gasInput, float brakeInput, bool handbrakeInput, float sideSlipThreshold, float fwdSlipThreshold, DrivetrainType drivetrainType)
         {
             UpdateDriveWheels(drivetrainType);
-            float speedMS = Vector3.Dot(_rb.velocity, _transform.forward);
+            float speedMS = Vector3.Dot(_rb.linearVelocity, _transform.forward);
 
             _currentCarStats.SpeedInMsPerS = speedMS;
             _currentCarStats.SpeedPercent = Mathf.Clamp01(Mathf.Abs(_currentCarStats.SpeedInKMperH) / _partsPresetWrapper.Engine.MaxSpeed);
@@ -111,7 +111,7 @@ namespace Assets.VehicleController
             _currentCarStats.AccelerationForce = (_currentCarStats.SpeedInMsPerS - _lastSpeed) / Time.deltaTime;
             _lastSpeed = speedMS;
 
-            _currentCarStats.SidewaysForce = _rb.velocity.x * _transform.right.x + _rb.velocity.z * _transform.right.z;
+            _currentCarStats.SidewaysForce = _rb.linearVelocity.x * _transform.right.x + _rb.linearVelocity.z * _transform.right.z;
 
             _currentCarStats.Reversing = _transmission.DetermineGasInput(gasInput, brakeInput) < 0 && speedMS <= 1;
 
@@ -142,14 +142,14 @@ namespace Assets.VehicleController
         private void CalculateDriftAngle()
         {
             if (_currentCarStats.SpeedInMsPerS > 0.1f)
-                _currentCarStats.DriftAngle = Vector3.Angle(_transform.forward, _rb.velocity);
+                _currentCarStats.DriftAngle = Vector3.Angle(_transform.forward, _rb.linearVelocity);
             else
                 _currentCarStats.DriftAngle = 0;
         }
 
         private void CalculateDriftTime(float sideSlipThreshold)
         {
-            if (Mathf.Abs(Vector3.Dot(_rb.velocity.normalized, _transform.right)) > sideSlipThreshold)
+            if (Mathf.Abs(Vector3.Dot(_rb.linearVelocity.normalized, _transform.right)) > sideSlipThreshold)
                 _lastDriftTime = Time.time;
 
             _currentCarStats.DriftTime = Time.time < _lastDriftTime + 1 ? _currentCarStats.DriftTime + Time.deltaTime : 0;

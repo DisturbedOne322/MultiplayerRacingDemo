@@ -15,6 +15,9 @@ public class Authenticate : MonoBehaviour
     [SerializeField]
     private Button _loginButton;
 
+    [SerializeField] 
+    private Transform _menuHolder;
+
     [SerializeField]
     private JoinServerHandler _joinServerHandler;
 
@@ -63,6 +66,14 @@ public class Authenticate : MonoBehaviour
             Instance = this;
     }
 
+    private void Start()
+    {
+        if (UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized)
+            _nextWindow.GoToNextWindow();
+        else
+            MenuHandler.Instance.AddMenu(_menuHolder);
+    }
+
     private void OnEnable()
     {
         if (_player != null)
@@ -82,17 +93,18 @@ public class Authenticate : MonoBehaviour
 
             if (AuthenticationService.Instance.IsAuthorized)
             {
-                MenuHandler.Instance.AddMenu(_nextWindow.Get());
+                _loginButton.interactable = true;
+                _nextWindow.GoToNextWindow();
                 return;
             }
 
             AuthenticationService.Instance.SignedIn += () =>
             {
-                MenuHandler.Instance.AddMenu(_nextWindow.Get());
+                _loginButton.interactable = true;
+                _nextWindow.GoToNextWindow();
             };
 
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            _loginButton.interactable = true;
         }
         catch (LobbyServiceException e)
         {

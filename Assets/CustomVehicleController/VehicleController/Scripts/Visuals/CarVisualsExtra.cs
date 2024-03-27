@@ -138,7 +138,7 @@ namespace Assets.VehicleController
 #endif
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             UpdateNetworkVariables();
 
@@ -159,7 +159,7 @@ namespace Assets.VehicleController
 
             if (_enableBodyAeroEffect)
                 _bodyWindEffect.HandleSpeedEffect(_speedNetVar.Value, _rbVelocityNetVar.Value);
-            
+
             if (_enableWingAeroEffect)
                 _wingAeroEffect.HandleWingAeroEffect(_speedNetVar.Value, _speedNetVar.Value / 100);
         }
@@ -173,7 +173,7 @@ namespace Assets.VehicleController
             _sidewaysForceNetVar.Value = _currentCarStats.SidewaysForce;
             _accelNetVar.Value = _currentCarStats.Accelerating;
             _speedNetVar.Value = _currentCarStats.SpeedInMsPerS;
-            _rbVelocityNetVar.Value = _rigidbody.velocity;
+            _rbVelocityNetVar.Value = _rigidbody.linearVelocity;
             _brakingNetVar.Value = _currentCarStats.Braking;
         }
 

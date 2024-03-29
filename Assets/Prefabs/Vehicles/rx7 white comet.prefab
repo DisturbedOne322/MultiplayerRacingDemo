@@ -197,8 +197,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1053343632
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2239451046
+  InScenePlacedSourceGlobalObjectIdHash: 2924293465
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -2538,8 +2538,8 @@ MeshRenderer:
   - {fileID: 5548385417048157359, guid: 576a23858013f504e83d00bdf2f26739, type: 3}
   - {fileID: 2100000, guid: 8e96b73a1ef8121449e8b5a5dd53e059, type: 2}
   - {fileID: 2100000, guid: 970631489c352644bb6731aa4294c399, type: 2}
-  - {fileID: 2100000, guid: 8e96b73a1ef8121449e8b5a5dd53e059, type: 2}
-  - {fileID: -885208078579205595, guid: 576a23858013f504e83d00bdf2f26739, type: 3}
+  - {fileID: 2100000, guid: 970631489c352644bb6731aa4294c399, type: 2}
+  - {fileID: 2100000, guid: 970631489c352644bb6731aa4294c399, type: 2}
   - {fileID: 3977401652403395387, guid: 576a23858013f504e83d00bdf2f26739, type: 3}
   - {fileID: 1687278177921424350, guid: 576a23858013f504e83d00bdf2f26739, type: 3}
   - {fileID: 3729005154948500576, guid: 576a23858013f504e83d00bdf2f26739, type: 3}
@@ -3784,6 +3784,31 @@ PrefabInstance:
       propertyPath: _playerTransform
       value: 
       objectReference: {fileID: 3385878778198836193}
+    - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.6499996
+      objectReference: {fileID: 0}
+    - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.399994
+      objectReference: {fileID: 0}
+    - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.07326758
+      objectReference: {fileID: 0}
+    - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.000000017688263
+      objectReference: {fileID: 0}
+    - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0000000012994688
+      objectReference: {fileID: 0}
     - target: {fileID: 7991086063049087487, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'

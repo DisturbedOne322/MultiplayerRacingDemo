@@ -188,7 +188,6 @@ GameObject:
   - component: {fileID: 4006865891849266439}
   - component: {fileID: -7699478019182252798}
   - component: {fileID: 3308757588634421692}
-  - component: {fileID: 1164487560896958929}
   m_Layer: 7
   m_Name: Compact Body
   m_TagString: Traffic
@@ -283,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 431491853
+  GlobalObjectIdHash: 1812707932
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -368,7 +367,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 52
   m_CollisionDetection: 0
 --- !u!114 &3308757588634421692
@@ -383,34 +382,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb2093a1001d71b408ad15ba2fbdcf93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _splineAnimate: {fileID: 1164487560896958929}
+  _wheelsArray:
+  - {fileID: 6305090919744206720}
+  - {fileID: 7415573094459693987}
+  - {fileID: 3099030100798305496}
+  - {fileID: 6221595935023762695}
+  Container: {fileID: 0}
   _rb: {fileID: -7699478019182252798}
   _trafficLayer:
     serializedVersion: 2
     m_Bits: 136
---- !u!114 &1164487560896958929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3420000722356631014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29a074d529cf945029ef7cf40540c9df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Target: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_LoopMode: 1
-  m_Method: 0
-  m_Duration: 1
-  m_MaxSpeed: 10
-  m_EasingMode: 0
-  m_AlignmentMode: 1
-  m_ObjectForwardAxis: 2
-  m_ObjectUpAxis: 1
-  m_StartOffset: 0
 --- !u!1 &3792377748955694011
 GameObject:
   m_ObjectHideFlags: 0

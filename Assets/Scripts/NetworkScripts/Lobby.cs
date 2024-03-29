@@ -28,7 +28,9 @@ public class Lobby : MonoBehaviour
     private void Awake()
     {
         if (Instance == null)
+        {
             Instance = this;
+        }
     }
 
     public void UpdateJoinedLobby(MyLobby updatedLobby)
@@ -88,7 +90,7 @@ public class Lobby : MonoBehaviour
     private void LoadScene()
     {
         NetworkManager.Singleton.SceneManager.LoadScene("CityScene", LoadSceneMode.Single);
-    }
+    }   
 
     public async void UpdatePlayerStatus(string newStatus)
     {

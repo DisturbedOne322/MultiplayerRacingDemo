@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,7 +38,7 @@ namespace Assets.VehicleController
 
         public override void OnNetworkSpawn()
         {
-            _joinServerHandler = GameObject.FindObjectOfType<JoinServerHandler>();
+            _joinServerHandler = GameObject.FindFirstObjectByType<JoinServerHandler>();
 
             NetworkManager.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
 

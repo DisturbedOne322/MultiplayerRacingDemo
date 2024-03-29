@@ -137,7 +137,6 @@ GameObject:
   - component: {fileID: -4029495896807092406}
   - component: {fileID: 2238417121413945407}
   - component: {fileID: -684516760741928973}
-  - component: {fileID: 4654926634348554378}
   m_Layer: 7
   m_Name: Offroad Body
   m_TagString: Traffic
@@ -317,7 +316,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 52
   m_CollisionDetection: 0
 --- !u!114 &-684516760741928973
@@ -332,34 +331,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb2093a1001d71b408ad15ba2fbdcf93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _splineAnimate: {fileID: 4654926634348554378}
+  _wheelsArray:
+  - {fileID: 1759408496411223109}
+  - {fileID: 7202953623190033291}
+  - {fileID: 4183659819652900151}
+  - {fileID: 5175635109419071084}
+  Container: {fileID: 0}
   _rb: {fileID: 2238417121413945407}
   _trafficLayer:
     serializedVersion: 2
     m_Bits: 136
---- !u!114 &4654926634348554378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1116262848421743360}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29a074d529cf945029ef7cf40540c9df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Target: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_LoopMode: 1
-  m_Method: 0
-  m_Duration: 1
-  m_MaxSpeed: 10
-  m_EasingMode: 0
-  m_AlignmentMode: 1
-  m_ObjectForwardAxis: 2
-  m_ObjectUpAxis: 1
-  m_StartOffset: 0
 --- !u!1 &1536987246312094389
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ public class FinishLine : NetworkBehaviour
         if(IsServer)
             _finishedClientIdList = new List<ulong>();
         
-        _joinServerHandler = GameObject.FindObjectOfType<JoinServerHandler>();
+        _joinServerHandler = GameObject.FindFirstObjectByType<JoinServerHandler>();
     }
 
     private void OnTriggerEnter(Collider other)

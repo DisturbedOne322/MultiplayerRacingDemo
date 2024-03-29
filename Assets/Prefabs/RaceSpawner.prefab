@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 5476237235557288516}
   - component: {fileID: 6104578289841314943}
   - component: {fileID: 4810947825831797624}
+  - component: {fileID: 7670518774581401285}
   m_Layer: 0
   m_Name: RaceSpawner
   m_TagString: Untagged
@@ -249,7 +250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1181215938
+  GlobalObjectIdHash: 3876820929
+  InScenePlacedSourceGlobalObjectIdHash: 2647122295
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
@@ -269,7 +271,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7bbef47c326b004a9595a22681d4227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vehiclePrefab: {fileID: 7550619113371354493, guid: 20d37d868c75c9744bc39b59231c25a5,
+  _raceLayout: {fileID: 0}
+  _vehiclePrefab: {fileID: 6453726170192464864, guid: b29fbe3b2ae224441b4d1ee38f73ba6a,
     type: 3}
   _racePositionArray:
   - {fileID: 8196690966460198370}
@@ -281,6 +284,20 @@ MonoBehaviour:
   - {fileID: 5179891974443030009}
   - {fileID: 3282054289787197353}
   _countdownText: {fileID: 464263553032843913}
+  _vehicleSelectionSO: {fileID: 11400000, guid: 2de082c049ce0244f92f0e7f8cfe1149,
+    type: 2}
+--- !u!114 &7670518774581401285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2330024282051970233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b9b71f29807134ca50523b80a1e7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2689492730708647914
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,15 +563,17 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
+  m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0

@@ -594,11 +594,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8488110656917215956}
     m_Modifications:
-    - target: {fileID: 614661288874869036, guid: 1929cf1c14e53c64693f32bb051e7185,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
-      objectReference: {fileID: 0}
     - target: {fileID: 824178941617280940, guid: 1929cf1c14e53c64693f32bb051e7185,
         type: 3}
       propertyPath: m_Pivot.x
@@ -699,40 +694,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1309963035145430547, guid: 1929cf1c14e53c64693f32bb051e7185,
+    - target: {fileID: 3281578016719805691, guid: 1929cf1c14e53c64693f32bb051e7185,
         type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
+      propertyPath: m_AnchorMax.x
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1335694052130465039, guid: 1929cf1c14e53c64693f32bb051e7185,
+    - target: {fileID: 3281578016719805691, guid: 1929cf1c14e53c64693f32bb051e7185,
         type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
-      objectReference: {fileID: 0}
-    - target: {fileID: 2364352367579107790, guid: 1929cf1c14e53c64693f32bb051e7185,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5388162619998710983, guid: 1929cf1c14e53c64693f32bb051e7185,
         type: 3}
       propertyPath: m_Name
       value: Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 6305338651156575994, guid: 1929cf1c14e53c64693f32bb051e7185,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
-      objectReference: {fileID: 0}
-    - target: {fileID: 7657210761919159367, guid: 1929cf1c14e53c64693f32bb051e7185,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
-      objectReference: {fileID: 0}
-    - target: {fileID: 7732581427637867003, guid: 1929cf1c14e53c64693f32bb051e7185,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

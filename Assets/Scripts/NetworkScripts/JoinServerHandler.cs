@@ -1,12 +1,15 @@
+using AYellowpaper.SerializedCollections;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Services.Authentication;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class JoinServerHandler : MonoBehaviour
+public class JoinServerHandler : NetworkBehaviour
 {
     private UnityTransport _unityTransport;
 
@@ -19,11 +22,23 @@ public class JoinServerHandler : MonoBehaviour
     private string _localPlayerName = "";
     public string LocalPlayerName => _localPlayerName;
 
+    public SerializedDictionary<ulong, string> ClientIdToNameDict;
+
     public void SetLocalPlayerName(string localPlayerName) => _localPlayerName = localPlayerName;
 
     private void Awake()
     {
-        _unityTransport = GameObject.FindObjectOfType<UnityTransport>();
+        DontDestroyOnLoad(this);
+
+        _unityTransport = GameObject.FindFirstObjectByType<UnityTransport>();
+        if (IsServer)
+            ClientIdToNameDict = new SerializedDictionary<ulong, string>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        Debug.Log("WHY THE FUCK AREN'T YOU WORKING");
+        SendDataToServerRpc(NetworkManager.Singleton.LocalClientId, Authenticate.Instance.GetPlayer().Data["PlayerName"].Value);
     }
 
     private void Start()
@@ -34,6 +49,13 @@ public class JoinServerHandler : MonoBehaviour
     }
 
 
+    [ServerRpc(RequireOwnership = false)] 
+    private void SendDataToServerRpc(ulong clientID, string lobbyUserName)
+    {
+        Debug.Log("Server received data");
+        ClientIdToNameDict.Add(clientID, lobbyUserName);
+    }
+
     private void UpdateSelection(int index)
     {
         _vehicleSelectionIndex = index;
@@ -41,6 +63,9 @@ public class JoinServerHandler : MonoBehaviour
 
     private void Singleton_OnClientDisconnectCallback(ulong id)
     {
+        if (IsServer)
+            ClientIdToNameDict.Remove(id);
+
         if (NetworkManager.Singleton.IsClient)
         {
             //host
@@ -58,12 +83,13 @@ public class JoinServerHandler : MonoBehaviour
     {
         try
         {
+            ClientIdToNameDict.Clear();
+
             Allocation a = await RelayService.Instance.CreateAllocationAsync(maxPlayers);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
 
             _unityTransport.SetHostRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData);
             NetworkManager.Singleton.StartHost();
-            Debug.Log("successfully created server " + joinCode);
             return joinCode;
         }
         catch(RelayServiceException ex)
@@ -94,6 +120,9 @@ public class JoinServerHandler : MonoBehaviour
 
     public void LeaveServer()
     {
+        if (IsServer)
+            ClientIdToNameDict.Clear();
+
         NetworkManager.Singleton.Shutdown();
     }
 }

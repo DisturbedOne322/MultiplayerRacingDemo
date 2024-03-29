@@ -8,7 +8,10 @@ public class TrafficCar : NetworkBehaviour
     private float _multiplier = 0.0001f;
 
     [SerializeField]
+    private Transform[] _wheelsArray;
+
     private SplineAnimate _splineAnimate;
+    public SplineContainer Container;
     [SerializeField]
     private Rigidbody _rb;
 
@@ -20,12 +23,16 @@ public class TrafficCar : NetworkBehaviour
 
     private float _maxSpeed;
 
-    private const float MAX_RAY_DIST = 20;
-    private WaitForSeconds _raycastDelay = new WaitForSeconds(0.33f);
+    private NetworkVariable<float> _speedNetVar;
+
+    private const float MAX_RAY_DIST = 30;
+    private WaitForSeconds _raycastDelay = new WaitForSeconds(0.25f);
 
     public void Initialize(SplineContainer container, float speed, float offset)
     {
-        _splineAnimate.Container = container;
+        _splineAnimate = gameObject.AddComponent<SplineAnimate>();
+        Container = container;
+        _splineAnimate.Container = Container;
 
         _splineAnimate.ObjectUpAxis = SplineComponent.AlignAxis.ZAxis;
         _splineAnimate.ObjectForwardAxis = SplineComponent.AlignAxis.NegativeYAxis;
@@ -46,15 +53,40 @@ public class TrafficCar : NetworkBehaviour
         while (true)
         {
             if (!_collided)
-            {
-                if (Physics.Raycast(transform.position + Vector3.up, -transform.up, MAX_RAY_DIST, _trafficLayer))
-                    _accelerate = false;
-                else
-                    _accelerate = true;
-            }
+                TestForFutureCollisions();
 
             yield return _raycastDelay;
         }
+    }
+
+    private void TestForFutureCollisions()
+    {
+        Debug.DrawRay(transform.position + Vector3.up, -transform.up * MAX_RAY_DIST, Color.red, 0.25f);
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position + Vector3.up, 2, -transform.up, MAX_RAY_DIST, _trafficLayer);
+        if (hits.Length > 0)
+            _accelerate = !IsCollisionDangerous(hits);
+        else
+            _accelerate = true;
+    }
+
+
+    private bool IsCollisionDangerous(RaycastHit[] hits)
+    {
+        for(int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].transform.root == transform.root)
+                continue;
+
+            if (hits[i].collider.transform.root.TryGetComponent<TrafficCar>(out TrafficCar otherCar))
+            {
+                if (otherCar.Container == this.Container)
+                    return true;
+            }
+            else
+                return true;
+        }
+
+        return false;
     }
 
     private void Update()
@@ -62,6 +94,13 @@ public class TrafficCar : NetworkBehaviour
         if (_collided)
             return;
 
+        for (int i = 0; i < _wheelsArray.Length; i++)
+            _wheelsArray[i].rotation *= Quaternion.Euler(_speedNetVar.Value, 0, 0);
+
+        if (!IsServer)
+            return;
+
+        _speedNetVar.Value = _splineAnimate.MaxSpeed;
         float prevProgress = _splineAnimate.NormalizedTime;
 
         if (_accelerate)
@@ -71,7 +110,7 @@ public class TrafficCar : NetworkBehaviour
 
             if (_splineAnimate.MaxSpeed < _maxSpeed)
             {
-                _splineAnimate.MaxSpeed += _maxSpeed * Time.deltaTime / 5;
+                _splineAnimate.MaxSpeed += _maxSpeed * Time.deltaTime / 6;
                 _splineAnimate.NormalizedTime = prevProgress;
             }
         }   
@@ -83,17 +122,18 @@ public class TrafficCar : NetworkBehaviour
                 _splineAnimate.NormalizedTime = prevProgress;
             }
             else
+            {
+                _splineAnimate.MaxSpeed = 0;
                 _splineAnimate.Pause();
+            }
         }
-
-
     }
 
     public void ResetTrafficCar(SplineContainer newContainer, float newOffset)
     {
         _rb.Sleep();
 
-        _splineAnimate.Container = newContainer;
+        Container = newContainer;
 
         _splineAnimate.StartOffset = newOffset;
         _splineAnimate.Restart(true);

@@ -23,7 +23,7 @@ public class TrafficCar : NetworkBehaviour
 
     private float _maxSpeed;
 
-    private NetworkVariable<float> _speedNetVar;
+    private NetworkVariable<float> _speedNetVar = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private const float MAX_RAY_DIST = 30;
     private WaitForSeconds _raycastDelay = new WaitForSeconds(0.25f);

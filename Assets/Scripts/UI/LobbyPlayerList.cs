@@ -33,8 +33,8 @@ public class LobbyPlayerList : MonoBehaviour
     private float _pingTimerMax = 15;
     private float _pingTimer = 15;
 
-    private float _updateTimer = 0f;
-    private float _updateTimerMax = 2f;
+    private float _lobbyUpdateTimer = 0f;
+    private const float LOBBY_UPDATE_TIMER_MAX = 2f;
 
     private void Awake()
     {
@@ -51,13 +51,13 @@ public class LobbyPlayerList : MonoBehaviour
 
     private void Instance_OnKicked()
     {
-        _updateTimer = _updateTimerMax;
+        _lobbyUpdateTimer = LOBBY_UPDATE_TIMER_MAX;
         _menuWindow.GoToPrevWindow();
     }
 
     private void OnEnable()
     {
-        _updateTimer = 0;
+        _lobbyUpdateTimer = 0;
         UpdateLobbyData();
     }
 
@@ -126,10 +126,10 @@ public class LobbyPlayerList : MonoBehaviour
         if (Lobby.Instance.JoinedLobby == null)
             return;
 
-        _updateTimer -= Time.unscaledDeltaTime;
-        if (_updateTimer < 0)
+        _lobbyUpdateTimer -= Time.unscaledDeltaTime;
+        if (_lobbyUpdateTimer < 0)
         {
-            _updateTimer = _updateTimerMax;
+            _lobbyUpdateTimer = LOBBY_UPDATE_TIMER_MAX;
             Lobby.Instance.UpdateJoinedLobby(await LobbyService.Instance.GetLobbyAsync(Lobby.Instance.JoinedLobby.Id));
 
             if (Lobby.Instance.JoinedLobby.Data["GameStarted"].Value == "True")

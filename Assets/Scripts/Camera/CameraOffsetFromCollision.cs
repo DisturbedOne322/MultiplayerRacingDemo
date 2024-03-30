@@ -9,7 +9,6 @@ public class CameraOffsetFromCollision : MonoBehaviour
 
     private float _offset = 0;
     private float _effectSpeed = 3;
-    private bool _obstacleDetected = false;
     private float _lastCollTime = 0;
     private float _delay = 0.33f;
 

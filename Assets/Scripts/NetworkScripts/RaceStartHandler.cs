@@ -18,9 +18,6 @@ namespace Assets.VehicleController
         private bool _raceStarted = false;
 
         [SerializeField]
-        private GameObject _vehiclePrefab;
-
-        [SerializeField]
         private Transform[] _racePositionArray;
         private int _playersSpawned = 0;
         private int _expectedPlayers = 0;

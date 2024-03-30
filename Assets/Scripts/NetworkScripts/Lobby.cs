@@ -33,6 +33,20 @@ public class Lobby : MonoBehaviour
         }
     }
 
+    public async void UpdatePlayerData()
+    {
+        if (Lobby.Instance.JoinedLobby == null)
+            return;
+
+        UpdatePlayerOptions updatePlayerOptions = new UpdatePlayerOptions();
+        updatePlayerOptions.Data = new Dictionary<string, PlayerDataObject>
+        {
+            {"ClientID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, NetworkManager.Singleton.LocalClientId.ToString())},
+        };
+
+        await LobbyService.Instance.UpdatePlayerAsync(_joinedLobby.Id, AuthenticationService.Instance.PlayerId, updatePlayerOptions);
+    }
+
     public void UpdateJoinedLobby(MyLobby updatedLobby)
     {
         _joinedLobby = updatedLobby;

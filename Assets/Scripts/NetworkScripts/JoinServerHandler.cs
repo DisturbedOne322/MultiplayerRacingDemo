@@ -37,7 +37,6 @@ public class JoinServerHandler : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log("WHY THE FUCK AREN'T YOU WORKING");
         SendDataToServerRpc(NetworkManager.Singleton.LocalClientId, Authenticate.Instance.GetPlayer().Data["PlayerName"].Value);
     }
 

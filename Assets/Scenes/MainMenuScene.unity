@@ -1484,6 +1484,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4070570636246127026, guid: 73ed415f9f7ff1347a4d21be8f16c519,
+        type: 3}
+      propertyPath: NetworkConfig.TickRate
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 5368235319178762689, guid: 73ed415f9f7ff1347a4d21be8f16c519,
         type: 3}
       propertyPath: m_Name
@@ -8779,7 +8784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df81829cf318c8d44b0d3e12863b2f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _clientIdToNameDict:
+  ClientIdToNameDict:
     _serializedList: []
 --- !u!4 &1548043810
 Transform:

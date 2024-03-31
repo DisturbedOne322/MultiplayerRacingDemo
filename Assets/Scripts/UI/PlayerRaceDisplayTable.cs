@@ -23,9 +23,10 @@ public class PlayerRaceDisplayTable : MonoBehaviour
         if(_playerDisplayInfoList != null)
         {
             _playerDisplayInfoList.Clear();
+            
             Transform[] children = _playersHolder.GetComponentsInChildren<Transform>();
             for(int i = 1; i < children.Length; i++) 
-                Destroy(children[i]);
+                Destroy(children[i].gameObject);
         }
 
         _playerDisplayInfoList = new List<PlayerRaceDisplayInfo>();

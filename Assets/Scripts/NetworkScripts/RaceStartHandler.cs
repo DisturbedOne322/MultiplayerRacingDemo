@@ -12,10 +12,9 @@ namespace Assets.VehicleController
     public class RaceStartHandler : NetworkBehaviour
     {
         public static event Action<SplineContainer> OnRaceStart;
+        public static bool RaceStarted { get; private set; }
         [SerializeField]
         private SplineContainer _raceLayout;
-
-        private bool _raceStarted = false;
 
         [SerializeField]
         private Transform[] _racePositionArray;
@@ -65,10 +64,10 @@ namespace Assets.VehicleController
 
             if (_countdownTimeNetVar.Value < 0)
             {
-                if (_raceStarted)
+                if (RaceStarted)
                     return;
 
-                _raceStarted = true;
+                RaceStarted = true;
 
                 OnRaceStart?.Invoke(_raceLayout);
 

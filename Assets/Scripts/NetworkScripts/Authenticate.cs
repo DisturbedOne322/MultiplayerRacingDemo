@@ -122,7 +122,6 @@ public class Authenticate : MonoBehaviour
             {
                 { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, GetVerifiedPlayerName()) },
                 { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "False" )},
-                { "ClientID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "0")},
             }
         };
     }

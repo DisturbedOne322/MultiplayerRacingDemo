@@ -47,6 +47,7 @@ public class RaceProgressTracker : NetworkBehaviour
     {
         var connectedClientIDs = NetworkManager.Singleton.ConnectedClientsIds;
         _playersTransformList = new();
+        _playersDataNetworkList.Clear();
         for (int i = 0; i < connectedClientIDs.Count; i++)
         {
             ulong id = connectedClientIDs[i];

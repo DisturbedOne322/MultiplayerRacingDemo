@@ -24,7 +24,7 @@ public partial class @PlayerNetworkInputActions: IInputActionCollection2, IDispo
     ""name"": ""PlayerNetworkInputActions"",
     ""maps"": [
         {
-            ""name"": ""Players"",
+            ""name"": ""Vehicle"",
             ""id"": ""3f67c974-f6cb-4ce3-9145-62088bcdb2dd"",
             ""actions"": [
                 {
@@ -218,17 +218,48 @@ public partial class @PlayerNetworkInputActions: IInputActionCollection2, IDispo
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Chat"",
+            ""id"": ""1b9b09bb-b8e7-42d6-ad53-c3947b36f7b1"",
+            ""actions"": [
+                {
+                    ""name"": ""OpenChat"",
+                    ""type"": ""Button"",
+                    ""id"": ""5adf1b1b-4f0b-42ee-81cc-3882b48eaf03"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""b32636d1-bdd6-4917-bb97-8ddf87c38411"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenChat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
 }");
-        // Players
-        m_Players = asset.FindActionMap("Players", throwIfNotFound: true);
-        m_Players_GasInput = m_Players.FindAction("GasInput", throwIfNotFound: true);
-        m_Players_BrakeInput = m_Players.FindAction("BrakeInput", throwIfNotFound: true);
-        m_Players_HandbrakeInput = m_Players.FindAction("HandbrakeInput", throwIfNotFound: true);
-        m_Players_NitroInput = m_Players.FindAction("NitroInput", throwIfNotFound: true);
-        m_Players_HorizontalInput = m_Players.FindAction("HorizontalInput", throwIfNotFound: true);
+        // Vehicle
+        m_Vehicle = asset.FindActionMap("Vehicle", throwIfNotFound: true);
+        m_Vehicle_GasInput = m_Vehicle.FindAction("GasInput", throwIfNotFound: true);
+        m_Vehicle_BrakeInput = m_Vehicle.FindAction("BrakeInput", throwIfNotFound: true);
+        m_Vehicle_HandbrakeInput = m_Vehicle.FindAction("HandbrakeInput", throwIfNotFound: true);
+        m_Vehicle_NitroInput = m_Vehicle.FindAction("NitroInput", throwIfNotFound: true);
+        m_Vehicle_HorizontalInput = m_Vehicle.FindAction("HorizontalInput", throwIfNotFound: true);
+        // Chat
+        m_Chat = asset.FindActionMap("Chat", throwIfNotFound: true);
+        m_Chat_OpenChat = m_Chat.FindAction("OpenChat", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -287,32 +318,32 @@ public partial class @PlayerNetworkInputActions: IInputActionCollection2, IDispo
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Players
-    private readonly InputActionMap m_Players;
-    private List<IPlayersActions> m_PlayersActionsCallbackInterfaces = new List<IPlayersActions>();
-    private readonly InputAction m_Players_GasInput;
-    private readonly InputAction m_Players_BrakeInput;
-    private readonly InputAction m_Players_HandbrakeInput;
-    private readonly InputAction m_Players_NitroInput;
-    private readonly InputAction m_Players_HorizontalInput;
-    public struct PlayersActions
+    // Vehicle
+    private readonly InputActionMap m_Vehicle;
+    private List<IVehicleActions> m_VehicleActionsCallbackInterfaces = new List<IVehicleActions>();
+    private readonly InputAction m_Vehicle_GasInput;
+    private readonly InputAction m_Vehicle_BrakeInput;
+    private readonly InputAction m_Vehicle_HandbrakeInput;
+    private readonly InputAction m_Vehicle_NitroInput;
+    private readonly InputAction m_Vehicle_HorizontalInput;
+    public struct VehicleActions
     {
         private @PlayerNetworkInputActions m_Wrapper;
-        public PlayersActions(@PlayerNetworkInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @GasInput => m_Wrapper.m_Players_GasInput;
-        public InputAction @BrakeInput => m_Wrapper.m_Players_BrakeInput;
-        public InputAction @HandbrakeInput => m_Wrapper.m_Players_HandbrakeInput;
-        public InputAction @NitroInput => m_Wrapper.m_Players_NitroInput;
-        public InputAction @HorizontalInput => m_Wrapper.m_Players_HorizontalInput;
-        public InputActionMap Get() { return m_Wrapper.m_Players; }
+        public VehicleActions(@PlayerNetworkInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @GasInput => m_Wrapper.m_Vehicle_GasInput;
+        public InputAction @BrakeInput => m_Wrapper.m_Vehicle_BrakeInput;
+        public InputAction @HandbrakeInput => m_Wrapper.m_Vehicle_HandbrakeInput;
+        public InputAction @NitroInput => m_Wrapper.m_Vehicle_NitroInput;
+        public InputAction @HorizontalInput => m_Wrapper.m_Vehicle_HorizontalInput;
+        public InputActionMap Get() { return m_Wrapper.m_Vehicle; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayersActions set) { return set.Get(); }
-        public void AddCallbacks(IPlayersActions instance)
+        public static implicit operator InputActionMap(VehicleActions set) { return set.Get(); }
+        public void AddCallbacks(IVehicleActions instance)
         {
-            if (instance == null || m_Wrapper.m_PlayersActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_PlayersActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_VehicleActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_VehicleActionsCallbackInterfaces.Add(instance);
             @GasInput.started += instance.OnGasInput;
             @GasInput.performed += instance.OnGasInput;
             @GasInput.canceled += instance.OnGasInput;
@@ -330,7 +361,7 @@ public partial class @PlayerNetworkInputActions: IInputActionCollection2, IDispo
             @HorizontalInput.canceled += instance.OnHorizontalInput;
         }
 
-        private void UnregisterCallbacks(IPlayersActions instance)
+        private void UnregisterCallbacks(IVehicleActions instance)
         {
             @GasInput.started -= instance.OnGasInput;
             @GasInput.performed -= instance.OnGasInput;
@@ -349,27 +380,77 @@ public partial class @PlayerNetworkInputActions: IInputActionCollection2, IDispo
             @HorizontalInput.canceled -= instance.OnHorizontalInput;
         }
 
-        public void RemoveCallbacks(IPlayersActions instance)
+        public void RemoveCallbacks(IVehicleActions instance)
         {
-            if (m_Wrapper.m_PlayersActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_VehicleActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IPlayersActions instance)
+        public void SetCallbacks(IVehicleActions instance)
         {
-            foreach (var item in m_Wrapper.m_PlayersActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_VehicleActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_PlayersActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_VehicleActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public PlayersActions @Players => new PlayersActions(this);
-    public interface IPlayersActions
+    public VehicleActions @Vehicle => new VehicleActions(this);
+
+    // Chat
+    private readonly InputActionMap m_Chat;
+    private List<IChatActions> m_ChatActionsCallbackInterfaces = new List<IChatActions>();
+    private readonly InputAction m_Chat_OpenChat;
+    public struct ChatActions
+    {
+        private @PlayerNetworkInputActions m_Wrapper;
+        public ChatActions(@PlayerNetworkInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @OpenChat => m_Wrapper.m_Chat_OpenChat;
+        public InputActionMap Get() { return m_Wrapper.m_Chat; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ChatActions set) { return set.Get(); }
+        public void AddCallbacks(IChatActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ChatActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ChatActionsCallbackInterfaces.Add(instance);
+            @OpenChat.started += instance.OnOpenChat;
+            @OpenChat.performed += instance.OnOpenChat;
+            @OpenChat.canceled += instance.OnOpenChat;
+        }
+
+        private void UnregisterCallbacks(IChatActions instance)
+        {
+            @OpenChat.started -= instance.OnOpenChat;
+            @OpenChat.performed -= instance.OnOpenChat;
+            @OpenChat.canceled -= instance.OnOpenChat;
+        }
+
+        public void RemoveCallbacks(IChatActions instance)
+        {
+            if (m_Wrapper.m_ChatActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IChatActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ChatActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ChatActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public ChatActions @Chat => new ChatActions(this);
+    public interface IVehicleActions
     {
         void OnGasInput(InputAction.CallbackContext context);
         void OnBrakeInput(InputAction.CallbackContext context);
         void OnHandbrakeInput(InputAction.CallbackContext context);
         void OnNitroInput(InputAction.CallbackContext context);
         void OnHorizontalInput(InputAction.CallbackContext context);
+    }
+    public interface IChatActions
+    {
+        void OnOpenChat(InputAction.CallbackContext context);
     }
 }

@@ -1,9 +1,7 @@
 using AYellowpaper.SerializedCollections;
-using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using Unity.Services.Authentication;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -37,7 +35,8 @@ public class JoinServerHandler : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        SendDataToServerRpc(NetworkManager.Singleton.LocalClientId, Authenticate.Instance.GetPlayer().Data["PlayerName"].Value);
+        SendDataToServerRpc(NetworkManager.Singleton.LocalClientId, PlayerData.Instance.GetPlayer().Data["PlayerName"].Value);
+        NetworkManager.Singleton.OnServerStopped += Singleton_OnServerStopped;
     }
 
     private void Start()
@@ -47,11 +46,18 @@ public class JoinServerHandler : NetworkBehaviour
         VehicleSelectionInLobby.OnVehicleSelectionChanged += UpdateSelection;
     }
 
+    private void Singleton_OnServerStopped(bool obj)
+    {
+        if (Lobby.Instance.JoinedLobby == null)
+            return;
+
+        if (Lobby.Instance.JoinedLobby.Data["GameStarted"].Value == "False")
+            MenuHandler.Instance.RemoveLastMenu();
+    }
 
     [ServerRpc(RequireOwnership = false)] 
     private void SendDataToServerRpc(ulong clientID, string lobbyUserName)
     {
-        Debug.Log("Server received data");
         ClientIdToNameDict.Add(clientID, lobbyUserName);
     }
 
@@ -65,14 +71,13 @@ public class JoinServerHandler : NetworkBehaviour
         if (IsServer)
             ClientIdToNameDict.Remove(id);
 
-        if (NetworkManager.Singleton.IsClient)
+        if (NetworkManager.Singleton.LocalClientId == id)
         {
-            //host
-            if (id == 0)
-            {
-                NetworkManager.Singleton.Shutdown();
+            if (Lobby.Instance.JoinedLobby.Data["GameStarted"].Value == "False")
+                MenuHandler.Instance.RemoveLastMenu();
+            else
                 SceneManager.LoadScene("MainMenuScene");
-            }
+            Lobby.Instance.LeaveLobby();
         }
     }
 
@@ -105,7 +110,6 @@ public class JoinServerHandler : NetworkBehaviour
         try
         {
             JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinCode);
-
             _unityTransport.SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
             NetworkManager.Singleton.StartClient();
             return true;

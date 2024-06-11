@@ -190,8 +190,8 @@ namespace Assets.VehicleController
                 _inputProvider.GetHorizontalInput(), _inputProvider.GetHandbrakeInput(),
                 _steerAngle, _steerSpeed, TransmissionType, DrivetrainType, _suspensionSimulationPrecision, _ignoreLayers);
 
-            _partsManager.PerformAirControls(AerialControlsEnabled, AerialControlsSensitivity,
-                _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());          
+            //_partsManager.PerformAirControls(AerialControlsEnabled, AerialControlsSensitivity,
+            //    _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());          
         }
 
         public Transform GetCenterOfMass() => _centerOfMass;

@@ -11,7 +11,6 @@ public class LobbyDisplayInfo : MonoBehaviour
     private TextMeshProUGUI _lobbyNameText;
     [SerializeField]
     private TextMeshProUGUI _playersInLobbyText;
-    
 
     [SerializeField]
     private Button _joinLobbyButton;
@@ -33,7 +32,7 @@ public class LobbyDisplayInfo : MonoBehaviour
         try
         {
             bool success = await Lobby.Instance.JoinByID(id);
-             if(success)
+            if(success)
                 OnJoinedLobby?.Invoke();
         }
         catch (LobbyServiceException e)

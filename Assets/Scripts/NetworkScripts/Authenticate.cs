@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,40 +16,6 @@ public class Authenticate : MonoBehaviour
     private Transform _menuHolder;
 
     [SerializeField]
-    private JoinServerHandler _joinServerHandler;
-
-    public static Authenticate Instance { get; private set; }
-
-    private Player _player;
-
-    private float _lastUpdateTime = 0;
-    private float _updateCD = 1.05f;
-
-    public Player GetPlayer()
-    {
-        return _player;
-    }
-
-    public void ResetReadyStatus()
-    {
-        _player.Data["Ready"].Value = "False";
-    }
-
-    public void SwitchReadyStatus()
-    {
-        if (_lastUpdateTime + _updateCD > Time.time)
-            return;
-
-        if (_player.Data["Ready"].Value == "True")
-            _player.Data["Ready"].Value = "False";
-        else
-            _player.Data["Ready"].Value = "True";
-
-        Lobby.Instance.UpdatePlayerStatus(_player.Data["Ready"].Value);
-        _lastUpdateTime = Time.time;
-    }
-
-    [SerializeField]
     private MenuWindow _nextWindow;
 
     private void Awake()
@@ -60,24 +23,23 @@ public class Authenticate : MonoBehaviour
         _loginButton.onClick.AddListener(() => {
             TryAuthenticate();
         });
-
-
-        if (Instance == null)
-            Instance = this;
     }
 
     private void Start()
     {
         if (UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized)
-            _nextWindow.GoToNextWindow();
-        else
+        {
             MenuHandler.Instance.AddMenu(_menuHolder);
-    }
+            MenuHandler.Instance.SetFirstMenu(_nextWindow.Get());
+            _nextWindow.GoToNextWindow();
+        }
+        else
+        {
+            MenuHandler.Instance.AddMenu(_menuHolder);
+        }
 
-    private void OnEnable()
-    {
-        if (_player != null)
-            _playerNameField.text = _player.Data["PlayerName"].Value;
+        if (PlayerData.Instance.GetPlayer() != null)
+            _playerNameField.text = PlayerData.Instance.GetPlayer().Data["PlayerName"].Value;
     }
 
     private async void TryAuthenticate()
@@ -85,9 +47,6 @@ public class Authenticate : MonoBehaviour
         try
         {
             _loginButton.interactable = false;
-            _player = CreatePlayer();
-
-            _joinServerHandler.SetLocalPlayerName(_player.Data["PlayerName"].Value);
 
             await UnityServices.InitializeAsync();
 
@@ -97,33 +56,19 @@ public class Authenticate : MonoBehaviour
                 _nextWindow.GoToNextWindow();
                 return;
             }
-
             AuthenticationService.Instance.SignedIn += () =>
             {
                 _loginButton.interactable = true;
                 _nextWindow.GoToNextWindow();
             };
-
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            PlayerData.Instance.UpdatePlayerName(GetVerifiedPlayerName());
         }
         catch (LobbyServiceException e)
         {
             _loginButton.interactable = true;
             Debug.Log(e);
         }
-    }
-
-
-    private Player CreatePlayer()
-    {
-        return new Player
-        {
-            Data = new Dictionary<string, PlayerDataObject>
-            {
-                { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, GetVerifiedPlayerName()) },
-                { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "False" )},
-            }
-        };
     }
 
     private string GetVerifiedPlayerName()

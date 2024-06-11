@@ -46,10 +46,6 @@ public class CreateNewLobby : MonoBehaviour
                 _menuWindow.GoToNextWindow();
             return;
         }
-
-        if (char.IsNumber(_lobbyName.text[0]))
-            return;
-
         bool success = await Lobby.Instance.CreateLobby(_lobbyName.text, _idToPlayerDict[_dropDown.value]);
         _createLobbyButton.interactable = true;
         if (success)

@@ -3546,7 +3546,6 @@ Transform:
   - {fileID: 7699709249158408602}
   - {fileID: 6245866214588921735}
   - {fileID: 7790605207538208204}
-  - {fileID: 7236388144677557761}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6586264349526160832
@@ -3607,7 +3606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4087501592
+  GlobalObjectIdHash: 3240842627
   InScenePlacedSourceGlobalObjectIdHash: 2264423694
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -5170,85 +5169,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &728763430377808901
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 5694785369334173440}
-    m_Modifications:
-    - target: {fileID: 1520968070598905880, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: _vehicleController
-      value: 
-      objectReference: {fileID: 5798885625002337906}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8506099674193091474, guid: 5e542fa020432224b96055d295e4a7e2,
-        type: 3}
-      propertyPath: m_Name
-      value: MinimapCamera
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5e542fa020432224b96055d295e4a7e2, type: 3}
---- !u!4 &7236388144677557761 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7958360647097152004, guid: 5e542fa020432224b96055d295e4a7e2,
-    type: 3}
-  m_PrefabInstance: {fileID: 728763430377808901}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2192349603428788707
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5557,6 +5477,11 @@ PrefabInstance:
       propertyPath: m_LookAt
       value: 
       objectReference: {fileID: 5694785369334173440}
+    - target: {fileID: 9204785542459496989, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: _vehicleController
+      value: 
+      objectReference: {fileID: 5798885625002337906}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

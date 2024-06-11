@@ -2,6 +2,7 @@ using Assets.VehicleController;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
 
 public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerInputProvider
 {
@@ -14,7 +15,7 @@ public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerI
     private PlayerNetworkInputActions _inputActions;
 
     private NetworkVariable<bool> _inputEnabledNetVar = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
+    private bool _lockVehicleInput = false;
 
     public override void OnNetworkSpawn()
     {
@@ -37,6 +38,8 @@ public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerI
                 GetComponent<CustomVehicleController>().TransmissionType = TransmissionType.Automatic;
             }
         };
+
+        _inputActions.Chat.OpenChat.performed += _ => {_lockVehicleInput = !_lockVehicleInput;};
     }
 
     public void EnableInput(bool enable)
@@ -48,20 +51,31 @@ public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerI
     {
         if (!IsOwner)
             return;
-        _gasInput = _inputActions.Players.GasInput.ReadValue<float>();
 
-        if (!_inputEnabledNetVar.Value)
+        if (_lockVehicleInput)
         {
-            _brakeInput = _inputActions.Players.GasInput.ReadValue<float>() == 0 ? 0 : 1;
+            _gasInput = 0;
+            _brakeInput = 0;
+            _handbrakeInput = false;
+            _nitroInput = false;
+            _horizontalInput = 0;
             return;
         }
 
-        _brakeInput = _inputActions.Players.BrakeInput.ReadValue<float>();
+        _gasInput = _inputActions.Vehicle.GasInput.ReadValue<float>();
 
-        _horizontalInput = _inputActions.Players.HorizontalInput.ReadValue<float>();
+        if (!_inputEnabledNetVar.Value)
+        {
+            _brakeInput = _inputActions.Vehicle.GasInput.ReadValue<float>() == 0 ? 0 : 1;
+            return;
+        }
 
-        _handbrakeInput = _inputActions.Players.HandbrakeInput.IsPressed();
-        _nitroInput = _inputActions.Players.NitroInput.IsPressed();
+        _brakeInput = _inputActions.Vehicle.BrakeInput.ReadValue<float>();
+
+        _horizontalInput = _inputActions.Vehicle.HorizontalInput.ReadValue<float>();
+
+        _handbrakeInput = _inputActions.Vehicle.HandbrakeInput.IsPressed();
+        _nitroInput = _inputActions.Vehicle.NitroInput.IsPressed();
     }
 
     public float GetBrakeInput() => IsOwner ? _brakeInput : 0;

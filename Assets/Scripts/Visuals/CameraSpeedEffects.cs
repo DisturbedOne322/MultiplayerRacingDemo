@@ -122,7 +122,7 @@ public class CameraSpeedEffects : MonoBehaviour
 
     private void ManageCameraOffset()
     {
-        _lookingBack = Input.GetKey(KeyCode.C);
+        //_lookingBack = Input.GetKey(KeyCode.C);
 
         Vector3 offset = new Vector3(_transposer.m_FollowOffset.x, _transposer.m_FollowOffset.y, 0);
 

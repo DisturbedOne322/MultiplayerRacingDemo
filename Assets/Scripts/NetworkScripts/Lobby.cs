@@ -23,6 +23,8 @@ public class Lobby : MonoBehaviour
     [SerializeField]
     private JoinServerHandler _joinServerHandler;
 
+    public bool GameStarted = false;
+
     private ILobbyEvents _lobbyEvents;
 
     private void Awake()
@@ -48,7 +50,7 @@ public class Lobby : MonoBehaviour
         List<Player> playersInLobby = JoinedLobby.Players;
         for (int i = 0; i < playersInLobby.Count; i++)
         {
-            if (playersInLobby[i].Id == Lobby.Instance.JoinedLobby.HostId)
+            if (playersInLobby[i].Id == JoinedLobby.HostId)
                 continue;
 
             if (playersInLobby[i].Data["Ready"].Value == "False")
@@ -76,21 +78,24 @@ public class Lobby : MonoBehaviour
 
     public async void StartGame()
     {
-        UpdateLobbyOptions updateLobbyOptions = new UpdateLobbyOptions();
-        updateLobbyOptions.Data = new Dictionary<string, DataObject>
+        try
         {
-            {"GameStarted", new DataObject(DataObject.VisibilityOptions.Member, "True")},
-        };
+            UpdateLobbyOptions updateLobbyOptions = new UpdateLobbyOptions();
+            updateLobbyOptions.Data = new Dictionary<string, DataObject>
+            {
+                {"GameStarted", new DataObject(DataObject.VisibilityOptions.Member, "True") }
+            };
 
-        await LobbyService.Instance.UpdateLobbyAsync(_joinedLobby.Id, updateLobbyOptions);
+            _hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(_joinedLobby.Id, updateLobbyOptions);
 
-        Invoke("LoadScene", 1.2f);
+            NetworkManager.Singleton.SceneManager.LoadScene("CityScene", LoadSceneMode.Single);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
     }
 
-    private void LoadScene()
-    {
-        NetworkManager.Singleton.SceneManager.LoadScene("CityScene", LoadSceneMode.Single);
-    }   
 
     public async void UpdatePlayerStatus(string newStatus)
     {
@@ -128,13 +133,13 @@ public class Lobby : MonoBehaviour
         {
             string lobbyName = "Lobby" + $"{UnityEngine.Random.Range(0,99999) : 00000}";
 
-            Authenticate.Instance.ResetReadyStatus();
+            PlayerData.Instance.ResetReadyStatus();
             string joinCode = await _joinServerHandler.HostGame(maxPlayers);
 
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
             {
                 IsPrivate = false,
-                Player = Authenticate.Instance.GetPlayer(),
+                Player = PlayerData.Instance.GetPlayer(),
                 Data = new Dictionary<string, DataObject>
                 {
                     {"JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode)},
@@ -143,7 +148,6 @@ public class Lobby : MonoBehaviour
             };
 
             _joinedLobby = _hostedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
-            Debug.Log("Created Lobby " + _hostedLobby.Name + " " + _hostedLobby.LobbyCode);
             return true;
         }
         catch (LobbyServiceException e)
@@ -157,13 +161,13 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            Authenticate.Instance.ResetReadyStatus();
+            PlayerData.Instance.ResetReadyStatus();
             string joinCode = await _joinServerHandler.HostGame(maxPlayers);
 
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
             {
                 IsPrivate = false,
-                Player = Authenticate.Instance.GetPlayer(),
+                Player = PlayerData.Instance.GetPlayer(),
                 Data = new Dictionary<string, DataObject>
                 {
                     { "JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode) },
@@ -172,7 +176,6 @@ public class Lobby : MonoBehaviour
             };
             
             _joinedLobby = _hostedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
-            Debug.Log("Created Lobby " + _hostedLobby.Name + " " + _hostedLobby.LobbyCode);
             return true;
         }
         catch (LobbyServiceException e)
@@ -215,11 +218,11 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            Authenticate.Instance.ResetReadyStatus();
+            PlayerData.Instance.ResetReadyStatus();
 
             QuickJoinLobbyOptions quickJoinLobbyOptions = new QuickJoinLobbyOptions
             {
-                Player = Authenticate.Instance.GetPlayer(),
+                Player = PlayerData.Instance.GetPlayer(),
             };
 
             _joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync(quickJoinLobbyOptions);
@@ -235,25 +238,26 @@ public class Lobby : MonoBehaviour
         }
     }
 
-    public async void JoinByCode(string code)
+    public async Task<bool> JoinByCode(string code)
     {
         try
         {
-            Authenticate.Instance.ResetReadyStatus();
+            PlayerData.Instance.ResetReadyStatus();
 
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
             {
-                Player = Authenticate.Instance.GetPlayer()           
+                Player = PlayerData.Instance.GetPlayer()           
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(code, joinLobbyByCodeOptions);
             await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
             SubscribeToKickEvent(JoinedLobby.Id);
-            Debug.Log("Joined by code " + code);
+            return true;
         }
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+            return false;
         }
     }
 
@@ -261,11 +265,11 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            Authenticate.Instance.ResetReadyStatus();
+            PlayerData.Instance.ResetReadyStatus();
 
             JoinLobbyByIdOptions joinLobbyByCodeOptions = new JoinLobbyByIdOptions
             {
-                Player = Authenticate.Instance.GetPlayer(),                
+                Player = PlayerData.Instance.GetPlayer(),                
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(id, joinLobbyByCodeOptions);
@@ -303,8 +307,6 @@ public class Lobby : MonoBehaviour
         try
         {
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-
-            Debug.Log("Lobbies found : " + queryResponse.Results.Count);
             return queryResponse.Results;   
         }
         catch (LobbyServiceException e)

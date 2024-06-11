@@ -22,16 +22,18 @@ public class JoinLobbyByCode : MonoBehaviour
         });
     }
 
-    public void JoinByCode()
+    public async void JoinByCode()
     {
-        _joinByCodeButton.interactable = false;
-        if (_joinCode.text == "")
+        if (_joinCode.text == "" || _joinCode.text.Length != 6)
+        {
+            Debug.Log("Code must consist of 6 characters");
             return;
-        if (_joinCode.text.Length != 6)
-            return;
+        }
 
-        Lobby.Instance.JoinByCode(_joinCode.text);
+        _joinByCodeButton.interactable = false;
+        bool success = await Lobby.Instance.JoinByCode(_joinCode.text);
         _joinByCodeButton.interactable = true;
-        _menuWindow.GoToNextWindow();
+        if(success)
+            _menuWindow.GoToNextWindow();
     }
 }

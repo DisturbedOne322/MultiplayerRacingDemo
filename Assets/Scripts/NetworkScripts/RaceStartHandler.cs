@@ -57,7 +57,7 @@ namespace Assets.VehicleController
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                NetworkManager.Singleton.Shutdown();
+                Lobby.Instance.LeaveLobby();
                 SceneManager.LoadScene("MainMenuScene");
             }
 

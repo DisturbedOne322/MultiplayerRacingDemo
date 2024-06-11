@@ -12,6 +12,9 @@ public class Minimap : NetworkBehaviour
     private Transform _followTransform;
 
     [SerializeField]
+    private Transform _playerIcon;
+
+    [SerializeField]
     private float _minSize = 200;
     [SerializeField]
     private float _maxSize = 600;
@@ -36,8 +39,9 @@ public class Minimap : NetworkBehaviour
             return;
 
         transform.position = _followTransform.position + new Vector3(0, _verticalOffset, 0);
+        _playerIcon.rotation = Quaternion.Euler(0, 0, Vector3.SignedAngle(_followTransform.forward, Vector3.forward, Vector3.up) + 90);
 
-        float size = _minSize + _vehicleController.GetCurrentCarStats().SpeedInMsPerS * 4;
+        float size = _minSize + Mathf.Abs(_vehicleController.GetCurrentCarStats().SpeedInMsPerS) * 4;
         if(size > _maxSize)
             size = _maxSize;
 

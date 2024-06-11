@@ -13,6 +13,6 @@ public class PlayerMinimapDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _playerMinimap.rotation = Quaternion.Euler(0, 0, Vector3.SignedAngle(_playerTransform.forward, Vector3.forward, Vector3.up) + 90);
+        //_playerMinimap.rotation = Quaternion.Euler(0, 0, Vector3.SignedAngle(_playerTransform.forward, Vector3.forward, Vector3.up) + 90);
     }
 }

@@ -39,12 +39,14 @@ namespace Assets.VehicleController
             _centerOfGeometry = centerOfGeometry;
         }
 
-        public void ManageCarParts(float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
+        public void ManageCarParts(bool owner, float gasInput, float breakInput, bool nitroBoostInput, float horizontalInput,
         bool handbrakeInput, float maxSteerAngle, float steerSpeed, TransmissionType transmissionType,
         DrivetrainType drivetrainType, int suspensionSimulationPrecision, LayerMask ignoreLayers)
         {
             ManageWheelsPhysics(suspensionSimulationPrecision, ignoreLayers);
-            
+
+            if (!owner)
+                return;
             UpdateDriveWheels(drivetrainType);
 
             _body.AddDownforce();

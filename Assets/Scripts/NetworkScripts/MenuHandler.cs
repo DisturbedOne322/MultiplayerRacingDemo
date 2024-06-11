@@ -34,29 +34,35 @@ public class MenuHandler : MonoBehaviour
 
     public void ResetMenuList()
     {
-        RemoveLastMenu();
+        for (int i = 0; i < _menuHierarchyList.Count; i++)
+            _menuHierarchyList[i].gameObject.SetActive(false);
+
         _menuHierarchyList.Clear();
-        AddMenu(_rootMenu);
+        _menuHierarchyList.Add(_rootMenu);
+        _menuHierarchyList[0].gameObject.SetActive(true);
     }
 
     public void AddMenu(Transform newMenu)
     {
-        if(_menuHierarchyList.Count > 0)
-        {
+        if (_menuHierarchyList.Count > 0)
             _menuHierarchyList[_menuHierarchyList.Count - 1].gameObject.SetActive(false);
-        }
 
         _menuHierarchyList.Add(newMenu);
         _menuHierarchyList[_menuHierarchyList.Count - 1].gameObject.SetActive(true);    
     }
 
+    public void SetFirstMenu(Transform newFirstMenu)
+    {
+        _menuHierarchyList[0].gameObject.SetActive(false);
+        _menuHierarchyList.RemoveAt(0);
+
+        AddMenu(newFirstMenu);
+    }
+
     public void RemoveLastMenu()
     {
-        //don't go back to auth window
         if (_menuHierarchyList.Count <= 1)
-        {
             return;
-        }
 
         _menuHierarchyList[_menuHierarchyList.Count - 1].gameObject.SetActive(false);
         _menuHierarchyList.RemoveAt(_menuHierarchyList.Count - 1);

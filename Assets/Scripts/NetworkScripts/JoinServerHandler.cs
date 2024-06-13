@@ -9,7 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class JoinServerHandler : NetworkBehaviour
 {
-    private UnityTransport _unityTransport;
+    [SerializeField]
+    private PlayerData _playerData;
 
     private int _playersOnServer;
     public int PlayersOnServer => _playersOnServer;
@@ -28,31 +29,31 @@ public class JoinServerHandler : NetworkBehaviour
     {
         DontDestroyOnLoad(this);
 
-        _unityTransport = GameObject.FindFirstObjectByType<UnityTransport>();
         if (IsServer)
             ClientIdToNameDict = new SerializedDictionary<ulong, string>();
     }
 
     public override void OnNetworkSpawn()
     {
-        SendDataToServerRpc(NetworkManager.Singleton.LocalClientId, PlayerData.Instance.GetPlayer().Data["PlayerName"].Value);
-        NetworkManager.Singleton.OnServerStopped += Singleton_OnServerStopped;
+        SendDataToServerRpc(NetworkManager.Singleton.LocalClientId, _localPlayerName);
+        NetworkManager.Singleton.RunInBackground = true;
+        NetworkManager.Singleton.OnClientDisconnectCallback += Singleton_OnClientDisconnectCallback;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        NetworkManager.Singleton.OnClientDisconnectCallback -= Singleton_OnClientDisconnectCallback;
     }
 
     private void Start()
     {
-        NetworkManager.Singleton.RunInBackground = true;
-        NetworkManager.Singleton.OnClientDisconnectCallback += Singleton_OnClientDisconnectCallback;
         VehicleSelectionInLobby.OnVehicleSelectionChanged += UpdateSelection;
     }
 
-    private void Singleton_OnServerStopped(bool obj)
+    private void OnDestroy()
     {
-        if (Lobby.Instance.JoinedLobby == null)
-            return;
-
-        if (Lobby.Instance.JoinedLobby.Data["GameStarted"].Value == "False")
-            MenuHandler.Instance.RemoveLastMenu();
+        VehicleSelectionInLobby.OnVehicleSelectionChanged -= UpdateSelection;
     }
 
     [ServerRpc(RequireOwnership = false)] 
@@ -74,11 +75,22 @@ public class JoinServerHandler : NetworkBehaviour
         if (NetworkManager.Singleton.LocalClientId == id)
         {
             if (Lobby.Instance.JoinedLobby.Data["GameStarted"].Value == "False")
+            {
+                Lobby.Instance.LeaveLobby();
                 MenuHandler.Instance.RemoveLastMenu();
+            }
             else
+            {
+                Lobby.Instance.LeaveLobby();
                 SceneManager.LoadScene("MainMenuScene");
-            Lobby.Instance.LeaveLobby();
+            }
         }
+    }
+
+    private async void DisconnectAndReturnToMenu()
+    {
+        await SceneManager.LoadSceneAsync("MainMenuScene");
+        Lobby.Instance.LeaveLobbyAndServer();
     }
 
     public void SetPlayersAmount(int amount) => _playersOnServer = amount;
@@ -92,7 +104,7 @@ public class JoinServerHandler : NetworkBehaviour
             Allocation a = await RelayService.Instance.CreateAllocationAsync(maxPlayers);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
 
-            _unityTransport.SetHostRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData);
+            GameObject.FindFirstObjectByType<UnityTransport>().SetHostRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData);
             NetworkManager.Singleton.StartHost();
             return joinCode;
         }
@@ -110,7 +122,7 @@ public class JoinServerHandler : NetworkBehaviour
         try
         {
             JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinCode);
-            _unityTransport.SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
+            GameObject.FindFirstObjectByType<UnityTransport>().SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
             NetworkManager.Singleton.StartClient();
             return true;
         }
@@ -123,9 +135,7 @@ public class JoinServerHandler : NetworkBehaviour
 
     public void LeaveServer()
     {
-        if (IsServer)
-            ClientIdToNameDict.Clear();
-
+        ClientIdToNameDict.Clear();
         NetworkManager.Singleton.Shutdown();
     }
 }

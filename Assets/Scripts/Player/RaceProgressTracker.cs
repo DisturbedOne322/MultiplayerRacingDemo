@@ -28,6 +28,7 @@ public class RaceProgressTracker : NetworkBehaviour
     {
         RaceStartHandler.OnRaceStart += RaceStartHandler_OnRaceStart;
     }
+    
 
     private void RaceStartHandler_OnRaceStart(SplineContainer raceLayout)
     {
@@ -59,6 +60,7 @@ public class RaceProgressTracker : NetworkBehaviour
     public override void OnDestroy()
     {
         _playersDataNetworkList?.Dispose();
+        RaceStartHandler.OnRaceStart -= RaceStartHandler_OnRaceStart;
     }
 
     private IEnumerator UpdatePlayersRaceProgress()

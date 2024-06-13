@@ -125,7 +125,7 @@ namespace Assets.VehicleController
         {
             Initialize();
         }
-       
+
         private void Initialize()
         {
             if (!IsOwner)

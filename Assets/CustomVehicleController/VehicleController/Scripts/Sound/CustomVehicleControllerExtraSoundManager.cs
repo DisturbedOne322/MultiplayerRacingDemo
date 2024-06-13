@@ -22,9 +22,13 @@ namespace Assets.VehicleController
         private AudioSource _forcedInductionAudioSource;
         private AudioSource _tireSlipAudioSource;
         private AudioSource _carEffectsAudioSource;
+        private AudioSource _tireBrakingAudioSource;
         private AudioSource _windNoiseAudioSource;
         private AudioSource _nitroStartAudioSource;
         private AudioSource _nitroContinuousAudioSource;
+
+        private float _brakingTime = 0;
+        private const float MAX_BRAKING_VOLUME_TIME = 0.25f;
 
         [SerializeField, Header("   Optional")]
         private AudioMixerGroup _vehicleSoundAudioMixerGroup;
@@ -44,7 +48,7 @@ namespace Assets.VehicleController
         private float _antiLagVolumeMultiplier = 0.55f;
 
         [SerializeField, Min(0), Space]
-        private float _tireVolumeIncreaseTime = 0.75f;
+        private float _tireVolumeIncreaseTime = 0.5f;
         [SerializeField, Range(0, 1f)]
         private float _maxTireSlipVolume = 0.5f;
 
@@ -108,6 +112,7 @@ namespace Assets.VehicleController
             InitializeCarEffectSound();
             InitializedWindNoise();
             InitializeNitroSound();
+            InitializeTireBrakingSound();
         }
 
 
@@ -204,6 +209,14 @@ namespace Assets.VehicleController
             _nitroContinuousAudioSource.clip = _extraSoundSO.NitroContinuous;
 
             _nitroEffectsInitialized = true;
+        }
+
+        private void InitializeTireBrakingSound()
+        {
+            _tireBrakingAudioSource = _effectAudioSourceHolder.AddComponent<AudioSource>();
+            _tireBrakingAudioSource.clip = _extraSoundSO.TireBrakingSound;
+            _tireBrakingAudioSource.volume = 0;
+            SetupAudioSource(_tireBrakingAudioSource, true, false);
         }
 
         private void SetupAudioSource(AudioSource source, bool loop, bool playOnAwake)
@@ -312,6 +325,35 @@ namespace Assets.VehicleController
 
             if (_windNoiseSoundInitialized)
                 HandleWindNoise();
+
+            HandleTireBrakingSound();
+        }
+
+        private void HandleTireBrakingSound()
+        {
+            if(_currentCarStats.Braking)
+            {
+                _brakingTime += Time.deltaTime;
+
+                float maxSpeedVolume = 50;
+                float volume = Mathf.Clamp01(_currentCarStats.SpeedInMsPerS / maxSpeedVolume);
+
+                float maxSpeedForPitchIncrease = 111;
+                float maxPitch = 1.2f;
+
+                _tireBrakingAudioSource.pitch = 1 + (_currentCarStats.SpeedInMsPerS / maxSpeedForPitchIncrease) * maxPitch;
+                _tireBrakingAudioSource.volume = volume * Mathf.Clamp01(_brakingTime / MAX_BRAKING_VOLUME_TIME);
+
+                if(!_tireBrakingAudioSource.isPlaying)
+                    _tireBrakingAudioSource.Play();
+            }
+            else
+            {
+                _brakingTime = 0;
+                _tireBrakingAudioSource.volume *= MAX_BRAKING_VOLUME_TIME * Time.deltaTime;
+                if (_tireBrakingAudioSource.isPlaying)
+                    _tireBrakingAudioSource.Stop();
+            }
         }
 
         private void UpdateAudioSourceSettings(AudioSource audioSource)
@@ -357,29 +399,17 @@ namespace Assets.VehicleController
                 if (!_vehicleController.GetCurrentCarStats().DriveWheelsGrounded)
                 {
                     _tireSlipVolumeNetVar.Value = 0;
-                    _tireSlipAudioSource.volume = _tireSlipVolumeNetVar.Value;
-                    if (_tireSlipAudioSource.isPlaying)
-                        _tireSlipAudioSource.Stop();
-
-                    return;
-                }
-
-                if (_vehicleController.GetCurrentCarStats().IsCarSlipping)
-                {
-                    if (!_tireSlipAudioSource.isPlaying)
-                        _tireSlipAudioSource.Play();
-
-                    _tireSlipVolumeNetVar.Value += Time.deltaTime * _maxTireSlipVolume / (_tireVolumeIncreaseTime);
                 }
                 else
                 {
-                    if (!_tireSlipAudioSource.isPlaying)
-                        return;
-
-                    _tireSlipVolumeNetVar.Value -= Time.deltaTime / (_tireVolumeIncreaseTime / 3);
-
-                    if (_tireSlipAudioSource.volume < 0.01f)
-                        _tireSlipAudioSource.Stop();
+                    if (_vehicleController.GetCurrentCarStats().IsCarSlipping)
+                    {
+                        _tireSlipVolumeNetVar.Value += Time.deltaTime / _tireVolumeIncreaseTime;
+                    }
+                    else
+                    {
+                        _tireSlipVolumeNetVar.Value -= Time.deltaTime / (_tireVolumeIncreaseTime / 3);
+                    }
                 }
 
                 _tireSlipVolumeNetVar.Value = Mathf.Clamp(_tireSlipVolumeNetVar.Value, 0, _maxTireSlipVolume);

@@ -15,27 +15,27 @@ MonoBehaviour:
   Mass: 1500
   ForwardDrag: 0.05
   Downforce: 50
-  CorneringResistanceStrength: 20
+  CorneringResistanceStrength: 25
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0011482239
-      value: 0.019637503
-      inSlope: 0.282064
-      outSlope: 0.282064
+      time: -0.0011411551
+      value: 0.004876418
+      inSlope: 0.06374625
+      outSlope: 0.06374625
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.15123366
+      outWeight: 0.17357512
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2.3102267
-      outSlope: 2.3102267
+      inSlope: 1.7501044
+      outSlope: 1.7501044
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.103507996
+      inWeight: 0.13989641
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2

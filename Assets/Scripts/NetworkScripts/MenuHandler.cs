@@ -23,7 +23,7 @@ public class MenuHandler : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             RemoveLastMenu();
-            Lobby.Instance.LeaveLobby();
+            Lobby.Instance.LeaveLobbyAndServer();
         }
     }
 

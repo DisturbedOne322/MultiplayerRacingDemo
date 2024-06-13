@@ -4,21 +4,13 @@ using UnityEngine;
 
 public class PlayerData : MonoBehaviour
 {
-    private Player _player;
-
-    public static PlayerData Instance;
+    private static Player _player;
 
     [SerializeField]
     private JoinServerHandler _joinServerHandler;
 
     private float _lastUpdateTime = 0;
     private float _updateCD = 1.05f;
-
-    private void Awake()
-    {
-        if(Instance == null)
-            Instance = this;
-    }
 
     public Player GetPlayer()
     {
@@ -54,6 +46,6 @@ public class PlayerData : MonoBehaviour
                 { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "False" )},
             }
         };
-        _joinServerHandler.SetLocalPlayerName(_player.Data["PlayerName"].Value);
+        _joinServerHandler.SetLocalPlayerName(name);
     }
 }

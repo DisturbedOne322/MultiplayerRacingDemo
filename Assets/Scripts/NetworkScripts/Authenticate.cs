@@ -37,9 +37,9 @@ public class Authenticate : MonoBehaviour
         {
             MenuHandler.Instance.AddMenu(_menuHolder);
         }
-
-        if (PlayerData.Instance.GetPlayer() != null)
-            _playerNameField.text = PlayerData.Instance.GetPlayer().Data["PlayerName"].Value;
+        PlayerData playerData = GameObject.FindFirstObjectByType<PlayerData>();
+        if (playerData.GetPlayer() != null)
+            _playerNameField.text = playerData.GetPlayer().Data["PlayerName"].Value;
     }
 
     private async void TryAuthenticate()
@@ -62,7 +62,7 @@ public class Authenticate : MonoBehaviour
                 _nextWindow.GoToNextWindow();
             };
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            PlayerData.Instance.UpdatePlayerName(GetVerifiedPlayerName());
+            GameObject.FindFirstObjectByType<PlayerData>().UpdatePlayerName(GetVerifiedPlayerName());
         }
         catch (LobbyServiceException e)
         {

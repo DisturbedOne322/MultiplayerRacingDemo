@@ -9,6 +9,7 @@ namespace Assets.VehicleController
         public AudioClip WindNoise;
         public AudioClip NitroStart;
         public AudioClip NitroContinuous;
+        public AudioClip TireBrakingSound;
     }
 }
 

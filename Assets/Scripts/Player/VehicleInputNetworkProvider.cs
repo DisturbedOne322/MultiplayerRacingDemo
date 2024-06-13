@@ -1,8 +1,5 @@
 using Assets.VehicleController;
 using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Utilities;
 
 public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerInputProvider
 {
@@ -39,7 +36,6 @@ public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerI
             }
         };
 
-        _inputActions.Chat.OpenChat.performed += _ => {_lockVehicleInput = !_lockVehicleInput;};
     }
 
     public void EnableInput(bool enable)
@@ -51,6 +47,8 @@ public class VehicleInputNetworkProvider : NetworkBehaviour, IVehicleControllerI
     {
         if (!IsOwner)
             return;
+
+        _lockVehicleInput = ChatUI.IsChatOpened;
 
         if (_lockVehicleInput)
         {

@@ -13,29 +13,29 @@ MonoBehaviour:
   m_Name: HeavyDriftBody
   m_EditorClassIdentifier: 
   Mass: 1735
-  ForwardDrag: 0.05
+  ForwardDrag: 0.03
   Downforce: 30
   CorneringResistanceStrength: 30
   CorneringResistanceCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0000002081506
-      value: 0.03352356
-      inSlope: -0.10004049
-      outSlope: -0.10004049
+      time: -0.0000012028031
+      value: 0.028696697
+      inSlope: 0.06199975
+      outSlope: 0.06199975
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.16062193
+      outWeight: 0.17448
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1.3470722
-      outSlope: 1.3470722
+      inSlope: 2.1370723
+      outSlope: 2.1370723
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.1398966
+      inWeight: 0.10880827
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2

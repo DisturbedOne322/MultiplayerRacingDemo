@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c2aebe285d18dd4e9c3581d6cb26896, type: 3}
   m_Name: YellowbirdSusp
   m_EditorClassIdentifier: 
-  SpringRestDistance: 0.47
-  SpringTravelLength: 0.3
+  SpringRestDistance: 0.52
+  SpringTravelLength: 0.33
   SpringStiffness: 90000
   SpringDampingStiffness: 2000
   AntiRollForce: 45000

@@ -30,11 +30,16 @@ public class LobbyPlayerList : MonoBehaviour
     [SerializeField]
     private Button _readyButton;
 
+    [SerializeField]
+    private Button _toMenuButton;
+
     private float _pingTimerMax = 15;
     private float _pingTimer = 15;
 
     private float _lobbyUpdateTimer = 0f;
     private const float LOBBY_UPDATE_TIMER_MAX = 2f;
+
+    private PlayerData _playerData;
 
     private void Awake()
     {
@@ -44,6 +49,17 @@ public class LobbyPlayerList : MonoBehaviour
 
             _startGameButton.interactable = false;
             Lobby.Instance.StartGame();
+        });
+
+        _toMenuButton.onClick.AddListener(() => { 
+            Lobby.Instance.LeaveLobbyAndServer();
+        });
+
+        _readyButton.onClick.AddListener(() => { 
+            if(_playerData == null)
+                _playerData = GameObject.FindFirstObjectByType<PlayerData>();
+
+            _playerData.SwitchReadyStatus();
         });
 
         Lobby.Instance.OnKicked += Instance_OnKicked;

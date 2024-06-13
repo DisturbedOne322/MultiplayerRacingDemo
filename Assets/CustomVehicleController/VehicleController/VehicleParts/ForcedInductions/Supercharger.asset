@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Supercharger
   m_EditorClassIdentifier: 
   ForcedInductionType: 2
-  MaxTorqueBoostAmount: 800
+  MaxTorqueBoostAmount: 1000
   TurboRPMPercentDelay: 0.2
   TurboSpinTime: 1

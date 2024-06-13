@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 3385878778198836193}
   - component: {fileID: 1081241667264918264}
   - component: {fileID: 1432362334511534114}
-  - component: {fileID: 5696485265578339009}
+  - component: {fileID: 7765686045453394356}
   - component: {fileID: 7372848000420521561}
   - component: {fileID: 2339560463316070965}
   - component: {fileID: 6974410350399997548}
@@ -126,7 +126,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7303617121073817728}
   - {fileID: 7931330433148570695}
@@ -181,10 +181,10 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 2
---- !u!114 &5696485265578339009
+  m_CollisionDetection: 1
+--- !u!114 &7765686045453394356
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,8 +196,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1053343632
-  InScenePlacedSourceGlobalObjectIdHash: 2924293465
+  GlobalObjectIdHash: 2266340999
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -297,8 +297,8 @@ MonoBehaviour:
   _forcedInductionMaxVolume: 0.7
   _turboFlutterVolumeMultiplier: 0.55
   _antiLagVolumeMultiplier: 0.55
-  _tireVolumeIncreaseTime: 0.75
-  _maxTireSlipVolume: 0.5
+  _tireVolumeIncreaseTime: 0.33
+  _maxTireSlipVolume: 0.65
   _maxWindVolume: 0.3
   _speedForMaxWindVolume: 100
   _nitroVolumeGainSpeedInSeconds: 0.4
@@ -671,7 +671,7 @@ GameObject:
   - component: {fileID: 2475553378366285130}
   - component: {fileID: 977256312011104041}
   - component: {fileID: 6247805931585517005}
-  - component: {fileID: 796318974320662268}
+  - component: {fileID: 4220618523516708764}
   m_Layer: 0
   m_Name: wheel.FL
   m_TagString: Untagged
@@ -749,7 +749,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &796318974320662268
+--- !u!114 &4220618523516708764
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -762,9 +762,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
@@ -1042,7 +1042,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7799479677576352956}
-  - component: {fileID: 4345461909363966865}
+  - component: {fileID: 9010951274619783684}
   m_Layer: 0
   m_Name: SteerWheel 1
   m_TagString: Untagged
@@ -1066,7 +1066,7 @@ Transform:
   - {fileID: 7594199433840394064}
   m_Father: {fileID: 5517483868748158329}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4345461909363966865
+--- !u!114 &9010951274619783684
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1093,7 +1093,7 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 1
   UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 1
+  UseHalfFloatPrecision: 0
   InLocalSpace: 1
   Interpolate: 0
   SlerpPosition: 0
@@ -1777,7 +1777,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5716738660371558975}
-  - component: {fileID: 5374470989377954238}
+  - component: {fileID: 2969211784989793665}
   m_Layer: 0
   m_Name: SteerWheel 0
   m_TagString: Untagged
@@ -1801,7 +1801,7 @@ Transform:
   - {fileID: 2475553378366285130}
   m_Father: {fileID: 5517483868748158329}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5374470989377954238
+--- !u!114 &2969211784989793665
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1828,7 +1828,7 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 1
   UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 1
+  UseHalfFloatPrecision: 0
   InLocalSpace: 1
   Interpolate: 0
   SlerpPosition: 0
@@ -2208,7 +2208,7 @@ GameObject:
   - component: {fileID: 7594199433840394064}
   - component: {fileID: 7816159072850766975}
   - component: {fileID: 2034228227568473827}
-  - component: {fileID: 4035485997855288009}
+  - component: {fileID: 1953631466333830351}
   m_Layer: 0
   m_Name: wheel.FR
   m_TagString: Untagged
@@ -2286,7 +2286,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4035485997855288009
+--- !u!114 &1953631466333830351
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2299,9 +2299,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
@@ -2328,7 +2328,7 @@ GameObject:
   - component: {fileID: 6196657632446959839}
   - component: {fileID: 3632171439576878056}
   - component: {fileID: 110989596331628725}
-  - component: {fileID: 6161999166254285579}
+  - component: {fileID: 42258255530146200}
   m_Layer: 0
   m_Name: wheel.RR
   m_TagString: Untagged
@@ -2406,7 +2406,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6161999166254285579
+--- !u!114 &42258255530146200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2433,7 +2433,7 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 1
   UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 1
+  UseHalfFloatPrecision: 0
   InLocalSpace: 1
   Interpolate: 0
   SlerpPosition: 0
@@ -2665,7 +2665,7 @@ GameObject:
   - component: {fileID: 7785036259230565534}
   - component: {fileID: 2193106562796803967}
   - component: {fileID: 2498123815748793120}
-  - component: {fileID: 1727920603025722381}
+  - component: {fileID: 3560555476226487408}
   m_Layer: 0
   m_Name: wheel.RL
   m_TagString: Untagged
@@ -2743,7 +2743,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1727920603025722381
+--- !u!114 &3560555476226487408
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3707,27 +3707,32 @@ PrefabInstance:
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6499996
+      value: 1.6500001
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.399994
+      value: -4.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99731237
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.07326758
+      value: 0.07326754
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000017688263
+      value: 0.000000004290033
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000012994688
+      value: -3.1516734e-10
       objectReference: {fileID: 0}
     - target: {fileID: 7991086063049087487, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}

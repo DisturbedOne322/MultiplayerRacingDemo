@@ -343,9 +343,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
@@ -749,7 +749,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6013316830775082178}
@@ -812,9 +812,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
 --- !u!114 &8281385559738526990
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -862,7 +862,7 @@ MonoBehaviour:
     Body: {fileID: 11400000, guid: 6515010ba3958e24cafac5f274b8bdc9, type: 2}
   DrivetrainType: 0
   TransmissionType: 0
-  _steerAngle: 23
+  _steerAngle: 25
   _steerSpeed: 0.2
   _forwardSlippingThreshold: 0.1
   _sidewaysSlippingThreshold: 0.5
@@ -928,8 +928,8 @@ MonoBehaviour:
   _forcedInductionMaxVolume: 0.7
   _turboFlutterVolumeMultiplier: 0.55
   _antiLagVolumeMultiplier: 0.55
-  _tireVolumeIncreaseTime: 0.75
-  _maxTireSlipVolume: 0.5
+  _tireVolumeIncreaseTime: 0.3
+  _maxTireSlipVolume: 0.653
   _maxWindVolume: 0.3
   _speedForMaxWindVolume: 100
   _nitroVolumeGainSpeedInSeconds: 0.4
@@ -2087,9 +2087,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
@@ -2867,12 +2867,12 @@ PrefabInstance:
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.833333
+      value: 2.2000008
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.666667
+      value: -8
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
@@ -2887,12 +2887,12 @@ PrefabInstance:
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0000000021476683
+      value: -0.0000000021476683
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -1.1599263e-10
+      value: 1.1599263e-10
       objectReference: {fileID: 0}
     - target: {fileID: 7991086063049087487, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}

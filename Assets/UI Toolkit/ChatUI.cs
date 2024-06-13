@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 public class ChatUI : NetworkBehaviour
 {
+    public static bool IsChatOpened;
+
     [SerializeField]
     private UIDocument _document;
 
@@ -27,6 +28,7 @@ public class ChatUI : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        IsChatOpened = false;
         _localPlayerName = new FixedString32Bytes(GameObject.FindFirstObjectByType<JoinServerHandler>().LocalPlayerName);
 
         SetupChatList();
@@ -59,7 +61,7 @@ public class ChatUI : NetworkBehaviour
         _list.makeItem = makeItem;
         _list.bindItem = bindItem;
         _list.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
-        //        _list.fixedItemHeight = itemHeight;
+        _list.SetEnabled(false);
     }
     private void SetupInputField()
     {
@@ -93,6 +95,7 @@ public class ChatUI : NetworkBehaviour
         }
 
         _document.rootVisualElement.style.opacity = _textField.enabledSelf ? 1 : 0.5f;
+        IsChatOpened = _textField.enabledSelf;
     }
 
 
@@ -105,6 +108,7 @@ public class ChatUI : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     private void SendMessageClientRpc(FixedString32Bytes playerName, FixedString128Bytes message)
     {
+        _list.SetEnabled(true);
         _messages.Add(playerName + ": " + message);
         _list.RefreshItems();
     }

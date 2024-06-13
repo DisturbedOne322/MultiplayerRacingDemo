@@ -13,6 +13,9 @@ public class Lobby : MonoBehaviour
 {
     public static Lobby Instance { get; private set; }
 
+    [SerializeField]
+    private PlayerData _playerData;
+
     public event Action OnKicked;
 
     private MyLobby _hostedLobby;
@@ -133,13 +136,13 @@ public class Lobby : MonoBehaviour
         {
             string lobbyName = "Lobby" + $"{UnityEngine.Random.Range(0,99999) : 00000}";
 
-            PlayerData.Instance.ResetReadyStatus();
+            _playerData.ResetReadyStatus();
             string joinCode = await _joinServerHandler.HostGame(maxPlayers);
 
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
             {
                 IsPrivate = false,
-                Player = PlayerData.Instance.GetPlayer(),
+                Player = _playerData.GetPlayer(),
                 Data = new Dictionary<string, DataObject>
                 {
                     {"JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode)},
@@ -161,13 +164,13 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            PlayerData.Instance.ResetReadyStatus();
+            _playerData.ResetReadyStatus();
             string joinCode = await _joinServerHandler.HostGame(maxPlayers);
 
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
             {
                 IsPrivate = false,
-                Player = PlayerData.Instance.GetPlayer(),
+                Player = _playerData.GetPlayer(),
                 Data = new Dictionary<string, DataObject>
                 {
                     { "JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode) },
@@ -218,11 +221,11 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            PlayerData.Instance.ResetReadyStatus();
+            _playerData.ResetReadyStatus();
 
             QuickJoinLobbyOptions quickJoinLobbyOptions = new QuickJoinLobbyOptions
             {
-                Player = PlayerData.Instance.GetPlayer(),
+                Player = _playerData.GetPlayer(),
             };
 
             _joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync(quickJoinLobbyOptions);
@@ -242,11 +245,11 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            PlayerData.Instance.ResetReadyStatus();
+            _playerData.ResetReadyStatus();
 
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
             {
-                Player = PlayerData.Instance.GetPlayer()           
+                Player = _playerData.GetPlayer()           
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(code, joinLobbyByCodeOptions);
@@ -265,11 +268,11 @@ public class Lobby : MonoBehaviour
     {
         try
         {
-            PlayerData.Instance.ResetReadyStatus();
+            _playerData.ResetReadyStatus();
 
             JoinLobbyByIdOptions joinLobbyByCodeOptions = new JoinLobbyByIdOptions
             {
-                Player = PlayerData.Instance.GetPlayer(),                
+                Player = _playerData.GetPlayer(),                
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(id, joinLobbyByCodeOptions);
@@ -284,6 +287,12 @@ public class Lobby : MonoBehaviour
         }
     }
 
+    public void LeaveLobbyAndServer()
+    {
+        _joinServerHandler.LeaveServer();
+        LeaveLobby();
+    }
+
     public async void LeaveLobby()
     {
         if (JoinedLobby == null)
@@ -293,7 +302,6 @@ public class Lobby : MonoBehaviour
         {
             string playerId = AuthenticationService.Instance.PlayerId;
             await LobbyService.Instance.RemovePlayerAsync(JoinedLobby.Id, playerId);
-            _joinServerHandler.LeaveServer();
             _hostedLobby = _joinedLobby = null;
         }
         catch (LobbyServiceException e)

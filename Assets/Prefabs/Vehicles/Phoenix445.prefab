@@ -3221,9 +3221,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
@@ -3534,9 +3534,9 @@ Transform:
   m_GameObject: {fileID: 6453726170192464864}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -67.616425, y: 0.86031985, z: 23.089428}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1104445285929034959}
   - {fileID: 4923313030424470671}
@@ -3591,9 +3591,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
 --- !u!114 &6700296135952349436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3641,8 +3641,8 @@ MonoBehaviour:
     Body: {fileID: 11400000, guid: 2d0de92353e46ec47a2cbdb863ad79ae, type: 2}
   DrivetrainType: 0
   TransmissionType: 0
-  _steerAngle: 30
-  _steerSpeed: 0.15
+  _steerAngle: 25
+  _steerSpeed: 0.2
   _forwardSlippingThreshold: 0.1
   _sidewaysSlippingThreshold: 0.5
   AerialControlsEnabled: 0
@@ -3707,8 +3707,8 @@ MonoBehaviour:
   _forcedInductionMaxVolume: 0.7
   _turboFlutterVolumeMultiplier: 0.55
   _antiLagVolumeMultiplier: 0.55
-  _tireVolumeIncreaseTime: 0.75
-  _maxTireSlipVolume: 0.5
+  _tireVolumeIncreaseTime: 0.33
+  _maxTireSlipVolume: 0.673
   _maxWindVolume: 0.3
   _speedForMaxWindVolume: 100
   _nitroVolumeGainSpeedInSeconds: 0.4
@@ -4979,9 +4979,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
@@ -5375,12 +5375,12 @@ PrefabInstance:
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6999998
+      value: 1.8279579
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.699997
+      value: -5.0537767
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
@@ -5390,17 +5390,17 @@ PrefabInstance:
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0634438
+      value: 0.06344364
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.00000001823632
+      value: 1e-45
       objectReference: {fileID: 0}
     - target: {fileID: 6579325368156542973, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000011593168
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7991086063049087487, guid: 3f9a5b7372f34c34b9aee4a243a475a6,
         type: 3}

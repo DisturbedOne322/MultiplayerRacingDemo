@@ -98,7 +98,6 @@ public class TrafficSystem : NetworkBehaviour
                 trafficCar.Initialize(_roadSplines[UnityEngine.Random.Range(0, _roadSplines.Length)], _trafficSpeed, _currentStartDistance / _roadLength);
 
                 _trafficVehiclePool.Add(trafficCar);
-
                 trafficCar.GetComponent<NetworkObject>().Spawn();
             }
         }
@@ -193,6 +192,8 @@ public class TrafficSystem : NetworkBehaviour
         if (newNormTime > 1)
             newNormTime -= 1;
 
+        _trafficVehiclePool[carIndex].SetInterpolationClientRpc(RigidbodyInterpolation.None);
         _trafficVehiclePool[carIndex].ResetTrafficCar(_roadSplines[lineIndex], newNormTime);
+        _trafficVehiclePool[carIndex].SetInterpolationClientRpc(RigidbodyInterpolation.Interpolate);
     }
 }

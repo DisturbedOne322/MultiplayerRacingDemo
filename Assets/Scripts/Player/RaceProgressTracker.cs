@@ -1,7 +1,6 @@
 using Assets.VehicleController;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Netcode;
@@ -24,6 +23,8 @@ public class RaceProgressTracker : NetworkBehaviour
     private List<Transform> _playersTransformList;
 
     private NetworkList<PlayerRaceInfo> _playersDataNetworkList = new NetworkList<PlayerRaceInfo>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkList<PlayerRaceInfo> PlayerRaceDataList => _playersDataNetworkList;
+
     void Start()
     {
         RaceStartHandler.OnRaceStart += RaceStartHandler_OnRaceStart;

@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1691367112
+  GlobalObjectIdHash: 1812707932
   InScenePlacedSourceGlobalObjectIdHash: 431491853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -388,6 +388,7 @@ MonoBehaviour:
   - {fileID: 7415573094459693987}
   - {fileID: 3099030100798305496}
   - {fileID: 6221595935023762695}
+  _networkTransform: {fileID: -8913887375701261242}
   Container: {fileID: 0}
   _rb: {fileID: -7699478019182252798}
   _trafficLayer:

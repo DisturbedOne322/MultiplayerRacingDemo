@@ -26,7 +26,7 @@ public class CameraSpeedEffects : MonoBehaviour
     private Volume _localVolume;
     private Vignette _vignette;
     private float _vigMin = 0.2f;
-    private float _vigGain = 0.13f;
+    private float _vigGain = 0.2f;
     private ChromaticAberration _chromaticAberration;
 
     [SerializeField]

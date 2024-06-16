@@ -10,7 +10,12 @@ namespace Assets.VehicleController
     public class RaceStartHandler : NetworkBehaviour
     {
         public static event Action<SplineContainer> OnRaceStart;
+
         private bool _raceStarted;
+        public bool RaceStarted => _raceStarted;
+        private bool _raceFinished;
+        public bool RaceFinished => _raceFinished;
+
         [SerializeField]
         private SplineContainer _raceLayout;
 
@@ -32,6 +37,21 @@ namespace Assets.VehicleController
 
         public Vector3 SpawnPos;
         public Quaternion SpawnRot;
+
+        private void Start()
+        {
+            FinishLine.LocalPlayerFinishedRace += FinishLine_LocalPlayerFinishedRace;
+        }
+
+        private void FinishLine_LocalPlayerFinishedRace()
+        {
+            _raceFinished = true;
+        }
+
+        private void OnDestroy()
+        {
+            FinishLine.LocalPlayerFinishedRace -= FinishLine_LocalPlayerFinishedRace;
+        }
 
         public override void OnNetworkSpawn()
         {

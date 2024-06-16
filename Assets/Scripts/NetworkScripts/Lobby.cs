@@ -229,8 +229,11 @@ public class Lobby : MonoBehaviour
             };
 
             _joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync(quickJoinLobbyOptions);
+            bool result = await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
 
-            await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
+            if(!result)
+                return false;
+
             SubscribeToKickEvent(JoinedLobby.Id);
             return true;
         }
@@ -253,7 +256,11 @@ public class Lobby : MonoBehaviour
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(code, joinLobbyByCodeOptions);
-            await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
+
+            bool result = await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
+            if (!result)
+                return false;
+
             SubscribeToKickEvent(JoinedLobby.Id);
             return true;
         }
@@ -276,7 +283,11 @@ public class Lobby : MonoBehaviour
             };
 
             _joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(id, joinLobbyByCodeOptions);
-            await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
+            bool result = await _joinServerHandler.JoinGame(_joinedLobby.Data["JoinCode"].Value);
+
+            if (!result)
+                return false;
+
             SubscribeToKickEvent(JoinedLobby.Id);
             return true;
         }

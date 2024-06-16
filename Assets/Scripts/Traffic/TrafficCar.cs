@@ -1,5 +1,6 @@
 using System.Collections;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -9,6 +10,8 @@ public class TrafficCar : NetworkBehaviour
 
     [SerializeField]
     private Transform[] _wheelsArray;
+    [SerializeField]    
+    private NetworkTransform _networkTransform;
 
     private SplineAnimate _splineAnimate;
     public SplineContainer Container;
@@ -39,12 +42,13 @@ public class TrafficCar : NetworkBehaviour
 
         _splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
         _maxSpeed = speed;
-        _splineAnimate.MaxSpeed = 1;
+        _splineAnimate.MaxSpeed = _maxSpeed;
+        _splineAnimate.Play();
 
         _splineAnimate.StartOffset = offset;
         _rb.Sleep();
 
-        StartCoroutine(CheckForFutureCollisions(offset));
+        StartCoroutine(CheckForFutureCollisions(5));
     }
 
     private IEnumerator CheckForFutureCollisions(float delay) 
@@ -129,10 +133,15 @@ public class TrafficCar : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void SetInterpolationClientRpc(RigidbodyInterpolation value)
+    {
+        _rb.interpolation = value;
+        _networkTransform.Interpolate = value == RigidbodyInterpolation.Interpolate;
+    }
+
     public void ResetTrafficCar(SplineContainer newContainer, float newOffset)
     {
-        _rb.Sleep();
-
         Container = newContainer;
 
         _splineAnimate.StartOffset = newOffset;
@@ -144,6 +153,7 @@ public class TrafficCar : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        TrafficStopFromCollisionClientRPC();
         if (IsServer)
         {
             if (collision.gameObject.CompareTag("Traffic"))
@@ -177,5 +187,11 @@ public class TrafficCar : NetworkBehaviour
         {
             NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<Rigidbody>().AddForce(relativeVel * _multiplier, ForceMode.Impulse);
         }
+    }
+
+    [ClientRpc]
+    private void TrafficStopFromCollisionClientRPC()
+    {
+        _collided = true;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
@@ -7,7 +8,7 @@ public class FinishLine : NetworkBehaviour
 {
     private List<ulong> _finishedClientIdList;
     private JoinServerHandler _joinServerHandler;
-
+    public static event Action LocalPlayerFinishedRace;
 
     public override void OnNetworkSpawn()
     {
@@ -34,6 +35,9 @@ public class FinishLine : NetworkBehaviour
     {
         if (_finishedClientIdList.Contains(clientID))
             return;
+
+        if (clientID == NetworkManager.Singleton.LocalClientId)
+            LocalPlayerFinishedRace?.Invoke();
 
         _finishedClientIdList.Add(clientID);
         DisplayWinnerClientRpc(playerName, _finishedClientIdList.Count);

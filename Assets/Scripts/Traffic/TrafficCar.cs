@@ -33,6 +33,7 @@ public class TrafficCar : NetworkBehaviour
 
     public void Initialize(SplineContainer container, float speed, float offset)
     {
+        _collided = false;
         _splineAnimate = gameObject.AddComponent<SplineAnimate>();
         Container = container;
         _splineAnimate.Container = Container;
@@ -42,11 +43,10 @@ public class TrafficCar : NetworkBehaviour
 
         _splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
         _maxSpeed = speed;
-        _splineAnimate.MaxSpeed = _maxSpeed;
-        _splineAnimate.Play();
-
+        _splineAnimate.MaxSpeed = 1;
         _splineAnimate.StartOffset = offset;
-        _rb.Sleep();
+        _splineAnimate.Play();
+        _splineAnimate.Update();
 
         StartCoroutine(CheckForFutureCollisions(5));
     }
@@ -133,7 +133,7 @@ public class TrafficCar : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.ClientsAndHost)]
     public void SetInterpolationClientRpc(RigidbodyInterpolation value)
     {
         _rb.interpolation = value;
@@ -142,56 +142,54 @@ public class TrafficCar : NetworkBehaviour
 
     public void ResetTrafficCar(SplineContainer newContainer, float newOffset)
     {
+        _collided  = false;
+
         Container = newContainer;
 
         _splineAnimate.StartOffset = newOffset;
         _splineAnimate.Restart(true);
 
         _splineAnimate.Play();
-        _collided = false;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        TrafficStopFromCollisionClientRPC();
-        if (IsServer)
+        if(collision.gameObject.CompareTag("Traffic") || collision.gameObject.CompareTag("Player"))
         {
-            if (collision.gameObject.CompareTag("Traffic"))
-                OnCollisionServerRPC(collision.relativeVelocity);
+            OnAnyCollisionServerRpc();
         }
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            OnCollisionServerRPC(collision.relativeVelocity);
-            OnCollisionWithPlayerServerRPC(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, collision.relativeVelocity);
+            Vector3 direction = (collision.gameObject.transform.position - transform.position).normalized;
+            ResolveCollisionServerRpc(-direction * collision.relativeVelocity.magnitude * 1.5f);    
         }
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void OnCollisionServerRPC(Vector3 relativeVel)
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    private void OnAnyCollisionServerRpc()
     {
-        _collided = true;
         _splineAnimate.Pause();
+        OnAnyCollisionClientRpc();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void OnCollisionWithPlayerServerRPC(ulong collidedClientID, Vector3 relativeVel)
-    {
-        ReactToCollisionClientRPC(collidedClientID, relativeVel);
-    }
-
-    [ClientRpc]
-    private void ReactToCollisionClientRPC(ulong testID, Vector3 relativeVel)
-    {
-        if(NetworkManager.Singleton.LocalClientId == testID)
-        {
-            NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<Rigidbody>().AddForce(relativeVel * _multiplier, ForceMode.Impulse);
-        }
-    }
-
-    [ClientRpc]
-    private void TrafficStopFromCollisionClientRPC()
+    [Rpc(SendTo.ClientsAndHost)]
+    private void OnAnyCollisionClientRpc()
     {
         _collided = true;
+    }
+
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    private void ResolveCollisionServerRpc(Vector3 impulse)
+    {
+        ResolveCollisionClientRpc(impulse);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void ResolveCollisionClientRpc(Vector3 impulse)
+    {
+        if (NetworkManager.Singleton.IsServer)
+        {
+            _rb.linearVelocity = impulse;
+        }
     }
 }

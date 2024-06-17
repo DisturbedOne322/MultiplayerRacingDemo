@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using Unity.Netcode;
-using Unity.Netcode.Components;
 
 namespace Assets.VehicleController
 {
@@ -44,7 +43,7 @@ namespace Assets.VehicleController
         private float _steerSpeed = 0.2f;
         public float SteerSpeed
         {
-            get =>  _steerAngle;
+            get => _steerAngle;
             set { _steerSpeed = Mathf.Clamp(value, 0, 100); }
         }
         #endregion
@@ -120,7 +119,7 @@ namespace Assets.VehicleController
         [SerializeField]
         private Separator Separator;
 
-       
+
         private void Awake()
         {
             Initialize();
@@ -193,6 +192,34 @@ namespace Assets.VehicleController
             //_partsManager.PerformAirControls(AerialControlsEnabled, AerialControlsSensitivity,
             //    _inputProvider.GetPitchInput(), _inputProvider.GetYawInput(), _inputProvider.GetRollInput());          
         }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (!IsOwner)
+                return;
+
+            if(collision.gameObject.CompareTag("Player"))
+            {
+                Vector3 direction = (collision.gameObject.transform.position - transform.position).normalized;
+                HandleCollisionServerRpc(collision.gameObject.transform.root.GetComponent<NetworkObject>().OwnerClientId, direction * collision.relativeVelocity.magnitude * 777, collision.contacts[0].point);
+            }
+        }
+
+        [Rpc(SendTo.Server)]
+        private void HandleCollisionServerRpc(ulong id, Vector3 impulse, Vector3 point)
+        {
+            HandleCollisionClientRpc(id, impulse, point);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void HandleCollisionClientRpc(ulong id, Vector3 impulse, Vector3 point)
+        {
+            if (id == NetworkManager.Singleton.LocalClientId)
+            {
+                NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<Rigidbody>().AddForceAtPosition(impulse, point, ForceMode.Impulse);
+            }
+        }
+
 
         public Transform GetCenterOfMass() => _centerOfMass;
         public CurrentCarStats GetCurrentCarStats() => CurrentCarStats;

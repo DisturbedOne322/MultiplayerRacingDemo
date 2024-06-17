@@ -13,17 +13,17 @@ public class TrafficSystem : NetworkBehaviour
     [SerializeField]
     private GameObject[] _trafficVehiclePrefabArray;
 
-    private int _maxDistanceToReset = 400;
-    private int _resetDistanceMin = 400;
-    private int _resetDistanceMax = 500;
+    private int _maxDistanceToReset = 600;
+    private int _resetDistanceMin = 700;
+    private int _resetDistanceMax = 1200;
 
     private float _trafficSpeed = 25;
 
     private List<TrafficCar> _trafficVehiclePool;
     private int _vehiclesPerType = 2;
 
-    private float _minDistanceBetweenCars = 30;
-    private float _maxDistanceBetweenCars = 100;
+    private float _minDistanceBetweenCars = 50;
+    private float _maxDistanceBetweenCars = 200;
 
     private float _currentStartDistance = 0;
 
@@ -92,12 +92,12 @@ public class TrafficSystem : NetworkBehaviour
                 GameObject gameObject = Instantiate(_trafficVehiclePrefabArray[i]);
                 TrafficCar trafficCar = gameObject.GetComponent<TrafficCar>();
 
-                _currentStartDistance += UnityEngine.Random.Range(_minDistanceBetweenCars, _maxDistanceBetweenCars) * UnityEngine.Random.Range(1, 10);
+                _currentStartDistance += UnityEngine.Random.Range(_minDistanceBetweenCars, _maxDistanceBetweenCars) * UnityEngine.Random.Range(1, 3);
                 _currentStartDistance %= _roadLength;
 
                 trafficCar.Initialize(_roadSplines[UnityEngine.Random.Range(0, _roadSplines.Length)], _trafficSpeed, _currentStartDistance / _roadLength);
-
                 _trafficVehiclePool.Add(trafficCar);
+                trafficCar.transform.position = new Vector3(0, 1000 + UnityEngine.Random.Range(0, 1000), 0);
                 trafficCar.GetComponent<NetworkObject>().Spawn();
             }
         }

@@ -205,8 +205,8 @@ Transform:
   m_GameObject: {fileID: 3420000722356631014}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 4.607731, y: 0, z: 6.3705616}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3238371166876537722}
@@ -283,12 +283,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1812707932
+  GlobalObjectIdHash: 431491853
   InScenePlacedSourceGlobalObjectIdHash: 431491853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  ActiveSceneSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
@@ -352,8 +352,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3420000722356631014}
   serializedVersion: 4
-  m_Mass: 2000
-  m_Drag: 10
+  m_Mass: 1000
+  m_Drag: 5
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -367,10 +367,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 52
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!114 &3308757588634421692
 MonoBehaviour:
   m_ObjectHideFlags: 0

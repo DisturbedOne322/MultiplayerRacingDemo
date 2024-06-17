@@ -183,7 +183,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!114 &7765686045453394356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2266340999
+  GlobalObjectIdHash: 174931623
   InScenePlacedSourceGlobalObjectIdHash: 174931623
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1

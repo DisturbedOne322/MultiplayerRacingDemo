@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 431491853
+  GlobalObjectIdHash: 1812707932
   InScenePlacedSourceGlobalObjectIdHash: 431491853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -342,8 +342,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.38, y: 3.4376826, z: 1.2230861}
-  m_Center: {x: -0.00000027509836, y: -0.00075065176, z: 0.81924534}
+  m_Size: {x: 1.38, y: 3.4376826, z: 1.4485242}
+  m_Center: {x: -0.00000029802322, y: -0.0007506609, z: 0.7065262}
 --- !u!54 &-7699478019182252798
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -352,7 +352,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3420000722356631014}
   serializedVersion: 4
-  m_Mass: 1000
+  m_Mass: 2000
   m_Drag: 5
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -367,7 +367,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 52
   m_CollisionDetection: 3

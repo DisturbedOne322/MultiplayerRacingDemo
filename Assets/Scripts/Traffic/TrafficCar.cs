@@ -47,7 +47,10 @@ public class TrafficCar : NetworkBehaviour
         _splineAnimate.StartOffset = offset;
         _splineAnimate.Play();
         _splineAnimate.Update();
+    }
 
+    public override void OnNetworkSpawn()
+    {
         StartCoroutine(CheckForFutureCollisions(5));
     }
 
@@ -65,7 +68,6 @@ public class TrafficCar : NetworkBehaviour
 
     private void TestForFutureCollisions()
     {
-        Debug.DrawRay(transform.position + Vector3.up, -transform.up * MAX_RAY_DIST, Color.red, 0.25f);
         RaycastHit[] hits = Physics.SphereCastAll(transform.position + Vector3.up, 2, -transform.up, MAX_RAY_DIST, _trafficLayer);
         if (hits.Length > 0)
             _accelerate = !IsCollisionDangerous(hits);
@@ -145,7 +147,7 @@ public class TrafficCar : NetworkBehaviour
         _collided  = false;
 
         Container = newContainer;
-
+        _splineAnimate.enabled = true;
         _splineAnimate.StartOffset = newOffset;
         _splineAnimate.Restart(true);
 
@@ -169,6 +171,7 @@ public class TrafficCar : NetworkBehaviour
     private void OnAnyCollisionServerRpc()
     {
         _splineAnimate.Pause();
+        _splineAnimate.enabled = false;
         OnAnyCollisionClientRpc();
     }
 

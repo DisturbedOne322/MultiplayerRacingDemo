@@ -9,7 +9,7 @@ public class CameraSpeedEffects : MonoBehaviour
 {
     private CinemachineVirtualCamera _camera;
     private CinemachineBasicMultiChannelPerlin _noise;
-    private CinemachineTransposer _transposer;
+    private CinemachineOrbitalTransposer _transposer;
 
     public float Zoffset = -4f;
 
@@ -75,7 +75,7 @@ public class CameraSpeedEffects : MonoBehaviour
         _localVolume.profile.TryGet<Vignette>(out  _vignette);
         _localVolume.profile.TryGet<ChromaticAberration>(out _chromaticAberration);
 
-        _transposer = _camera.GetCinemachineComponent<CinemachineTransposer>();
+        _transposer = _camera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
     }
 
     // Update is called once per frame
@@ -118,12 +118,41 @@ public class CameraSpeedEffects : MonoBehaviour
         _camera.m_Lens.FieldOfView = Mathf.SmoothDamp(_camera.m_Lens.FieldOfView, targetFOV, ref _fovSmDampVelocity, _smDampTime);
 
         HandleAnimeSpeedEffect(currentCarStats.SpeedInMsPerS, currentCarStats.NitroIntensity == 1);
+        HandleCameraUserMovement();
+    }
+
+    private float _lastInputTime = 0;
+
+    private void HandleCameraUserMovement()
+    {
+        float recenterDelayInput = 5;
+        float recenterDelayNoInput = 0.3f;
+
+        float input = _transposer.m_XAxis.m_InputAxisValue;
+
+        bool accelerating = _customVehicleController.GetCurrentCarStats().Accelerating;
+        bool braking = _customVehicleController.GetCurrentCarStats().Braking;
+        bool inputExists = (accelerating || braking) && !(accelerating && braking);
+
+        if (input != 0)
+            _lastInputTime = Time.time;
+
+        if (_lastInputTime + 0.5f > Time.time)
+            input = 1;
+
+        if (inputExists)
+        {
+            _transposer.m_RecenterToTargetHeading.m_WaitTime = input == 0 ? recenterDelayNoInput : recenterDelayInput;
+        }
+        else
+        {
+            _transposer.m_RecenterToTargetHeading.m_WaitTime = recenterDelayInput;
+        }
+
     }
 
     private void ManageCameraOffset()
     {
-        //_lookingBack = Input.GetKey(KeyCode.C);
-
         Vector3 offset = new Vector3(_transposer.m_FollowOffset.x, _transposer.m_FollowOffset.y, 0);
 
 

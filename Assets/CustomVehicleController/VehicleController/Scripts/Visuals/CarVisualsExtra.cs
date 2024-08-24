@@ -206,25 +206,27 @@ namespace Assets.VehicleController
             if (!IsOwner)
                 return;
 
-            bool frontLeft = _wheelControllerArray[0].HasContactWithGround && _currentCarStats.WheelSlipArray[0];
+            bool brakingEffect = _currentCarStats.Braking && _currentCarStats.SpeedInMsPerS > 20;
+
+            bool frontLeft = _wheelControllerArray[0].HasContactWithGround && (_currentCarStats.WheelSlipArray[0] || brakingEffect);
             if (frontLeft)
                 _lastStopEmitTimeArray[0] = Time.time;
             else
                 frontLeft = Time.time < _lastStopEmitTimeArray[0] + DELAY_BEFORE_DISABLING_EFFECTS;
 
-            bool frontRight = _wheelControllerArray[1].HasContactWithGround && _currentCarStats.WheelSlipArray[1];
+            bool frontRight = _wheelControllerArray[1].HasContactWithGround && (_currentCarStats.WheelSlipArray[1] || brakingEffect);
             if (frontRight)
                 _lastStopEmitTimeArray[1] = Time.time;
             else
                 frontRight = Time.time < _lastStopEmitTimeArray[1] + DELAY_BEFORE_DISABLING_EFFECTS;
 
-            bool rearLeft = _wheelControllerArray[2].HasContactWithGround && _currentCarStats.WheelSlipArray[2];
+            bool rearLeft = _wheelControllerArray[2].HasContactWithGround && (_currentCarStats.WheelSlipArray[2] || brakingEffect);
             if (rearLeft)
                 _lastStopEmitTimeArray[2] = Time.time;
             else
                 rearLeft = Time.time < _lastStopEmitTimeArray[2] + DELAY_BEFORE_DISABLING_EFFECTS;
 
-            bool rearRight = _wheelControllerArray[3].HasContactWithGround && _currentCarStats.WheelSlipArray[3];
+            bool rearRight = _wheelControllerArray[3].HasContactWithGround && (_currentCarStats.WheelSlipArray[3] || brakingEffect);
             if (rearRight)
                 _lastStopEmitTimeArray[3] = Time.time;
             else

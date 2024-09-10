@@ -14,6 +14,12 @@ This is a relatively small project made with NGO, Lobby and Relay packages, and 
 
 All in multiplayer, supporting up to 8 players.
 
+## Technologies used
+
+- [Custom Vehicle Controller](https://assetstore.unity.com/packages/tools/physics/custom-vehicle-controller-278027)
+- [Netcode for GameObjects](https://docs-multiplayer.unity3d.com/netcode/current/about/)
+- [Lobby](https://docs.unity.com/ugs/manual/lobby/manual/unity-lobby-service)
+- [Relay](https://docs.unity.com/ugs/manual/relay/manual/introduction)
 
 ## Demo
 

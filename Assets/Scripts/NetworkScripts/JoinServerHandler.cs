@@ -87,9 +87,9 @@ public class JoinServerHandler : NetworkBehaviour
         }
     }
 
-    private async void DisconnectAndReturnToMenu()
+    private void DisconnectAndReturnToMenu()
     {
-        await SceneManager.LoadSceneAsync("MainMenuScene");
+        SceneManager.LoadScene("MainMenuScene");
         Lobby.Instance.LeaveLobbyAndServer();
     }
 

@@ -4,8 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneManagement : MonoBehaviour
 {
-    private async void Awake()
+    private  void Awake()
     {
-        await SceneManager.LoadSceneAsync("MainMenuScene");    
+        SceneManager.LoadScene("MainMenuScene");    
     }
 }

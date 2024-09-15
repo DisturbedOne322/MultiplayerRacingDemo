@@ -192,7 +192,7 @@ public class TrafficCar : NetworkBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            _rb.linearVelocity = impulse;
+            _rb.velocity = impulse;
         }
     }
 }
